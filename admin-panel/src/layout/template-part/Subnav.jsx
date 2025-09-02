@@ -78,6 +78,15 @@ export default function Subnav() {
           </li>
         );
       })}
+
+      <li className={getNavItemClass("/site-management/site-listings") + " last-item"}>
+        <Link to="/site-management/site-listings" className="nav-link">
+          <svg className="nav-icon">
+            <use xlinkHref="/assets/vendors/@coreui/icons/svg/free.svg#cil-account-logout"></use>
+          </svg>
+          Back to List
+        </Link>
+      </li>
     </ul>
   );
 }

@@ -30,14 +30,22 @@ export default function Header() {
     switch (firstSegment) {
       case 'dashboard':
         return 'Dashboard';
-      case 'user-management':
+      case 'tickets':
+        return 'Tickets';
+      case 'users':
         return 'User Management';
-      case 'content-management':
-        return 'Content Management';
-      case 'system-settings':
-        return 'System Settings';
+      case 'reports':
+        return 'Reports';
+      case 'settings':
+        return 'Settings';
       case 'profile':
         return 'Profile';
+      case 'rates':
+        return 'Rate Management';
+      case 'promoters':
+        return 'Promoter Management';
+      case 'vip':
+        return 'VIP Management';
       default:
         // Convert dashed or lowercase words to Title Case
         return firstSegment

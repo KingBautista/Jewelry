@@ -12,12 +12,9 @@ use App\Services\MessageService;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Resources\UserResource;
-use App\Traits\Auditable;
 
 class UserController extends BaseController
 {
-	use Auditable;
-
 	public function __construct(UserService $userService, MessageService $messageService)
   {
     // Call the parent constructor to initialize services
@@ -55,8 +52,6 @@ class UserController extends BaseController
         $meta_details['last_name'] = $request->last_name;
 
       $user = $this->service->storeWithMeta($userData, $meta_details);
-      
-      $this->logCreate("Created new user: {$userData['user_login']} ({$userData['user_email']})", $user);
       
       return response($user, 201);
     // } catch (\Exception $e) {
@@ -96,9 +91,7 @@ class UserController extends BaseController
 
       $user = $this->service->updateWithMeta($upData, $meta_details, $user);
 
-      $this->logUpdate("Updated user: {$user->user_login} ({$user->user_email})", $oldData, $user->toArray());
-
-      return response($user, 201);
+      return response($user, 200);
     } catch (\Exception $e) {
       return $this->messageService->responseError();
     }
@@ -120,8 +113,6 @@ class UserController extends BaseController
         }
       }
 
-      $this->logBulkAction('PASSWORD_CHANGE', "Bulk changed password for {$count} users", $count);
-
       return response(['message' => 'Passwords have been changed successfully.'], 200);
     } catch (\Exception $e) {
       return $this->messageService->responseError();
@@ -136,8 +127,6 @@ class UserController extends BaseController
       $count = count($userIds);
 
       User::whereIn('id', $userIds)->update(['user_role_id' => $roleId]);
-
-      $this->logBulkAction('ROLE_CHANGE', "Bulk changed role for {$count} users to role ID: {$roleId}", $count);
 
       return response(['message' => 'Roles have been changed successfully.'], 200);
     } catch (\Exception $e) {
@@ -171,8 +160,6 @@ class UserController extends BaseController
 
       $user = $this->service->updateWithMeta($upData, $meta_details, $user);
 
-      $this->logUpdate("Updated own profile: {$user->user_login} ({$user->user_email})", $oldData, $user);
-
       return response([
         'message' => 'Profile has been updated successfully.',
         'user' => $user
@@ -196,8 +183,6 @@ class UserController extends BaseController
         'created_at' => $user->created_at,
         'updated_at' => $user->updated_at,
       ];
-
-      $this->logAudit('VIEW', 'Viewed own profile information');
 
       return response($userData, 200);
     } catch (\Exception $e) {

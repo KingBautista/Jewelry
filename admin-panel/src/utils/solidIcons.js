@@ -13,6 +13,7 @@ import {
   faEye,
   faEyeSlash,
   faUser,
+  faUsers,
   faLock,
   faSignOutAlt,
   faCog,
@@ -24,6 +25,8 @@ import {
   faCalendarAlt,
   faChevronDown,
   faChevronUp,
+  faAngleDown,
+  faAngleUp,
   faArrowRight,
   faArrowLeft,
   faFileAlt,
@@ -41,7 +44,8 @@ import {
   faFax,
   faList,
   faPrint,
-  faCashRegister
+  faCashRegister,
+  faFilter
 } from '@fortawesome/free-solid-svg-icons';
 
 export const solidIconMap = {
@@ -57,6 +61,7 @@ export const solidIconMap = {
   eye: faEye,
   eyeslash: faEyeSlash,
   user: faUser,
+  users: faUsers,
   lock: faLock,
   signout: faSignOutAlt,
   cog: faCog,
@@ -68,6 +73,8 @@ export const solidIconMap = {
   calendar: faCalendarAlt,
   chevrondown: faChevronDown,
   chevronup: faChevronUp,
+  angleDown: faAngleDown,
+  angleUp: faAngleUp,
   arrowright: faArrowRight,
   arrowleft: faArrowLeft,
   file: faFileAlt,
@@ -84,5 +91,6 @@ export const solidIconMap = {
   globe: faGlobe,
   list: faList,
   print: faPrint,
-  cashRegister: faCashRegister
+  cashRegister: faCashRegister,
+  filter: faFilter
 };

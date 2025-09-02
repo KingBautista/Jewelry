@@ -41,7 +41,7 @@ class NavigationSeeder extends Seeder
             'customer_management' => Navigation::create([
                 'name' => 'Customer Management',
                 'slug' => 'customer-management',
-                'icon' => 'fi-br-people',
+                'icon' => 'fi-br-woman-head',
                 'parent_id' => null,
                 'active' => 1,
                 'show_in_menu' => 1
@@ -76,16 +76,8 @@ class NavigationSeeder extends Seeder
                 'show_in_menu' => 1
             ],
             [
-                'name' => 'Role Management',
-                'slug' => 'user-management/roles',
-                'icon' => 'fi-br-shield',
-                'parent_id' => $parents['user_management']->id,
-                'active' => 1,
-                'show_in_menu' => 1
-            ],
-            [
                 'name' => 'Permission Settings',
-                'slug' => 'user-management/permissions',
+                'slug' => 'user-management/roles',
                 'icon' => 'fi-br-lock',
                 'parent_id' => $parents['user_management']->id,
                 'active' => 1,
@@ -101,44 +93,12 @@ class NavigationSeeder extends Seeder
                 'active' => 1,
                 'show_in_menu' => 1
             ],
-            [
-                'name' => 'Create Invoice',
-                'slug' => 'invoice-management/create',
-                'icon' => 'fi-br-plus',
-                'parent_id' => $parents['invoice_management']->id,
-                'active' => 1,
-                'show_in_menu' => 1
-            ],
-            [
-                'name' => 'Invoice Templates',
-                'slug' => 'invoice-management/templates',
-                'icon' => 'fi-br-copy',
-                'parent_id' => $parents['invoice_management']->id,
-                'active' => 1,
-                'show_in_menu' => 1
-            ],
 
             // Payment Management Children
             [
                 'name' => 'All Payments',
                 'slug' => 'payment-management/payments',
                 'icon' => 'fi-br-dollar',
-                'parent_id' => $parents['payment_management']->id,
-                'active' => 1,
-                'show_in_menu' => 1
-            ],
-            [
-                'name' => 'Payment Methods',
-                'slug' => 'payment-management/methods',
-                'icon' => 'fi-br-credit-card',
-                'parent_id' => $parents['payment_management']->id,
-                'active' => 1,
-                'show_in_menu' => 1
-            ],
-            [
-                'name' => 'Payment Gateway',
-                'slug' => 'payment-management/gateway',
-                'icon' => 'fi-br-lock',
                 'parent_id' => $parents['payment_management']->id,
                 'active' => 1,
                 'show_in_menu' => 1

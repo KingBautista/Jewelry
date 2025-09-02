@@ -26,7 +26,7 @@ Route::middleware('auth:sanctum')->group(function () {
 	Route::get('/user', [UserController::class, 'getUser']);
 	Route::post('/logout', [AuthController::class, 'logout']);
 
-		/*
+	/*
 	|--------------------------------------------------------------------------
 	| Options Management Routes
 	|--------------------------------------------------------------------------
@@ -35,10 +35,10 @@ Route::middleware('auth:sanctum')->group(function () {
 		// media date folder
 		Route::get('/dates', [MediaController::class, 'dateFolder']);
 		// navigation-related routes
-		Route::get('/navigations', [NavigationController::class, 'getNavigations']);  // Retrieve all categories for dropdown
+		Route::get('/navigations', [NavigationController::class, 'index']);  // Retrieve all categories for dropdown
 		Route::get('/navigations/{id}', [NavigationController::class, 'getSubNavigations']);  // Retrieve subcategories for a specific category		
 		Route::get('/routes', [NavigationController::class, 'getRoutes']);  // Retrieve all routes
-		Route::get('/roles', [RoleController::class, 'getRoles']);  // Retrieve all routes
+		Route::get('/roles', [RoleController::class, 'index']);  // Retrieve all routes
 		// users for dropdowns
 		Route::get('/users', [UserController::class, 'getUsersForDropdown']);
 	});
@@ -114,6 +114,7 @@ Route::middleware('auth:sanctum')->group(function () {
 	});
 });
 
+// Public routes
 Route::post('/signup', [AuthController::class, 'signup']);
 Route::post('/validate', [AuthController::class, 'activateUser']);
 Route::post('/generate-password', [AuthController::class, 'genTempPassword']);

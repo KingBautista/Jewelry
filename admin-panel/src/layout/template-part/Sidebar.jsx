@@ -110,7 +110,20 @@ export default function Sidebar() {
         );
       }
       return null;
-    })
+    }),
+    // Add About page at the end
+    <li className="nav-group" key="about">
+      <div className="nav-group-header">
+        <Link to="/information" className={`nav-link ${isPathActive('/information') ? "active" : ""}`}>
+          <div className="nav-icon">
+            <svg className="nav-icon-svg">
+              <use xlinkHref="/assets/new-icons/icons-bold/fi-br-info.svg" />
+            </svg>
+          </div>
+          <span className="nav-text">About</span>
+        </Link>
+      </div>
+    </li>
   ];
 
   return (
@@ -126,8 +139,8 @@ export default function Sidebar() {
             </svg>
           </div>
           <div className="brand-text">
-            <span className="brand-title">JEWELRY</span>
-            <span className="brand-subtitle">SYSTEM</span>
+            <span className="brand-title">INVOICE & PAYMENT</span>
+            <span className="brand-subtitle">MANAGEMENT</span>
           </div>
         </div>
       </div>

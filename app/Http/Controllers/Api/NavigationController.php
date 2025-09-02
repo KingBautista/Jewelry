@@ -3,31 +3,22 @@
 namespace App\Http\Controllers\Api;
 
 use Illuminate\Http\Request;
-use App\Http\Requests\NavigationRequest;
-use App\Services\MessageService;
 use App\Services\NavigationService;
-use App\Traits\Auditable;
+use App\Services\MessageService;
 
 class NavigationController extends BaseController
 {
-  use Auditable;
-
-  public function __construct(NavigationService $navigationService, MessageService $messageService)
+	public function __construct(NavigationService $navigationService, MessageService $messageService)
   {
     // Call the parent constructor to initialize services
     parent::__construct($navigationService, $messageService);
   }
 
-  /**
-   * Store a newly created resource in storage.
-   */
-  public function store(NavigationRequest $request)
+  public function store(Request $request)
   {
     try {
       $data = $request->all();
       $resource = $this->service->store($data);
-      
-      $this->logCreate("Created new navigation: {$data['name']}", $resource);
       
       return response($resource, 201);
     } catch (\Exception $e) {
@@ -35,58 +26,36 @@ class NavigationController extends BaseController
     }
   }
 
-  /**
-   * Update a resource in storage.
-   */
-  public function update(NavigationRequest $request, $id)
+  public function update(Request $request, Int $id)
   {
     try {
       $data = $request->all();
-      $oldData = $this->service->show($id);
-      $resource = $this->service->update($data, $id);
-      
-      $this->logUpdate("Updated navigation: {$data['name']}", $oldData, $resource);
-      
+      $resource = $this->service->show($id);
+      $oldData = $resource->toArray();
+
+      $resource = $this->service->update($data, $resource);
+
       return response($resource, 200);
     } catch (\Exception $e) {
       return $this->messageService->responseError();
     }
   }
 
-  public function getNavigations() 
+  public function getSubNavigations(Int $id)
   {
     try {
-      $navigations = $this->service->navigations();
-      
-      $this->logAudit('VIEW', 'Viewed navigation list');
-      
-      return $navigations;
+      $subNavigations = $this->service->getSubNavigations($id);
+      return response($subNavigations, 200);
     } catch (\Exception $e) {
       return $this->messageService->responseError();
     }
   }
 
-  public function getSubNavigations($id) 
-  {
-    try {
-      $subNavigations = $this->service->subNavigations($id);
-      
-      $this->logAudit('VIEW', "Viewed sub-navigations for navigation ID: {$id}");
-      
-      return $subNavigations;
-    } catch (\Exception $e) {
-      return $this->messageService->responseError();
-    }
-  }
-
-  public function getRoutes() 
+  public function getRoutes()
   {
     try {
       $routes = $this->service->getRoutes();
-      
-      $this->logAudit('VIEW', 'Viewed system routes');
-      
-      return $routes;
+      return response($routes, 200);
     } catch (\Exception $e) {
       return $this->messageService->responseError();
     }

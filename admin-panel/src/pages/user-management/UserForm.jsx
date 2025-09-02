@@ -5,7 +5,7 @@ import ToastMessage from "../../components/ToastMessage";
 import Field from "../../components/Field";
 import DOMPurify from 'dompurify';
 import PasswordGenerator from "../../components/PasswordGenerator";
-import TreeDropdown from "../../components/TreeDropdown"; 
+ 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { solidIconMap } from '../../utils/solidIcons';
 
@@ -61,13 +61,26 @@ export default function UserForm() {
   // Handle form submission
   const onSubmit = (ev) => {
     ev.preventDefault();
+    
+    // Validate required fields
+    if (!user.user_role_id) {
+      toastAction.current.showToast('Please select a role', 'warning');
+      return;
+    }
+
     setIsLoading(true);
 
-    user.user_status = isActive;
+    // Prepare the data for submission
+    const submitData = {
+      ...user,
+      user_status: isActive,
+      first_name: user.user_details?.first_name || '',
+      last_name: user.user_details?.last_name || '',
+    };
 
     const request = user.id
-      ? axiosClient.put(`/user-management/users/${user.id}`, user)
-      : axiosClient.post('/user-management/users', user);
+      ? axiosClient.put(`/user-management/users/${user.id}`, submitData)
+      : axiosClient.post('/user-management/users', submitData);
 
     request
       .then(() => {
@@ -82,9 +95,28 @@ export default function UserForm() {
       });
   };
 
+  // Handle delete
+  const handleDelete = () => {
+    if (!user.id) return;
+    
+    if (window.confirm('Are you sure you want to delete this user?')) {
+      setIsLoading(true);
+      axiosClient.delete(`/user-management/users/${user.id}`)
+        .then(() => {
+          toastAction.current.showToast('User has been deleted.', 'success');
+          setIsLoading(false);
+          setTimeout(() => navigate('/user-management/users'), 2000);
+        })
+        .catch((errors) => {
+          toastAction.current.showError(errors.response);
+          setIsLoading(false);
+        });
+    }
+  };
+
   return (
+    <>
     <div className="card">
-      <ToastMessage ref={toastAction} />
       <form onSubmit={onSubmit}>
         <div className="card-header">
           <h4>
@@ -132,8 +164,14 @@ export default function UserForm() {
               <input
                 className="form-control"
                 type="text"
-                value={user.first_name}
-                onChange={ev => setUser({ ...user, first_name: DOMPurify.sanitize(ev.target.value) })}
+                value={user.user_details?.first_name || ''}
+                onChange={ev => setUser({ 
+                  ...user, 
+                  user_details: {
+                    ...user.user_details,
+                    first_name: DOMPurify.sanitize(ev.target.value)
+                  }
+                })}
               />
             }
             labelClass="col-sm-12 col-md-3"
@@ -146,8 +184,14 @@ export default function UserForm() {
               <input
                 className="form-control"
                 type="text"
-                value={user.last_name}
-                onChange={ev => setUser({ ...user, last_name: DOMPurify.sanitize(ev.target.value) })}
+                value={user.user_details?.last_name || ''}
+                onChange={ev => setUser({ 
+                  ...user, 
+                  user_details: {
+                    ...user.user_details,
+                    last_name: DOMPurify.sanitize(ev.target.value)
+                  }
+                })}
               />
             }
             labelClass="col-sm-12 col-md-3"
@@ -161,17 +205,24 @@ export default function UserForm() {
             labelClass="col-sm-12 col-md-3"
             inputClass="col-sm-12 col-md-9"
           />
-          {/* Tags Field */}
+          {/* Role Field */}
           <Field
             label="Role"
             required={true}
             inputComponent={
-              <TreeDropdown
-                options={roles}
-                values={user?.user_details?.user_role || ''}
-                onChange={selectedRoles => setUser({ ...user, user_role: DOMPurify.sanitize(JSON.stringify(selectedRoles)) })}
-                placeholder="Select Role"
-              />
+              <select
+                className="form-select"
+                value={user?.user_role_id || ''}
+                onChange={ev => setUser({ ...user, user_role_id: ev.target.value })}
+                required
+              >
+                <option value="">Select Role</option>
+                {roles.map(role => (
+                  <option key={role.id} value={role.id}>
+                    {role.name}
+                  </option>
+                ))}
+              </select>
             }
             labelClass="col-sm-12 col-md-3"
             inputClass="col-sm-12 col-md-9"
@@ -191,18 +242,33 @@ export default function UserForm() {
             inputClass="col-sm-12 col-md-9"
           />
         </div>
-        <div className="card-footer">
-          <Link type="button" to="/user-management/users" className="btn btn-secondary">
-            <FontAwesomeIcon icon={solidIconMap.arrowleft} className="me-2" />
-            Cancel
-          </Link> &nbsp;
-          <button type="submit" className="btn btn-primary">
-            <FontAwesomeIcon icon={solidIconMap.save} className="me-2" />
-            {buttonText} &nbsp;
-            {isLoading && <span className="spinner-border spinner-border-sm ml-1" role="status"></span>}
-          </button>
+        <div className="card-footer d-flex justify-content-between">
+          <div>
+            <Link type="button" to="/user-management/users" className="btn btn-secondary">
+              <FontAwesomeIcon icon={solidIconMap.arrowleft} className="me-2" />
+              Cancel
+            </Link> &nbsp;
+            <button type="submit" className="btn btn-primary">
+              <FontAwesomeIcon icon={solidIconMap.save} className="me-2" />
+              {buttonText} &nbsp;
+              {isLoading && <span className="spinner-border spinner-border-sm ml-1" role="status"></span>}
+            </button>
+          </div>
+          {user.id && (
+            <button 
+              type="button" 
+              className="btn btn-danger" 
+              onClick={handleDelete}
+              disabled={isLoading}
+            >
+              <FontAwesomeIcon icon={solidIconMap.trash} className="me-2" />
+              Delete
+            </button>
+          )}
         </div>
       </form>
     </div>
+    <ToastMessage ref={toastAction} />
+    </>
   );
 }

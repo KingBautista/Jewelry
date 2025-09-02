@@ -211,7 +211,7 @@ const Dropzone = forwardRef((props, ref) => {
 
   const switchUploader = (
     <p className="mt-2">
-      You are using the {isMulti ? "multi-file" : "browser's built-in"} uploader. 
+      You are using the {isMulti ? "multi-file" : "browser’s built-in"} uploader. 
       {isMulti ? (
         <>
           Problems? Try the{" "}
