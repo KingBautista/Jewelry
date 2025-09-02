@@ -9,8 +9,8 @@ class PermissionSeeder extends Seeder
 {
     public function run(): void
     {
-        // Truncate the table before seeding
-        Permission::truncate();
+        // Delete existing records instead of truncate to avoid foreign key issues
+        Permission::query()->delete();
 
         // Data from user and roles.sql (id, name, label)
         $permissions = [
@@ -23,6 +23,7 @@ class PermissionSeeder extends Seeder
         foreach ($permissions as $permission) {
             [$id, $name, $description] = $permission;
             Permission::create([
+                'id' => $id,
                 'name' => $name,
                 'description' => $description,
             ]);

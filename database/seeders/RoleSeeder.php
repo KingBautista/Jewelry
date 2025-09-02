@@ -9,8 +9,8 @@ class RoleSeeder extends Seeder
 {
     public function run(): void
     {
-        // Truncate the table before seeding
-        Role::truncate();
+        // Delete existing records instead of truncate to avoid foreign key issues
+        Role::query()->delete();
 
         // Data for Invoice and Payment Management System
         // (id, name, active, is_super_admin)
@@ -26,6 +26,7 @@ class RoleSeeder extends Seeder
         foreach ($roles as $role) {
             [$id, $name, $active, $isSuperAdmin] = $role;
             Role::create([
+                'id' => $id,
                 'name' => $name,
                 'active' => $active,
                 'is_super_admin' => $isSuperAdmin,

@@ -9,8 +9,8 @@ class NavigationSeeder extends Seeder
 {
     public function run(): void
     {
-        // Truncate the table before seeding
-        Navigation::truncate();
+        // Delete existing records instead of truncate to avoid foreign key issues
+        Navigation::query()->delete();
 
         // Create parent navigations first
         $parents = [
