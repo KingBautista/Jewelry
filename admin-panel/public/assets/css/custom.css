@@ -1642,6 +1642,10 @@ hr {
   background: #6b7280 !important;
 }
 
+[data-theme="light"] .main-content {
+  background-color: #090a0a !important;
+}
+
 [data-theme="light"] .brand-logo svg {
   fill: white !important;
   stroke: white !important;
