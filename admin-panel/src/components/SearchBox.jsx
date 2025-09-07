@@ -24,7 +24,7 @@ const SearchBox = forwardRef((props, ref) => {
       />
       <button
         type="button"
-        className="btn btn-primary"
+        className="btn btn-secondary"
         onClick={handleButtonClick}
       >
         Search &nbsp;

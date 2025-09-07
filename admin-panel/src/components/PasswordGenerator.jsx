@@ -64,14 +64,14 @@ const PasswordGenerator = ({ label, setUser, user, labelClass = 'col-3', inputCl
               }}
               autoComplete="new-password"
             />
-            <button className="btn btn-primary" type="button" onClick={handleRegenPassword}>
+            <button className="btn btn-secondary" type="button" onClick={handleRegenPassword}>
               <img 
                 src="/assets/new-icons/icons-bold/fi-br-arrow-right.svg" 
                 alt="Regenerate" 
                 style={{ width: '14px', height: '14px', filter: 'brightness(0) invert(1)' }} 
               />
             </button>
-            <button className="btn btn-primary" type="button" onClick={handleHidePassword}>
+            <button className="btn btn-secondary" type="button" onClick={handleHidePassword}>
               <img 
                 src="/assets/new-icons/icons-bold/fi-br-cross-circle.svg" 
                 alt="Cancel" 

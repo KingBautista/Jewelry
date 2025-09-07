@@ -3,8 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use Illuminate\Http\Request;
-use App\Http\Requests\StoreRoleRequest;
-use App\Http\Requests\UpdateRoleRequest;
+use App\Http\Requests\RoleRequest;
 use App\Services\RoleService;
 use App\Services\MessageService;
 use App\Models\Role;
@@ -18,7 +17,7 @@ class RoleController extends BaseController
     parent::__construct($roleService, $messageService);
   }
 
-  public function store(StoreRoleRequest $request)
+  public function store(RoleRequest $request)
   {
     try {
       $data = $request->validated();
@@ -30,16 +29,28 @@ class RoleController extends BaseController
     }
   }
 
-  public function update(UpdateRoleRequest $request, Int $id)
+  public function update(RoleRequest $request, Int $id)
   {
     try {
       $data = $request->validated();
-      $role = Role::findOrFail($id);
+      $role = Role::with('rolePermissions')->findOrFail($id);
       $oldData = $role->toArray();
 
-      $role = $this->service->update($data, $role);
+      $role = $this->service->update($data, $id);
 
       return response($role, 200);
+    } catch (\Exception $e) {
+      return $this->messageService->responseError();
+    }
+  }
+
+  /**
+   * Get all roles resource.
+   */
+  public function getRoles() 
+  {
+    try {
+      return $this->service->getRoles();
     } catch (\Exception $e) {
       return $this->messageService->responseError();
     }

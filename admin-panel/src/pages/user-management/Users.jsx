@@ -267,7 +267,7 @@ export default function Users() {
             <div className="col-md-7 col-12">
                <div className="d-flex align-items-center gap-2">
                  <SearchBox ref={searchRef} onClick={handleSearch} />
-                 <button className="btn btn-primary h-100 text-nowrap" onClick={toggleFilterModal}>
+                 <button className="btn btn-secondary h-100 text-nowrap" onClick={toggleFilterModal}>
                    <img src="/assets/new-icons/icons-bold/fi-br-filter.svg" alt="Filter" className="me-1" style={{ width: '14px', height: '14px', filter: 'brightness(0) invert(1)' }} />
                    Filters
                  </button>
@@ -279,7 +279,7 @@ export default function Users() {
              </div>
              <div className="col-md-5 col-12 d-flex justify-content-end align-items-center">
               {access?.can_create && 
-                <Link to="/user-management/users/create" className="btn btn-primary" type="button">
+                <Link to="/user-management/users/create" className="btn btn-secondary" type="button">
                   <FontAwesomeIcon icon={solidIconMap.plus} className="me-2" />
                   Create New User
                 </Link>
@@ -463,7 +463,7 @@ export default function Users() {
                               }}
                             />
                             <button 
-                              className="btn btn-primary" 
+                              className="btn btn-secondary" 
                               type="button"
                               onClick={handleSearch}
                             >

@@ -192,7 +192,7 @@ const Dropzone = forwardRef((props, ref) => {
       <div className="card-footer">
         <button 
           type="button" 
-          className="btn btn-primary" 
+          className="btn btn-secondary" 
           onClick={handleUpload}
         >
           <FontAwesomeIcon icon={solidIconMap.upload} className="me-2" />

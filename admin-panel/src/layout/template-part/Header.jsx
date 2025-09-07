@@ -143,7 +143,7 @@ export default function Header() {
                 {userIcon && userIcon !== '/assets/img/avatars/default-user.png' ? (
                   <img className="user-avatar-img" src={userIcon} alt={user && user.user_login} />
                 ) : (
-                  <div className="user-avatar-initials">
+                  <div className="user-avatar-initials" style={{ backgroundColor: '#6b7280', color: 'white' }}>
                     {getUserInitials()}
                   </div>
                 )}

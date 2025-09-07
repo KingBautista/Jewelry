@@ -165,7 +165,7 @@ export default function Register() {
 
             <div className="row">
               <div className="col-6">
-                <button className="btn btn-block btn-primary" type="submit">
+                <button className="btn btn-block btn-secondary" type="submit">
                   Create Account &nbsp;
                   {isLoading && <span className="spinner-border spinner-border-sm ml-1" role="status" />}
                 </button>

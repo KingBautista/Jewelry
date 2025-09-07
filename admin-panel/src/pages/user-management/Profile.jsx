@@ -300,7 +300,7 @@ export default function Profile() {
                   </small>
                   <button 
                     type="submit" 
-                    className="btn btn-primary profile-submit-btn"
+                    className="btn btn-secondary profile-submit-btn"
                     disabled={isLoading}
                   >
                     <FontAwesomeIcon icon={solidIconMap.save} className="me-2" />

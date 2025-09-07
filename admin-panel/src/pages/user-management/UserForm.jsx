@@ -36,6 +36,10 @@ export default function UserForm() {
       setIsLoading(true);
       axiosClient.get(`/user-management/users/${id}`)
         .then(({ data }) => {
+          // Ensure user_role_id is set from the user_role object
+          if (data.user_role && data.user_role.id) {
+            data.user_role_id = data.user_role.id.toString();
+          }
           setUser(data);
           setIsLoading(false);
           setIsActive(data.user_status === 'Inactive' ? false : true);
@@ -50,11 +54,16 @@ export default function UserForm() {
   useEffect(() => {
     axiosClient.get(`/options/roles`)
     .then(({ data }) => {
-      const roles = data;
+      // Ensure data is an array
+      const roles = Array.isArray(data) ? data : [];
       setRoles(roles);
     })
     .catch((errors) => {
-      toastAction.current.showError(errors.response);
+      console.error('Error fetching roles:', errors);
+      setRoles([]); // Set empty array on error
+      if (toastAction.current) {
+        toastAction.current.showError(errors.response);
+      }
     });
   }, []);
 
@@ -76,7 +85,11 @@ export default function UserForm() {
       user_status: isActive,
       first_name: user.user_details?.first_name || '',
       last_name: user.user_details?.last_name || '',
+      user_role: user.user_role_id ? { id: parseInt(user.user_role_id) } : null,
     };
+    
+    // Remove user_role_id as it's not expected by the backend
+    delete submitData.user_role_id;
 
     const request = user.id
       ? axiosClient.put(`/user-management/users/${user.id}`, submitData)
@@ -217,7 +230,7 @@ export default function UserForm() {
                 required
               >
                 <option value="">Select Role</option>
-                {roles.map(role => (
+                {Array.isArray(roles) && roles.map(role => (
                   <option key={role.id} value={role.id}>
                     {role.name}
                   </option>
@@ -248,7 +261,7 @@ export default function UserForm() {
               <FontAwesomeIcon icon={solidIconMap.arrowleft} className="me-2" />
               Cancel
             </Link> &nbsp;
-            <button type="submit" className="btn btn-primary">
+            <button type="submit" className="btn btn-secondary">
               <FontAwesomeIcon icon={solidIconMap.save} className="me-2" />
               {buttonText} &nbsp;
               {isLoading && <span className="spinner-border spinner-border-sm ml-1" role="status"></span>}

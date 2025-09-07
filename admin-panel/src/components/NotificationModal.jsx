@@ -50,7 +50,7 @@ const NotificationModal = forwardRef((props, ref) => {
           </div>
           <div className="modal-footer">
             <button type="button" className="btn btn-secondary" onClick={closeNotification}>Close</button>
-            <button type="button" className="btn btn-primary" onClick={handleConfirm}>OK</button>
+            <button type="button" className="btn btn-secondary" onClick={handleConfirm}>OK</button>
           </div>
         </div>
       </div>

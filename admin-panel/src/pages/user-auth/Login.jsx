@@ -83,16 +83,16 @@ export default function Login() {
 
 	return (
 		<div className="col-lg-9">
-			<div className="row g-0 rounded-4 overflow-hidden shadow-xl" style={{ backgroundColor: 'white', border: '1px solid rgba(0,0,0,0.05)' }}>
+			<div className="row g-0 rounded-4 overflow-hidden shadow-xl" style={{ backgroundColor: '#1a1a1a', border: '1px solid rgba(255,255,255,0.1)' }}>
 				{/* Login Form - Left Side */}
 				<div className="col-lg-6">
 					<div className="h-100 d-flex flex-column justify-content-center">
 						<div className="p-5">
 							{/* Header Section */}
 							<div className="text-center mb-5">
-								<FontAwesomeIcon icon={solidIconMap.user} className="text-primary fs-1 mb-4" style={{ filter: 'drop-shadow(0 4px 8px rgba(0,0,0,0.1))' }} />
-								<h1 className="fw-bold text-dark mb-2" style={{ fontSize: '2.5rem', letterSpacing: '-0.5px' }}>Welcome Back</h1>
-								<p className="text-muted mb-0 fs-5" style={{ opacity: 0.8 }}>Sign in to continue to your account</p>
+								<FontAwesomeIcon icon={solidIconMap.user} className="text-light fs-1 mb-4" style={{ filter: 'drop-shadow(0 4px 8px rgba(0,0,0,0.3))' }} />
+								<h1 className="fw-bold text-white mb-2" style={{ fontSize: '2.5rem', letterSpacing: '-0.5px' }}>Welcome Back</h1>
+								<p className="text-light mb-0 fs-5" style={{ opacity: 0.8 }}>Sign in to continue to your account</p>
 							</div>
 
 							<form onSubmit={onSubmit} className={isValidated}>
@@ -121,38 +121,38 @@ export default function Login() {
 								
 								{/* Email Input */}
 								<div className="mb-4">
-									<label htmlFor="email" className="form-label fw-semibold text-dark mb-2" style={{ fontSize: '1.1rem' }}>Email Address</label>
+									<label htmlFor="email" className="form-label fw-semibold text-white mb-2" style={{ fontSize: '1.1rem' }}>Email Address</label>
 									<div className="input-group input-group-lg shadow-sm">
-										<span className="input-group-text bg-white border-end-0 border-2" style={{ borderColor: '#e9ecef' }}>
-											<FontAwesomeIcon icon={solidIconMap.user} className="text-muted" />
+										<span className="input-group-text bg-dark border-end-0 border-2" style={{ borderColor: '#404040', color: '#9ca3af' }}>
+											<FontAwesomeIcon icon={solidIconMap.user} className="text-light" />
 										</span>
 										<input 
 											id="email"
 											ref={emailRef} 
-											className="form-control border-start-0 border-2" 
+											className="form-control border-start-0 border-2 bg-dark text-white" 
 											type="email" 
 											placeholder="Enter your email" 
 											required
-											style={{ fontSize: '1rem', borderColor: '#e9ecef' }}
+											style={{ fontSize: '1rem', borderColor: '#404040' }}
 										/>
 									</div>
 								</div>
 								
 								{/* Password Input */}
 								<div className="mb-4">
-									<label htmlFor="password" className="form-label fw-semibold text-dark mb-2" style={{ fontSize: '1.1rem' }}>Password</label>
+									<label htmlFor="password" className="form-label fw-semibold text-white mb-2" style={{ fontSize: '1.1rem' }}>Password</label>
 									<div className="input-group input-group-lg shadow-sm">
-										<span className="input-group-text bg-white border-end-0 border-2" style={{ borderColor: '#e9ecef' }}>
-											<FontAwesomeIcon icon={solidIconMap.lock} className="text-muted" />
+										<span className="input-group-text bg-dark border-end-0 border-2" style={{ borderColor: '#404040', color: '#9ca3af' }}>
+											<FontAwesomeIcon icon={solidIconMap.lock} className="text-light" />
 										</span>
 										<input
 											id="password"
 											ref={passwordRef}
-											className="form-control border-start-0 border-2"
+											className="form-control border-start-0 border-2 bg-dark text-white"
 											type={showPassword ? "text" : "password"}
 											placeholder="Enter your password"
 											required
-											style={{ fontSize: '1rem', borderColor: '#e9ecef' }}
+											style={{ fontSize: '1rem', borderColor: '#404040' }}
 										/>
 									</div>
 								</div>
@@ -169,10 +169,10 @@ export default function Login() {
 											style={{ 
 												width: '1.3em', 
 												height: '1.3em',
-												accentColor: '#321fdb'
+												accentColor: '#6b7280'
 											}}
 										/>
-										<label htmlFor="showPassword" className="form-check-label text-muted fw-semibold" style={{ fontSize: '1rem' }}>
+										<label htmlFor="showPassword" className="form-check-label text-light fw-semibold" style={{ fontSize: '1rem' }}>
 											Show password
 										</label>
 									</div>
@@ -181,15 +181,18 @@ export default function Login() {
 								{/* Submit Button */}
 								<div className="mb-4">
 									<button 
-										className="btn btn-primary w-100 fw-bold" 
+										className="btn w-100 fw-bold" 
 										type="submit"
 										disabled={isLoading}
 										style={{ 
 											padding: '0.8rem 1.5rem',
 											fontSize: '1.1rem',
 											borderRadius: '0.75rem',
-											boxShadow: '0 4px 15px rgba(50, 31, 219, 0.3)',
-											border: 'none'
+											backgroundColor: '#374151',
+											borderColor: '#4b5563',
+											color: 'white',
+											boxShadow: '0 4px 15px rgba(75, 85, 99, 0.3)',
+											border: '1px solid #4b5563'
 										}}
 									>
 										{isLoading ? (
@@ -208,7 +211,7 @@ export default function Login() {
 								
 								{/* Forgot Password Link */}
 								<div className="text-center">
-									<Link to="/forgot-password" className="text-decoration-none text-muted fw-semibold" style={{ fontSize: '1rem', transition: 'all 0.3s ease' }}>
+									<Link to="/forgot-password" className="text-decoration-none text-light fw-semibold" style={{ fontSize: '1rem', transition: 'all 0.3s ease' }}>
 										Forgot your password?
 									</Link>
 								</div>
@@ -222,7 +225,7 @@ export default function Login() {
 					<div 
 						className="h-100 d-flex align-items-center justify-content-center"
 						style={{ 
-							background: 'linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%)',
+							background: 'linear-gradient(135deg, #1f2937 0%, #374151 50%, #4b5563 100%)',
 							minHeight: '500px'
 						}}
 					>
@@ -230,7 +233,7 @@ export default function Login() {
 						<div 
 							className="position-absolute w-100 h-100"
 							style={{
-								backgroundImage: 'radial-gradient(circle at 25% 25%, rgba(255,255,255,0.15) 0%, transparent 50%), radial-gradient(circle at 75% 75%, rgba(255,255,255,0.15) 0%, transparent 50%), linear-gradient(45deg, rgba(255,255,255,0.05) 0%, transparent 50%)',
+								backgroundImage: 'radial-gradient(circle at 25% 25%, rgba(255,255,255,0.05) 0%, transparent 50%), radial-gradient(circle at 75% 75%, rgba(255,255,255,0.05) 0%, transparent 50%), linear-gradient(45deg, rgba(255,255,255,0.02) 0%, transparent 50%)',
 								backgroundSize: '300px 300px, 300px 300px, 100px 100px'
 							}}
 						></div>
@@ -247,32 +250,32 @@ export default function Login() {
 								Invoice & Payment Management System
 							</h2>
 							
-							<p className="fs-4 mb-5 text-white" style={{ maxWidth: '450px', margin: '0 auto', opacity: 0.95, lineHeight: '1.6' }}>
+							<p className="fs-4 text-white" style={{ maxWidth: '450px', margin: '0 auto', opacity: 0.95, lineHeight: '1.6' }}>
 								Comprehensive invoice and payment management for modern businesses
 							</p>
 							
 							{/* Features List */}
 							<div className="row g-4 text-start" style={{ maxWidth: '380px', margin: '0 auto' }}>
 								<div className="col-12">
-									<div className="d-flex align-items-center p-3 rounded" style={{ backgroundColor: 'rgba(255,255,255,0.1)', backdropFilter: 'blur(10px)' }}>
+									<div className="d-flex align-items-center p-3 rounded" style={{ backgroundColor: 'rgba(0,0,0,0.2)', backdropFilter: 'blur(10px)', border: '1px solid rgba(255,255,255,0.1)' }}>
 										<FontAwesomeIcon icon={solidIconMap.check} className="text-white me-3" style={{ fontSize: '1.3rem' }} />
 										<span className="text-white fw-medium">Advanced invoice management</span>
 									</div>
 								</div>
 								<div className="col-12">
-									<div className="d-flex align-items-center p-3 rounded" style={{ backgroundColor: 'rgba(255,255,255,0.1)', backdropFilter: 'blur(10px)' }}>
+									<div className="d-flex align-items-center p-3 rounded" style={{ backgroundColor: 'rgba(0,0,0,0.2)', backdropFilter: 'blur(10px)', border: '1px solid rgba(255,255,255,0.1)' }}>
 										<FontAwesomeIcon icon={solidIconMap.check} className="text-white me-3" style={{ fontSize: '1.3rem' }} />
 										<span className="text-white fw-medium">Secure payment processing</span>
 									</div>
 								</div>
 								<div className="col-12">
-									<div className="d-flex align-items-center p-3 rounded" style={{ backgroundColor: 'rgba(255,255,255,0.1)', backdropFilter: 'blur(10px)' }}>
+									<div className="d-flex align-items-center p-3 rounded" style={{ backgroundColor: 'rgba(0,0,0,0.2)', backdropFilter: 'blur(10px)', border: '1px solid rgba(255,255,255,0.1)' }}>
 										<FontAwesomeIcon icon={solidIconMap.check} className="text-white me-3" style={{ fontSize: '1.3rem' }} />
 										<span className="text-white fw-medium">Customer relationship tools</span>
 									</div>
 								</div>
 								<div className="col-12">
-									<div className="d-flex align-items-center p-3 rounded" style={{ backgroundColor: 'rgba(255,255,255,0.1)', backdropFilter: 'blur(10px)' }}>
+									<div className="d-flex align-items-center p-3 rounded" style={{ backgroundColor: 'rgba(0,0,0,0.2)', backdropFilter: 'blur(10px)', border: '1px solid rgba(255,255,255,0.1)' }}>
 										<FontAwesomeIcon icon={solidIconMap.check} className="text-white me-3" style={{ fontSize: '1.3rem' }} />
 										<span className="text-white fw-medium">Modern admin interface</span>
 									</div>

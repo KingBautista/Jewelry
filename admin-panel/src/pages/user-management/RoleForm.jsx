@@ -89,7 +89,7 @@ export default function RoleForm() {
     };
   
     // Find the top-level navigation
-    const parentNav = navigations.find((nav) => nav.id === navigationId);
+    const parentNav = Array.isArray(navigations) ? navigations.find((nav) => nav.id === navigationId) : null;
     if (parentNav && parentNav.children) {
       applyPermissionToChildren(navigationId, parentNav.children);
     }
@@ -132,11 +132,13 @@ export default function RoleForm() {
       };
   
       // Loop through all top-level navigations
-      navigations.forEach((nav) => {
-        if (nav.children && nav.children.length > 0) {
-          applyPermissions(nav.id, nav.children);
-        }
-      });
+      if (Array.isArray(navigations)) {
+        navigations.forEach((nav) => {
+          if (nav.children && nav.children.length > 0) {
+            applyPermissions(nav.id, nav.children);
+          }
+        });
+      }
   
       setRole({
         ...role,
@@ -236,7 +238,7 @@ export default function RoleForm() {
         </div>
   
         {/* Top-Level Navigation Rows */}
-        {navigations.map((nav) => (
+        {Array.isArray(navigations) && navigations.map((nav) => (
           <div
             key={nav.id}
             style={{ borderTop: "2px solid #ccc", paddingTop: "5px" }}
@@ -295,10 +297,16 @@ export default function RoleForm() {
     // Get navigations
     axiosClient.get(`/options/routes`)
     .then(({ data }) => {
-      setNavigations(data.data);
+      // The API returns the data directly as an array (Laravel resource collection)
+      const navigationsData = Array.isArray(data) ? data : [];
+      setNavigations(navigationsData);
     })
     .catch((errors) => {
-      toastAction.current.showError(errors.response);
+      console.error('Error fetching navigations:', errors);
+      setNavigations([]); // Set empty array on error
+      if (toastAction.current) {
+        toastAction.current.showError(errors.response);
+      }
     });
 
     if (id) {
@@ -391,7 +399,7 @@ export default function RoleForm() {
               <FontAwesomeIcon icon={solidIconMap.arrowleft} className="me-2" />
               Cancel
             </Link> &nbsp;
-            <button type="submit" className="btn btn-primary">
+            <button type="submit" className="btn btn-secondary">
               <FontAwesomeIcon icon={solidIconMap.save} className="me-2" />
               {buttonText} &nbsp;
               {isLoading && <span className="spinner-border spinner-border-sm ml-1" role="status"></span>}

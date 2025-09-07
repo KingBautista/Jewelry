@@ -130,12 +130,15 @@ export default function Sidebar() {
     <div className="sidebar sidebar-modern" id="sidebar">
       <div className="sidebar-header">
         <div className="sidebar-brand">
-          <div className="brand-logo">
-            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <rect x="3" y="3" width="7" height="7" rx="1" fill="#059669"/>
-              <rect x="14" y="3" width="7" height="7" rx="1" fill="#059669"/>
-              <rect x="3" y="14" width="7" height="7" rx="1" fill="#059669"/>
-              <rect x="14" y="14" width="7" height="7" rx="1" fill="#059669"/>
+          <div className="brand-logo" style={{ 
+            backgroundColor: '#6b7280 !important', 
+            filter: 'drop-shadow(0 2px 4px rgba(107, 114, 128, 0.3))' 
+          }}>
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ color: 'white' }}>
+              <rect x="3" y="3" width="7" height="7" rx="1" fill="white" stroke="none"/>
+              <rect x="14" y="3" width="7" height="7" rx="1" fill="white" stroke="none"/>
+              <rect x="3" y="14" width="7" height="7" rx="1" fill="white" stroke="none"/>
+              <rect x="14" y="14" width="7" height="7" rx="1" fill="white" stroke="none"/>
             </svg>
           </div>
           <div className="brand-text">

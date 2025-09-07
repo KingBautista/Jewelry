@@ -197,7 +197,7 @@ export default function NavigationForm() {
         <div className="card-footer d-flex justify-content-between">
           <div>
             <Link type="button" to="/system-settings/navigation" className="btn btn-secondary">Cancel</Link>&nbsp;
-            <button type="submit" className="btn btn-primary">
+            <button type="submit" className="btn btn-secondary">
               {buttonText} {isLoading && <span className="spinner-border spinner-border-sm ml-1" />}
             </button>
           </div>
