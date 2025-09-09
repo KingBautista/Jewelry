@@ -36,6 +36,16 @@ class RoleService extends BaseService
         $query->where('name', 'LIKE', '%' . request('search') . '%');
       }
 
+      // Apply active status filter
+      if (request('active')) {
+        $active = request('active');
+        if ($active === 'Active') {
+          $query->where('active', 1);
+        } elseif ($active === 'Inactive') {
+          $query->where('active', 0);
+        }
+      }
+
       // Apply ordering
       if (request('order')) {
         $query->orderBy(request('order'), request('sort'));

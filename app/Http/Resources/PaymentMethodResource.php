@@ -5,7 +5,7 @@ namespace App\Http\Resources;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class DiscountResource extends JsonResource
+class PaymentMethodResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -16,19 +16,15 @@ class DiscountResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'name' => $this->name,
-            'code' => $this->code,
-            'amount' => $this->amount,
-            'formatted_amount' => $this->formatted_amount,
-            'type' => $this->type,
+            'bank_name' => $this->bank_name,
+            'account_name' => $this->account_name,
+            'account_number' => $this->account_number,
+            'masked_account_number' => $this->masked_account_number,
             'description' => $this->description,
-            'valid_from' => $this->valid_from ? $this->valid_from->format('Y-m-d') : null,
-            'valid_until' => $this->valid_until ? $this->valid_until->format('Y-m-d') : null,
-            'usage_limit' => $this->usage_limit,
-            'used_count' => $this->used_count,
+            'qr_code_image' => $this->qr_code_image,
+            'qr_code_url' => $this->qr_code_url,
             'active' => $this->active,
             'status' => $this->active ? 'Active' : 'Inactive',
-            'is_valid' => $this->isValid(),
             'created_at' => $this->created_at->format('Y-m-d H:m:s'),
             'updated_at' => $this->updated_at->format('Y-m-d H:m:s'),
         ];

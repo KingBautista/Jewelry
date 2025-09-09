@@ -62,23 +62,31 @@ export default function ForgotPassword() {
 							<form onSubmit={onSubmit} className={isValidated}>
 								{/* Success Message */}
 								{sanitizedMessage && 
-									<div className="alert alert-success border-0 shadow-sm" role="alert">
+									<div className="alert border-0 shadow-sm" role="alert" style={{ 
+										backgroundColor: 'rgba(25, 135, 84, 0.1)', 
+										border: '1px solid rgba(25, 135, 84, 0.3)',
+										color: '#d1e7dd'
+									}}>
 										<div className="d-flex align-items-center">
-											<FontAwesomeIcon icon={solidIconMap.check} className="text-success me-2" />
-											<p className="mb-0 fw-medium">{sanitizedMessage}</p>
+											<FontAwesomeIcon icon={solidIconMap.check} className="me-2" style={{ color: '#198754' }} />
+											<p className="mb-0 fw-medium" style={{ color: '#d1e7dd' }}>{sanitizedMessage}</p>
 										</div>
 									</div>
 								}
 								
 								{/* Error Messages */}
 								{Object.keys(sanitizedErrors).length > 0 && 
-									<div className="alert alert-danger border-0 shadow-sm" role="alert">
+									<div className="alert border-0 shadow-sm" role="alert" style={{ 
+										backgroundColor: 'rgba(220, 53, 69, 0.1)', 
+										border: '1px solid rgba(220, 53, 69, 0.3)',
+										color: '#f8d7da'
+									}}>
 										<div className="d-flex align-items-center mb-2">
-											<FontAwesomeIcon icon={solidIconMap.exclamationTriangle} className="text-danger me-2" />
-											<span className="fw-medium">Please fix the following errors:</span>
+											<FontAwesomeIcon icon={solidIconMap.exclamationTriangle} className="me-2" style={{ color: '#dc3545' }} />
+											<span className="fw-medium" style={{ color: '#f8d7da' }}>Please fix the following errors:</span>
 										</div>
 										{Object.keys(sanitizedErrors).map(key => (
-											<div key={key} className="ms-4">• {sanitizedErrors[key]}</div>
+											<div key={key} className="ms-4" style={{ color: '#f8d7da' }}>• {sanitizedErrors[key]}</div>
 										))}
 									</div>
 								}
@@ -171,43 +179,43 @@ export default function ForgotPassword() {
 						{/* Content */}
 						<div className="text-center text-white position-relative">
 							{/* Icon */}
-							<div className="mb-5">
-								<FontAwesomeIcon icon={solidIconMap.shieldAlt} className="text-white" style={{ fontSize: '4rem', filter: 'drop-shadow(0 8px 16px rgba(0,0,0,0.3))' }} />
+							<div className="mb-3">
+								<FontAwesomeIcon icon={solidIconMap.shieldAlt} className="text-white" style={{ fontSize: '3.5rem', filter: 'drop-shadow(0 8px 16px rgba(0,0,0,0.3))' }} />
 							</div>
 							
 							{/* Welcome Text */}
-							<h2 className="fw-bold mb-4 text-white" style={{ fontSize: '2.8rem', letterSpacing: '-1px', textShadow: '0 4px 8px rgba(0,0,0,0.3)' }}>
+							<h2 className="fw-bold mb-3 text-white" style={{ fontSize: '2.2rem', letterSpacing: '-1px', textShadow: '0 4px 8px rgba(0,0,0,0.3)' }}>
 								Password Recovery
 							</h2>
 							
-							<p className="fs-4 text-white" style={{ maxWidth: '450px', margin: '0 auto', opacity: 0.95, lineHeight: '1.6' }}>
+							<p className="fs-5 text-white mb-4" style={{ maxWidth: '400px', margin: '0 auto', opacity: 0.95, lineHeight: '1.5' }}>
 								Secure password reset process to protect your account
 							</p>
 							
 							{/* Features List */}
-							<div className="row g-4 text-start" style={{ maxWidth: '380px', margin: '0 auto' }}>
+							<div className="row g-2 text-start" style={{ maxWidth: '360px', margin: '0 auto' }}>
 								<div className="col-12">
-									<div className="d-flex align-items-center p-3 rounded" style={{ backgroundColor: 'rgba(0,0,0,0.2)', backdropFilter: 'blur(10px)', border: '1px solid rgba(255,255,255,0.1)' }}>
-										<FontAwesomeIcon icon={solidIconMap.check} className="text-white me-3" style={{ fontSize: '1.3rem' }} />
-										<span className="text-white fw-medium">Secure email verification</span>
+									<div className="d-flex align-items-center p-2 rounded" style={{ backgroundColor: 'rgba(0,0,0,0.2)', backdropFilter: 'blur(10px)', border: '1px solid rgba(255,255,255,0.1)' }}>
+										<FontAwesomeIcon icon={solidIconMap.check} className="text-white me-2" style={{ fontSize: '1.1rem' }} />
+										<span className="text-white fw-medium" style={{ fontSize: '0.95rem' }}>Secure email verification</span>
 									</div>
 								</div>
 								<div className="col-12">
-									<div className="d-flex align-items-center p-3 rounded" style={{ backgroundColor: 'rgba(0,0,0,0.2)', backdropFilter: 'blur(10px)', border: '1px solid rgba(255,255,255,0.1)' }}>
-										<FontAwesomeIcon icon={solidIconMap.check} className="text-white me-3" style={{ fontSize: '1.3rem' }} />
-										<span className="text-white fw-medium">Quick password reset</span>
+									<div className="d-flex align-items-center p-2 rounded" style={{ backgroundColor: 'rgba(0,0,0,0.2)', backdropFilter: 'blur(10px)', border: '1px solid rgba(255,255,255,0.1)' }}>
+										<FontAwesomeIcon icon={solidIconMap.check} className="text-white me-2" style={{ fontSize: '1.1rem' }} />
+										<span className="text-white fw-medium" style={{ fontSize: '0.95rem' }}>Quick password reset</span>
 									</div>
 								</div>
 								<div className="col-12">
-									<div className="d-flex align-items-center p-3 rounded" style={{ backgroundColor: 'rgba(0,0,0,0.2)', backdropFilter: 'blur(10px)', border: '1px solid rgba(255,255,255,0.1)' }}>
-										<FontAwesomeIcon icon={solidIconMap.check} className="text-white me-3" style={{ fontSize: '1.3rem' }} />
-										<span className="text-white fw-medium">Account security protection</span>
+									<div className="d-flex align-items-center p-2 rounded" style={{ backgroundColor: 'rgba(0,0,0,0.2)', backdropFilter: 'blur(10px)', border: '1px solid rgba(255,255,255,0.1)' }}>
+										<FontAwesomeIcon icon={solidIconMap.check} className="text-white me-2" style={{ fontSize: '1.1rem' }} />
+										<span className="text-white fw-medium" style={{ fontSize: '0.95rem' }}>Account security protection</span>
 									</div>
 								</div>
 								<div className="col-12">
-									<div className="d-flex align-items-center p-3 rounded" style={{ backgroundColor: 'rgba(0,0,0,0.2)', backdropFilter: 'blur(10px)', border: '1px solid rgba(255,255,255,0.1)' }}>
-										<FontAwesomeIcon icon={solidIconMap.check} className="text-white me-3" style={{ fontSize: '1.3rem' }} />
-										<span className="text-white fw-medium">Easy access restoration</span>
+									<div className="d-flex align-items-center p-2 rounded" style={{ backgroundColor: 'rgba(0,0,0,0.2)', backdropFilter: 'blur(10px)', border: '1px solid rgba(255,255,255,0.1)' }}>
+										<FontAwesomeIcon icon={solidIconMap.check} className="text-white me-2" style={{ fontSize: '1.1rem' }} />
+										<span className="text-white fw-medium" style={{ fontSize: '0.95rem' }}>Easy access restoration</span>
 									</div>
 								</div>
 							</div>

@@ -5,7 +5,7 @@ namespace App\Http\Resources;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class DiscountResource extends JsonResource
+class FeeResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -22,13 +22,8 @@ class DiscountResource extends JsonResource
             'formatted_amount' => $this->formatted_amount,
             'type' => $this->type,
             'description' => $this->description,
-            'valid_from' => $this->valid_from ? $this->valid_from->format('Y-m-d') : null,
-            'valid_until' => $this->valid_until ? $this->valid_until->format('Y-m-d') : null,
-            'usage_limit' => $this->usage_limit,
-            'used_count' => $this->used_count,
             'active' => $this->active,
             'status' => $this->active ? 'Active' : 'Inactive',
-            'is_valid' => $this->isValid(),
             'created_at' => $this->created_at->format('Y-m-d H:m:s'),
             'updated_at' => $this->updated_at->format('Y-m-d H:m:s'),
         ];

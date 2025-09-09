@@ -100,8 +100,8 @@ class UserController extends BaseController
   public function bulkChangePassword(Request $request) 
   {
     try {
-      $userIds = $request->user_ids;
-      $newPassword = $request->new_password;
+      $userIds = $request->ids;
+      $newPassword = PasswordHelper::generateSalt(); // Generate a random password
       $count = count($userIds);
 
       foreach ($userIds as $userId) {
@@ -122,8 +122,8 @@ class UserController extends BaseController
   public function bulkChangeRole(Request $request) 
   {
     try {
-      $userIds = $request->user_ids;
-      $roleId = $request->role_id;
+      $userIds = $request->ids;
+      $roleId = $request->role;
       $count = count($userIds);
 
       User::whereIn('id', $userIds)->update(['user_role_id' => $roleId]);

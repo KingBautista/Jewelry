@@ -17,6 +17,18 @@ const MediaForm = lazy(() => import('./content-management/MediaForm'));
 const Navigations = lazy(() => import('./system-settings/Navigations'));
 const NavigationForm = lazy(() => import('./system-settings/NavigationForm'));
 
+// Financial Management Components
+const Taxes = lazy(() => import('./financial-management/Taxes'));
+const TaxForm = lazy(() => import('./financial-management/TaxForm'));
+const Fees = lazy(() => import('./financial-management/Fees'));
+const FeeForm = lazy(() => import('./financial-management/FeeForm'));
+const Discounts = lazy(() => import('./financial-management/Discounts'));
+const DiscountForm = lazy(() => import('./financial-management/DiscountForm'));
+const PaymentTerms = lazy(() => import('./financial-management/PaymentTerms'));
+const PaymentTermForm = lazy(() => import('./financial-management/PaymentTermForm'));
+const PaymentMethods = lazy(() => import('./financial-management/PaymentMethods'));
+const PaymentMethodForm = lazy(() => import('./financial-management/PaymentMethodForm'));
+
 // Mapping paths to components
 const routeMap = {
   '/dashboard': Dashboard,
@@ -33,6 +45,22 @@ const routeMap = {
   '/system-settings/navigation/create': NavigationForm,
   '/system-settings/navigation/:id': NavigationForm,
   '/profile': Profile,
+  // Financial Management Routes
+  '/financial-management/taxes': Taxes,
+  '/financial-management/taxes/create': TaxForm,
+  '/financial-management/taxes/:id': TaxForm,
+  '/financial-management/fees': Fees,
+  '/financial-management/fees/create': FeeForm,
+  '/financial-management/fees/:id': FeeForm,
+  '/financial-management/discounts': Discounts,
+  '/financial-management/discounts/create': DiscountForm,
+  '/financial-management/discounts/:id': DiscountForm,
+  '/financial-management/payment-terms': PaymentTerms,
+  '/financial-management/payment-terms/create': PaymentTermForm,
+  '/financial-management/payment-terms/:id': PaymentTermForm,
+  '/financial-management/payment-methods': PaymentMethods,
+  '/financial-management/payment-methods/create': PaymentMethodForm,
+  '/financial-management/payment-methods/:id': PaymentMethodForm,
 };
 
 const Index = () => {

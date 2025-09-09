@@ -98,23 +98,31 @@ export default function Login() {
 							<form onSubmit={onSubmit} className={isValidated}>
 								{/* Success Message */}
 								{sanitizedMessage && 
-									<div className="alert alert-success border-0 shadow-sm" role="alert">
+									<div className="alert border-0 shadow-sm" role="alert" style={{ 
+										backgroundColor: 'rgba(25, 135, 84, 0.1)', 
+										border: '1px solid rgba(25, 135, 84, 0.3)',
+										color: '#d1e7dd'
+									}}>
 										<div className="d-flex align-items-center">
-											<FontAwesomeIcon icon={solidIconMap.check} className="text-success me-2" />
-											<p className="mb-0 fw-medium">{sanitizedMessage}</p>
+											<FontAwesomeIcon icon={solidIconMap.check} className="me-2" style={{ color: '#198754' }} />
+											<p className="mb-0 fw-medium" style={{ color: '#d1e7dd' }}>{sanitizedMessage}</p>
 										</div>
 									</div>
 								}
 								
 								{/* Error Messages */}
 								{Object.keys(sanitizedErrors).length > 0 && 
-									<div className="alert alert-danger border-0 shadow-sm" role="alert">
+									<div className="alert border-0 shadow-sm" role="alert" style={{ 
+										backgroundColor: 'rgba(220, 53, 69, 0.1)', 
+										border: '1px solid rgba(220, 53, 69, 0.3)',
+										color: '#f8d7da'
+									}}>
 										<div className="d-flex align-items-center mb-2">
-											<FontAwesomeIcon icon={solidIconMap.exclamationTriangle} className="text-danger me-2" />
-											<span className="fw-medium">Please fix the following errors:</span>
+											<FontAwesomeIcon icon={solidIconMap.exclamationTriangle} className="me-2" style={{ color: '#dc3545' }} />
+											<span className="fw-medium" style={{ color: '#f8d7da' }}>Please fix the following errors:</span>
 										</div>
 										{Object.keys(sanitizedErrors).map(key => (
-											<div key={key} className="ms-4">• {sanitizedErrors[key]}</div>
+											<div key={key} className="ms-4" style={{ color: '#f8d7da' }}>• {sanitizedErrors[key]}</div>
 										))}
 									</div>
 								}

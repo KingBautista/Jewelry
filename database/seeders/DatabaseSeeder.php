@@ -18,6 +18,14 @@ class DatabaseSeeder extends Seeder
     $this->call(UserSeeder::class);
     $this->call(NavigationSeeder::class);
     $this->call(RolePermissionSeeder::class);
+    
+    // Financial Configuration Seeders
+    $this->call(TaxSeeder::class);
+    $this->call(FeeSeeder::class);
+    $this->call(DiscountSeeder::class);
+    $this->call(PaymentTermSeeder::class);
+    $this->call(PaymentMethodSeeder::class);
+    
     // $this->call(MediaLibrarySeeder::class);
   }
 }

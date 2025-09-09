@@ -1,40 +1,36 @@
-import { useRef, useState, useEffect } from "react"
+import { useEffect, useRef, useState } from "react"
 import { Link } from "react-router-dom";
 import axiosClient from "../../axios-client";
 import DataTable from "../../components/table/DataTable";
 import NotificationModal from "../../components/NotificationModal";
 import ToastMessage from "../../components/ToastMessage";
 import SearchBox from "../../components/SearchBox";
+import DOMPurify from 'dompurify';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { solidIconMap } from '../../utils/solidIcons';
 import { useAccess } from '../../hooks/useAccess';
 
-export default function Roles() {
-  const accessHelper = useAccess();
-  const access = accessHelper.hasAccess(); // defaults to window.location.pathname
+export default function PaymentMethods() {
 
-  const [totalRows, setTotalRows] = useState(0);
-  const [totalTrash, setTotalTrash] = useState(0);
-  const [activeTab, setActiveTab] = useState('all');  // 'all' or 'trash'
-  const [params, setParams] = useState({ search: '' });
-  const [modalDescription, setModalDescription] = useState("");
-  const [showFilterModal, setShowFilterModal] = useState(false);
-  const [collapsedSections, setCollapsedSections] = useState({
-    status: false,
-    search: false,
+  const accessHelper = useAccess();
+  const access = accessHelper.hasAccess();
+  
+  // Grouping states that are related
+  const [dataStatus, setDataStatus] = useState({
+    totalRows: 0,
+    totalTrash: 0,
+    classAll: 'current',
+    classTrash: null,
   });
 
-  const searchRef = useRef();
-  const tableRef = useRef();
-  const modalAction = useRef();
-  const bulkAction = useRef();
-  const toastAction = useRef();
-
   const [options, setOptions] = useState({
-    dataSource: '/user-management/roles',
+    dataSource: '/financial-config/payment-methods',
     dataFields: {
-      name: {name: "Name", withSort: true}, 
-      active: {
+      'bank_name': { name: 'Bank Name', withSort: true },
+      'account_name': { name: 'Account Name', withSort: true },
+      'account_number': { name: 'Account Number', withSort: false },
+      'description': { name: 'Description', withSort: false },
+      'status': {
         name: "Status",
         withSort: true,
         badge: {
@@ -46,37 +42,58 @@ export default function Roles() {
           'Inactive': 'Inactive'
         }
       },
-      updated_at: {name: "Updated At", withSort: true}
+      'created_at': { name: 'Created', withSort: true },
     },
     softDelete: true,
-    primaryKey: "id",
+    primaryKey: 'id',
     redirectUrl: '',
-    otherActions: {},
     edit_link: true,
     bulk_action: false,
   });
-  
-  const modalParams = {
-    id: 'categoryModal',
+
+  const [params, setParams] = useState({ search: '' });
+  const [showFilterModal, setShowFilterModal] = useState(false);
+  const [collapsedSections, setCollapsedSections] = useState({
+    status: false,
+    search: false,
+  });
+
+  // Refs
+  const searchRef = useRef();
+  const tableRef = useRef();
+  const modalAction = useRef();
+  const bulkAction = useRef();
+  const toastAction = useRef();
+
+  const [modalParams, setModalParams] = useState({
+    id: 'businessModal',
     title: "Confirmation",
-    descriptions: modalDescription,
-  };
+    descriptions: "Are you sure to apply these changes?",
+  });
 
-  const handleTabSwitch = (ev, tab) => {
+  // Helper function to update data source and tabs
+  const handleTabChange = (ev, type) => {
     ev.preventDefault();
-    setActiveTab(tab);
 
-    const url = tab === 'trash' ? '/user-management/archived/roles' : '/user-management/roles';
+    const isTrash = type === 'Trash';
+    setDataStatus(prevStatus => ({
+      ...prevStatus,
+      classAll: isTrash ? null : 'current',
+      classTrash: isTrash ? 'current' : null,
+    }));
 
-    // Clear search and params when switching tabs
-    setParams({ search: '', active: '' });
-    if (searchRef.current) {
-      searchRef.current.value = '';
-    }
+    // Clear search input and parameters
+    searchRef.current.value = '';
+    setParams({ search: '' });
     tableRef.current.clearPage();
-    setOptions(prevOptions => ({ ...prevOptions, dataSource: url }));
+
+    setOptions(prevOptions => ({
+      ...prevOptions,
+      dataSource: isTrash ? '/financial-config/archived/payment-methods' : '/financial-config/payment-methods',
+    }));
   };
 
+  // Handle search action
   const handleSearch = () => {
     const searchValue = searchRef.current.value;
     setParams(prevParams => ({
@@ -106,10 +123,15 @@ export default function Roles() {
     }
   };
 
+  // Effect to sync search input when params change
+  useEffect(() => {
+    syncSearchInput();
+  }, [params.search]);
+
   const clearFilters = () => {
     setParams({
       search: '',
-      active: '',
+      status: '',
     });
     // Clear search input
     if (searchRef.current) {
@@ -120,23 +142,6 @@ export default function Roles() {
     // Trigger reload to show all data
     setTimeout(() => handleSearch(), 100);
   };
-
-  // Effect to sync search input when params change
-  useEffect(() => {
-    syncSearchInput();
-  }, [params.search]);
-
-  // Debounced search effect
-  useEffect(() => {
-    const timeoutId = setTimeout(() => {
-      if (params.search !== undefined) {
-        // Trigger search when search param changes
-        tableRef.current?.reload();
-      }
-    }, 300); // 300ms delay
-
-    return () => clearTimeout(timeoutId);
-  }, [params.search]);
 
   const toggleFilterModal = () => {
     setShowFilterModal(!showFilterModal);
@@ -149,25 +154,28 @@ export default function Roles() {
     }));
   };
 
-  const showModalNotification = () => {
+  // Show modal and set description based on action
+  const showNotificationModal = () => {
     const action = bulkAction.current.value;
     if (!action) {
       toastAction.current.showToast('Please select an action first', 'warning');
       return;
     }
 
-    let message = '';
-
-    if (activeTab === 'trash' && action === 'delete') {
-      message = 'You are about to permanently delete these items. This action cannot be undone.'
-    } else {
-      message = 'Are you sure to apply these changes?'
-    }
-    setModalDescription(message);
+    const isDelete = action === 'delete' && dataStatus.classTrash;
+    const message = isDelete 
+      ? 'You are about to permanently delete these items from your site. This action cannot be undone.' 
+      : 'Are you sure to apply this change?';
+    
+    setModalParams((prev) => ({
+      ...prev,
+      descriptions: message,
+    }));
     modalAction.current.show();
   };
 
-  const handleBulkActionConfirmation = () => {
+  // Handle bulk actions (restore, delete)
+  const onConfirm = () => {
     const selectedRows = tableRef.current.getSelectedRows();
     const action = bulkAction.current.value;
 
@@ -181,21 +189,8 @@ export default function Roles() {
       return;
     }
 
-    let url = '';
-    let payload = { ids: selectedRows };
-
-    switch (action) {
-      case 'restore':
-        url = '/user-management/roles/bulk/restore';
-        break;
-      case 'delete':
-        url = activeTab === 'trash' 
-          ? '/user-management/roles/bulk/force-delete' 
-          : '/user-management/roles/bulk/delete';
-        break;
-      default:
-        break;
-    }
+    const url = getBulkActionUrl(action, dataStatus.classTrash);
+    const payload = { ids: selectedRows };
 
     axiosClient.post(url, payload)
     .then(({ data }) => {
@@ -203,6 +198,18 @@ export default function Roles() {
     }).catch((errors) => {
       toastAction.current.showError(errors.response);
     });
+  };
+
+  // Helper to get URL based on action and trash state
+  const getBulkActionUrl = (action, isTrash) => {
+    switch (action) {
+      case 'restore':
+        return '/financial-config/payment-methods/bulk/restore';
+      case 'delete':
+        return isTrash ? '/financial-config/payment-methods/bulk/force-delete' : '/financial-config/payment-methods/bulk/delete';
+      default:
+        return '';
+    }
   };
 
   // Handle API response after bulk action
@@ -214,20 +221,24 @@ export default function Roles() {
     bulkAction.current.value = '';
   };
 
-  const updateTotalCount = (all, trashed) => {
-    setTotalRows(all);
-    setTotalTrash(trashed);
+  // Show total rows and total trash count
+  const showSubSub = (all, archived) => {
+    setDataStatus(prevStatus => ({
+      ...prevStatus,
+      totalRows: all,
+      totalTrash: archived,
+    }));
   };
 
   return (
     <>
       <div className="card mb-2">
         <div className="card-header d-flex justify-content-between align-items-center border-0">
-          <h4>Roles</h4>
+          <h4>Payment Methods</h4>
         </div>
         <div className="card-header pb-0 pt-0 border-0">
-          <div className="row">
-                                      <div className="col-md-7 col-12">
+          <div className="row"> 
+            <div className="col-md-7 col-12">
                <div className="d-flex align-items-center gap-2">
                  <SearchBox ref={searchRef} onClick={handleSearch} />
                  <button className="btn btn-secondary h-100 text-nowrap" onClick={toggleFilterModal}>
@@ -242,16 +253,16 @@ export default function Roles() {
              </div>
              <div className="col-md-5 col-12 d-flex justify-content-end align-items-center">
               {access?.can_create && 
-                <Link to="/user-management/roles/create" className="btn btn-secondary" type="button">
+                <Link to="/financial-management/payment-methods/create" className="btn btn-secondary" type="button">
                   <FontAwesomeIcon icon={solidIconMap.plus} className="me-2" />
-                  Create New Role
+                  Create New Payment Method
                 </Link>
               }
             </div>
           </div>
         </div>
         <div className="card-body pb-0 pt-3">
-          <DataTable options={options} params={params} ref={tableRef} setSubSub={updateTotalCount} access={access} />
+          <DataTable options={options} params={params} ref={tableRef} setSubSub={showSubSub} access={access} />
         </div>
       </div>
 
@@ -291,11 +302,11 @@ export default function Roles() {
                             <input 
                               className="form-check-input" 
                               type="radio" 
-                              name="active" 
+                              name="status" 
                               id="status-all"
                               value=""
-                              checked={params.active === ''}
-                              onChange={e => handleFilterChange('active', e.target.value)}
+                              checked={params.status === ''}
+                              onChange={e => handleFilterChange('status', e.target.value)}
                             />
                             <label className="form-check-label" htmlFor="status-all" style={{ color: 'white' }}>
                               All Status
@@ -305,11 +316,11 @@ export default function Roles() {
                             <input 
                               className="form-check-input" 
                               type="radio" 
-                              name="active" 
+                              name="status" 
                               id="status-active"
                               value="Active"
-                              checked={params.active === 'Active'}
-                              onChange={e => handleFilterChange('active', e.target.value)}
+                              checked={params.status === 'Active'}
+                              onChange={e => handleFilterChange('status', e.target.value)}
                             />
                             <label className="form-check-label" htmlFor="status-active" style={{ color: 'white' }}>
                               Active
@@ -319,11 +330,11 @@ export default function Roles() {
                             <input 
                               className="form-check-input" 
                               type="radio" 
-                              name="active" 
+                              name="status" 
                               id="status-inactive"
                               value="Inactive"
-                              checked={params.active === 'Inactive'}
-                              onChange={e => handleFilterChange('active', e.target.value)}
+                              checked={params.status === 'Inactive'}
+                              onChange={e => handleFilterChange('status', e.target.value)}
                             />
                             <label className="form-check-label" htmlFor="status-inactive" style={{ color: 'white' }}>
                               Inactive
@@ -357,7 +368,7 @@ export default function Roles() {
                             <input 
                               type="text" 
                               className="form-control" 
-                              placeholder="Search roles..."
+                              placeholder="Search payment methods..."
                               style={{ backgroundColor: '#374151', borderColor: '#4b5563', color: 'white' }}
                               value={params.search || ''}
                               onChange={e => {
@@ -396,8 +407,8 @@ export default function Roles() {
         </>
       )}
 
-      <NotificationModal params={modalParams} ref={modalAction} confirmEvent={handleBulkActionConfirmation} />
+      <NotificationModal params={modalParams} ref={modalAction} confirmEvent={onConfirm} />
       <ToastMessage ref={toastAction} />
     </>
-  )
-};
+  );
+}

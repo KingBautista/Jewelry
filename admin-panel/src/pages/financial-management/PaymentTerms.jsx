@@ -1,40 +1,68 @@
-import { useRef, useState, useEffect } from "react"
+import { useEffect, useRef, useState } from "react"
 import { Link } from "react-router-dom";
 import axiosClient from "../../axios-client";
 import DataTable from "../../components/table/DataTable";
 import NotificationModal from "../../components/NotificationModal";
 import ToastMessage from "../../components/ToastMessage";
 import SearchBox from "../../components/SearchBox";
+import DOMPurify from 'dompurify';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { solidIconMap } from '../../utils/solidIcons';
 import { useAccess } from '../../hooks/useAccess';
 
-export default function Roles() {
-  const accessHelper = useAccess();
-  const access = accessHelper.hasAccess(); // defaults to window.location.pathname
+export default function PaymentTerms() {
 
-  const [totalRows, setTotalRows] = useState(0);
-  const [totalTrash, setTotalTrash] = useState(0);
-  const [activeTab, setActiveTab] = useState('all');  // 'all' or 'trash'
-  const [params, setParams] = useState({ search: '' });
-  const [modalDescription, setModalDescription] = useState("");
-  const [showFilterModal, setShowFilterModal] = useState(false);
-  const [collapsedSections, setCollapsedSections] = useState({
-    status: false,
-    search: false,
+  const accessHelper = useAccess();
+  const access = accessHelper.hasAccess();
+  
+  // Grouping states that are related
+  const [dataStatus, setDataStatus] = useState({
+    totalRows: 0,
+    totalTrash: 0,
+    classAll: 'current',
+    classTrash: null,
   });
 
-  const searchRef = useRef();
-  const tableRef = useRef();
-  const modalAction = useRef();
-  const bulkAction = useRef();
-  const toastAction = useRef();
-
   const [options, setOptions] = useState({
-    dataSource: '/user-management/roles',
+    dataSource: '/financial-config/payment-terms',
     dataFields: {
-      name: {name: "Name", withSort: true}, 
-      active: {
+      name: { name: "Name", withSort: true },
+      code: { name: "Code", withSort: true },
+      down_payment_percentage: { 
+        name: "Payment Breakdown", 
+        withSort: false,
+        customRender: (value, row) => {
+          const dp = parseFloat(row.down_payment_percentage || 0);
+          const remaining = parseFloat(row.remaining_percentage || 0);
+          const months = parseInt(row.term_months || 0);
+          return (
+            <div className="small">
+              <div><strong>DP:</strong> {dp.toFixed(1)}%</div>
+              <div><strong>Term:</strong> {months} months ({remaining.toFixed(1)}%)</div>
+            </div>
+          );
+        }
+      },
+      schedules_count: { 
+        name: "Schedule", 
+        withSort: false,
+        customRender: (value, row) => {
+          const schedulesCount = row.schedules ? row.schedules.length : 0;
+          const months = parseInt(row.term_months || 0);
+          return (
+            <div className="small">
+              <span className="badge bg-info">{schedulesCount} months</span>
+              {schedulesCount !== months && (
+                <div className="text-warning mt-1">
+                  <small>⚠️ Incomplete</small>
+                </div>
+              )}
+            </div>
+          );
+        }
+      },
+      description: { name: "Description", withSort: false },
+      status: {
         name: "Status",
         withSort: true,
         badge: {
@@ -46,37 +74,58 @@ export default function Roles() {
           'Inactive': 'Inactive'
         }
       },
-      updated_at: {name: "Updated At", withSort: true}
+      updated_at: { name: "Updated At", withSort: true },
     },
     softDelete: true,
     primaryKey: "id",
     redirectUrl: '',
-    otherActions: {},
     edit_link: true,
     bulk_action: false,
   });
-  
-  const modalParams = {
-    id: 'categoryModal',
+
+  const [params, setParams] = useState({ search: '' });
+  const [showFilterModal, setShowFilterModal] = useState(false);
+  const [collapsedSections, setCollapsedSections] = useState({
+    status: false,
+    search: false,
+  });
+
+  // Refs
+  const searchRef = useRef();
+  const tableRef = useRef();
+  const modalAction = useRef();
+  const bulkAction = useRef();
+  const toastAction = useRef();
+
+  const [modalParams, setModalParams] = useState({
+    id: 'businessModal',
     title: "Confirmation",
-    descriptions: modalDescription,
-  };
+    descriptions: "Are you sure to apply these changes?",
+  });
 
-  const handleTabSwitch = (ev, tab) => {
+  // Helper function to update data source and tabs
+  const handleTabChange = (ev, type) => {
     ev.preventDefault();
-    setActiveTab(tab);
 
-    const url = tab === 'trash' ? '/user-management/archived/roles' : '/user-management/roles';
+    const isTrash = type === 'Trash';
+    setDataStatus(prevStatus => ({
+      ...prevStatus,
+      classAll: isTrash ? null : 'current',
+      classTrash: isTrash ? 'current' : null,
+    }));
 
-    // Clear search and params when switching tabs
-    setParams({ search: '', active: '' });
-    if (searchRef.current) {
-      searchRef.current.value = '';
-    }
+    // Clear search input and parameters
+    searchRef.current.value = '';
+    setParams({ search: '' });
     tableRef.current.clearPage();
-    setOptions(prevOptions => ({ ...prevOptions, dataSource: url }));
+
+    setOptions(prevOptions => ({
+      ...prevOptions,
+      dataSource: isTrash ? '/financial-config/archived/payment-terms' : '/financial-config/payment-terms',
+    }));
   };
 
+  // Handle search action
   const handleSearch = () => {
     const searchValue = searchRef.current.value;
     setParams(prevParams => ({
@@ -106,6 +155,11 @@ export default function Roles() {
     }
   };
 
+  // Effect to sync search input when params change
+  useEffect(() => {
+    syncSearchInput();
+  }, [params.search]);
+
   const clearFilters = () => {
     setParams({
       search: '',
@@ -121,23 +175,6 @@ export default function Roles() {
     setTimeout(() => handleSearch(), 100);
   };
 
-  // Effect to sync search input when params change
-  useEffect(() => {
-    syncSearchInput();
-  }, [params.search]);
-
-  // Debounced search effect
-  useEffect(() => {
-    const timeoutId = setTimeout(() => {
-      if (params.search !== undefined) {
-        // Trigger search when search param changes
-        tableRef.current?.reload();
-      }
-    }, 300); // 300ms delay
-
-    return () => clearTimeout(timeoutId);
-  }, [params.search]);
-
   const toggleFilterModal = () => {
     setShowFilterModal(!showFilterModal);
   };
@@ -149,25 +186,28 @@ export default function Roles() {
     }));
   };
 
-  const showModalNotification = () => {
+  // Show modal and set description based on action
+  const showNotificationModal = () => {
     const action = bulkAction.current.value;
     if (!action) {
       toastAction.current.showToast('Please select an action first', 'warning');
       return;
     }
 
-    let message = '';
-
-    if (activeTab === 'trash' && action === 'delete') {
-      message = 'You are about to permanently delete these items. This action cannot be undone.'
-    } else {
-      message = 'Are you sure to apply these changes?'
-    }
-    setModalDescription(message);
+    const isDelete = action === 'delete' && dataStatus.classTrash;
+    const message = isDelete 
+      ? 'You are about to permanently delete these items from your site. This action cannot be undone.' 
+      : 'Are you sure to apply this change?';
+    
+    setModalParams((prev) => ({
+      ...prev,
+      descriptions: message,
+    }));
     modalAction.current.show();
   };
 
-  const handleBulkActionConfirmation = () => {
+  // Handle bulk actions (restore, delete)
+  const onConfirm = () => {
     const selectedRows = tableRef.current.getSelectedRows();
     const action = bulkAction.current.value;
 
@@ -181,21 +221,8 @@ export default function Roles() {
       return;
     }
 
-    let url = '';
-    let payload = { ids: selectedRows };
-
-    switch (action) {
-      case 'restore':
-        url = '/user-management/roles/bulk/restore';
-        break;
-      case 'delete':
-        url = activeTab === 'trash' 
-          ? '/user-management/roles/bulk/force-delete' 
-          : '/user-management/roles/bulk/delete';
-        break;
-      default:
-        break;
-    }
+    const url = getBulkActionUrl(action, dataStatus.classTrash);
+    const payload = { ids: selectedRows };
 
     axiosClient.post(url, payload)
     .then(({ data }) => {
@@ -203,6 +230,18 @@ export default function Roles() {
     }).catch((errors) => {
       toastAction.current.showError(errors.response);
     });
+  };
+
+  // Helper to get URL based on action and trash state
+  const getBulkActionUrl = (action, isTrash) => {
+    switch (action) {
+      case 'restore':
+        return '/financial-config/payment-terms/bulk/restore';
+      case 'delete':
+        return isTrash ? '/financial-config/payment-terms/bulk/force-delete' : '/financial-config/payment-terms/bulk/delete';
+      default:
+        return '';
+    }
   };
 
   // Handle API response after bulk action
@@ -214,20 +253,24 @@ export default function Roles() {
     bulkAction.current.value = '';
   };
 
-  const updateTotalCount = (all, trashed) => {
-    setTotalRows(all);
-    setTotalTrash(trashed);
+  // Show total rows and total trash count
+  const showSubSub = (all, archived) => {
+    setDataStatus(prevStatus => ({
+      ...prevStatus,
+      totalRows: all,
+      totalTrash: archived,
+    }));
   };
 
   return (
     <>
       <div className="card mb-2">
         <div className="card-header d-flex justify-content-between align-items-center border-0">
-          <h4>Roles</h4>
+          <h4>Payment Terms</h4>
         </div>
         <div className="card-header pb-0 pt-0 border-0">
-          <div className="row">
-                                      <div className="col-md-7 col-12">
+          <div className="row"> 
+            <div className="col-md-7 col-12">
                <div className="d-flex align-items-center gap-2">
                  <SearchBox ref={searchRef} onClick={handleSearch} />
                  <button className="btn btn-secondary h-100 text-nowrap" onClick={toggleFilterModal}>
@@ -242,16 +285,16 @@ export default function Roles() {
              </div>
              <div className="col-md-5 col-12 d-flex justify-content-end align-items-center">
               {access?.can_create && 
-                <Link to="/user-management/roles/create" className="btn btn-secondary" type="button">
+                <Link to="/financial-management/payment-terms/create" className="btn btn-secondary" type="button">
                   <FontAwesomeIcon icon={solidIconMap.plus} className="me-2" />
-                  Create New Role
+                  Create New Payment Term
                 </Link>
               }
             </div>
           </div>
         </div>
         <div className="card-body pb-0 pt-3">
-          <DataTable options={options} params={params} ref={tableRef} setSubSub={updateTotalCount} access={access} />
+          <DataTable options={options} params={params} ref={tableRef} setSubSub={showSubSub} access={access} />
         </div>
       </div>
 
@@ -357,7 +400,7 @@ export default function Roles() {
                             <input 
                               type="text" 
                               className="form-control" 
-                              placeholder="Search roles..."
+                              placeholder="Search payment terms..."
                               style={{ backgroundColor: '#374151', borderColor: '#4b5563', color: 'white' }}
                               value={params.search || ''}
                               onChange={e => {
@@ -396,8 +439,8 @@ export default function Roles() {
         </>
       )}
 
-      <NotificationModal params={modalParams} ref={modalAction} confirmEvent={handleBulkActionConfirmation} />
+      <NotificationModal params={modalParams} ref={modalAction} confirmEvent={onConfirm} />
       <ToastMessage ref={toastAction} />
     </>
-  )
+  );
 };
