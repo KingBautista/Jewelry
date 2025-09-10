@@ -24,7 +24,7 @@ export default function Fees() {
   });
 
   const [options, setOptions] = useState({
-    dataSource: '/financial-config/fees',
+    dataSource: '/financial-management/fees',
     dataFields: {
       name: { name: "Name", withSort: true },
       code: { name: "Code", withSort: true },
@@ -103,7 +103,7 @@ export default function Fees() {
 
     setOptions(prevOptions => ({
       ...prevOptions,
-      dataSource: isTrash ? '/financial-config/archived/fees' : '/financial-config/fees',
+      dataSource: isTrash ? '/financial-management/archived/fees' : '/financial-management/fees',
     }));
   };
 
@@ -219,9 +219,9 @@ export default function Fees() {
   const getBulkActionUrl = (action, isTrash) => {
     switch (action) {
       case 'restore':
-        return '/financial-config/fees/bulk/restore';
+        return '/financial-management/fees/bulk/restore';
       case 'delete':
-        return isTrash ? '/financial-config/fees/bulk/force-delete' : '/financial-config/fees/bulk/delete';
+        return isTrash ? '/financial-management/fees/bulk/force-delete' : '/financial-management/fees/bulk/delete';
       default:
         return '';
     }

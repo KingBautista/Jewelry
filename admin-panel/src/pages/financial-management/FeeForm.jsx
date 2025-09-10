@@ -30,7 +30,7 @@ export default function FeeForm() {
     if (id) {
       setButtonText('Save');
       setIsLoading(true);
-      axiosClient.get(`/financial-config/fees/${id}`)
+      axiosClient.get(`/financial-management/fees/${id}`)
         .then(({ data }) => {
           setFee(data);
           setIsLoading(false);
@@ -76,8 +76,8 @@ export default function FeeForm() {
     };
 
     const request = fee.id
-      ? axiosClient.put(`/financial-config/fees/${fee.id}`, submitData)
-      : axiosClient.post('/financial-config/fees', submitData);
+      ? axiosClient.put(`/financial-management/fees/${fee.id}`, submitData)
+      : axiosClient.post('/financial-management/fees', submitData);
 
     request
       .then(() => {
@@ -98,7 +98,7 @@ export default function FeeForm() {
     
     if (window.confirm('Are you sure you want to delete this fee?')) {
       setIsLoading(true);
-      axiosClient.delete(`/financial-config/fees/${fee.id}`)
+      axiosClient.delete(`/financial-management/fees/${fee.id}`)
         .then(() => {
           toastAction.current.showToast('Fee has been deleted.', 'success');
           setIsLoading(false);

@@ -13,6 +13,7 @@ use App\Http\Controllers\Api\FeeController;
 use App\Http\Controllers\Api\DiscountController;
 use App\Http\Controllers\Api\PaymentTermController;
 use App\Http\Controllers\Api\PaymentMethodController;
+use App\Http\Controllers\Api\CustomerController;
 
 /*
 |--------------------------------------------------------------------------
@@ -52,6 +53,7 @@ Route::middleware('auth:sanctum')->group(function () {
 		Route::get('/discounts', [DiscountController::class, 'getActiveDiscounts']);
 		Route::get('/payment-terms', [PaymentTermController::class, 'getActivePaymentTerms']);
 		Route::get('/payment-methods', [PaymentMethodController::class, 'getActivePaymentMethods']);
+		Route::get('/customers', [CustomerController::class, 'getCustomersForDropdown']);
 	});
 
 	// User Management Routes
@@ -120,8 +122,8 @@ Route::middleware('auth:sanctum')->group(function () {
 	// PROFILE ROUTES
 	Route::post('/profile', [UserController::class, 'updateProfile']);
 
-	// Financial Configuration Routes
-	Route::prefix('financial-config')->group(function () {
+	// Financial Management Routes
+	Route::prefix('financial-management')->group(function () {
 		// Taxes Management
 		Route::prefix('taxes')->group(function () {
 			Route::get('/', [TaxController::class, 'index']);
@@ -208,6 +210,20 @@ Route::middleware('auth:sanctum')->group(function () {
 			Route::get('/', [PaymentMethodController::class, 'getTrashed']);
 			Route::patch('/restore/{id}', [PaymentMethodController::class, 'restore']);
 			Route::delete('/{id}', [PaymentMethodController::class, 'forceDelete']);
+		});
+	});
+
+	// Customer Management Routes
+	Route::prefix('customer-management')->group(function () {
+		// Customers Management
+		Route::prefix('customers')->group(function () {
+			Route::get('/', [CustomerController::class, 'index']);
+			Route::get('/statistics', [CustomerController::class, 'getCustomerStats']);
+			Route::get('/export', [CustomerController::class, 'exportCustomers']);
+			Route::post('/', [CustomerController::class, 'store']);
+			Route::get('/{id}', [CustomerController::class, 'show']);
+			Route::put('/{id}', [CustomerController::class, 'update']);
+			Route::delete('/{id}', [CustomerController::class, 'destroy']);
 		});
 	});
 

@@ -92,6 +92,15 @@ class PaymentTermService extends BaseService
     }
 
     /**
+     * Get Details for editing the specified resource with schedules.
+     */
+    public function show(int $id)
+    {
+        $model = $this->model::with('schedules')->findOrFail($id);
+        return $this->resource::make($model);
+    }
+
+    /**
      * Get active payment terms for dropdown
      */
     public function getActivePaymentTerms()

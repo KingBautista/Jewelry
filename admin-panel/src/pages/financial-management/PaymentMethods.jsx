@@ -24,7 +24,7 @@ export default function PaymentMethods() {
   });
 
   const [options, setOptions] = useState({
-    dataSource: '/financial-config/payment-methods',
+    dataSource: '/financial-management/payment-methods',
     dataFields: {
       'bank_name': { name: 'Bank Name', withSort: true },
       'account_name': { name: 'Account Name', withSort: true },
@@ -89,7 +89,7 @@ export default function PaymentMethods() {
 
     setOptions(prevOptions => ({
       ...prevOptions,
-      dataSource: isTrash ? '/financial-config/archived/payment-methods' : '/financial-config/payment-methods',
+      dataSource: isTrash ? '/financial-management/archived/payment-methods' : '/financial-management/payment-methods',
     }));
   };
 
@@ -204,9 +204,9 @@ export default function PaymentMethods() {
   const getBulkActionUrl = (action, isTrash) => {
     switch (action) {
       case 'restore':
-        return '/financial-config/payment-methods/bulk/restore';
+        return '/financial-management/payment-methods/bulk/restore';
       case 'delete':
-        return isTrash ? '/financial-config/payment-methods/bulk/force-delete' : '/financial-config/payment-methods/bulk/delete';
+        return isTrash ? '/financial-management/payment-methods/bulk/force-delete' : '/financial-management/payment-methods/bulk/delete';
       default:
         return '';
     }

@@ -10,11 +10,10 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { solidIconMap } from '../../utils/solidIcons';
 import { useAccess } from '../../hooks/useAccess';
 
-export default function PaymentTerms() {
+export default function Customers() {
 
   const accessHelper = useAccess();
-  const access = accessHelper.hasAccess();
-  
+  const access = accessHelper.hasAccess(); // defaults to window.location.pathname
   // Grouping states that are related
   const [dataStatus, setDataStatus] = useState({
     totalRows: 0,
@@ -24,57 +23,26 @@ export default function PaymentTerms() {
   });
 
   const [options, setOptions] = useState({
-    dataSource: '/financial-management/payment-terms',
+    dataSource: '/customer-management/customers',
     dataFields: {
-      name: { name: "Name", withSort: true },
-      code: { name: "Code", withSort: true },
-      down_payment_percentage: { 
-        name: "Payment Breakdown", 
-        withSort: false,
-        customRender: (value, row) => {
-          const dp = parseFloat(row.down_payment_percentage || 0);
-          const remaining = parseFloat(row.remaining_percentage || 0);
-          const months = parseInt(row.term_months || 0);
-          return (
-            <div className="small">
-              <div><strong>DP:</strong> {dp.toFixed(1)}%</div>
-              <div><strong>Term:</strong> {months} months ({remaining.toFixed(1)}%)</div>
-            </div>
-          );
-        }
-      },
-      schedules_count: { 
-        name: "Schedule", 
-        withSort: false,
-        customRender: (value, row) => {
-          const schedulesCount = row.schedules ? row.schedules.length : 0;
-          const months = parseInt(row.term_months || 0);
-          return (
-            <div className="small">
-              <span className="badge bg-info">{schedulesCount} months</span>
-              {schedulesCount !== months && (
-                <div className="text-warning mt-1">
-                  <small>⚠️ Incomplete</small>
-                </div>
-              )}
-            </div>
-          );
-        }
-      },
-      description: { name: "Description", withSort: false },
-      status: {
+      customer_code: { name: "Customer Code", withSort: true },
+      first_name: { name: "Name", withSort: true },
+      email: { name: "Email", withSort: true },
+      phone: { name: "Phone", withSort: true },
+      gender: { name: "Gender", withSort: false },
+      active: {
         name: "Status",
         withSort: true,
         badge: {
-          'Active': 'bg-success',
-          'Inactive': 'bg-warning text-dark'
+          'true': 'bg-success',
+          'false': 'bg-secondary'
         },
         badgeLabels: {
-          'Active': 'Active',
-          'Inactive': 'Inactive'
+          'true': 'Active',
+          'false': 'Inactive'
         }
       },
-      updated_at: { name: "Updated At", withSort: true },
+      created_at: { name: "Created At", withSort: true },
     },
     softDelete: true,
     primaryKey: "id",
@@ -87,6 +55,7 @@ export default function PaymentTerms() {
   const [showFilterModal, setShowFilterModal] = useState(false);
   const [collapsedSections, setCollapsedSections] = useState({
     status: false,
+    gender: false,
     search: false,
   });
 
@@ -94,7 +63,6 @@ export default function PaymentTerms() {
   const searchRef = useRef();
   const tableRef = useRef();
   const modalAction = useRef();
-  const bulkAction = useRef();
   const toastAction = useRef();
 
   const [modalParams, setModalParams] = useState({
@@ -121,7 +89,7 @@ export default function PaymentTerms() {
 
     setOptions(prevOptions => ({
       ...prevOptions,
-      dataSource: isTrash ? '/financial-management/archived/payment-terms' : '/financial-management/payment-terms',
+      dataSource: isTrash ? '/customer-management/archived/customers' : '/customer-management/customers',
     }));
   };
 
@@ -164,6 +132,7 @@ export default function PaymentTerms() {
     setParams({
       search: '',
       active: '',
+      gender: '',
     });
     // Clear search input
     if (searchRef.current) {
@@ -186,73 +155,6 @@ export default function PaymentTerms() {
     }));
   };
 
-  // Show modal and set description based on action
-  const showNotificationModal = () => {
-    const action = bulkAction.current.value;
-    if (!action) {
-      toastAction.current.showToast('Please select an action first', 'warning');
-      return;
-    }
-
-    const isDelete = action === 'delete' && dataStatus.classTrash;
-    const message = isDelete 
-      ? 'You are about to permanently delete these items from your site. This action cannot be undone.' 
-      : 'Are you sure to apply this change?';
-    
-    setModalParams((prev) => ({
-      ...prev,
-      descriptions: message,
-    }));
-    modalAction.current.show();
-  };
-
-  // Handle bulk actions (restore, delete)
-  const onConfirm = () => {
-    const selectedRows = tableRef.current.getSelectedRows();
-    const action = bulkAction.current.value;
-
-    if (!action) {
-      toastAction.current.showToast('Please select an action first', 'warning');
-      return;
-    }
-
-    if (selectedRows.length === 0) {
-      toastAction.current.showToast('Please select at least one item', 'warning');
-      return;
-    }
-
-    const url = getBulkActionUrl(action, dataStatus.classTrash);
-    const payload = { ids: selectedRows };
-
-    axiosClient.post(url, payload)
-    .then(({ data }) => {
-      handleActionResponse(action, data);
-    }).catch((errors) => {
-      toastAction.current.showError(errors.response);
-    });
-  };
-
-  // Helper to get URL based on action and trash state
-  const getBulkActionUrl = (action, isTrash) => {
-    switch (action) {
-      case 'restore':
-        return '/financial-management/payment-terms/bulk/restore';
-      case 'delete':
-        return isTrash ? '/financial-management/payment-terms/bulk/force-delete' : '/financial-management/payment-terms/bulk/delete';
-      default:
-        return '';
-    }
-  };
-
-  // Handle API response after bulk action
-  const handleActionResponse = (action, data) => {
-    const toastType = action === 'restore' ? 'success' : 'danger';
-    toastAction.current.showToast(data.message, toastType);
-    modalAction.current.hide();
-    tableRef.current.reload();
-    bulkAction.current.value = '';
-  };
-
   // Show total rows and total trash count
   const showSubSub = (all, archived) => {
     setDataStatus(prevStatus => ({
@@ -266,7 +168,7 @@ export default function PaymentTerms() {
     <>
       <div className="card mb-2">
         <div className="card-header d-flex justify-content-between align-items-center border-0">
-          <h4>Payment Terms</h4>
+          <h4>Customers</h4>
         </div>
         <div className="card-header pb-0 pt-0 border-0">
           <div className="row"> 
@@ -285,9 +187,9 @@ export default function PaymentTerms() {
              </div>
              <div className="col-md-5 col-12 d-flex justify-content-end align-items-center">
               {access?.can_create && 
-                <Link to="/financial-management/payment-terms/create" className="btn btn-secondary" type="button">
+                <Link to="/customer-management/customers/create" className="btn btn-secondary" type="button">
                   <FontAwesomeIcon icon={solidIconMap.plus} className="me-2" />
-                  Create New Payment Term
+                  Create New Customer
                 </Link>
               }
             </div>
@@ -350,8 +252,8 @@ export default function PaymentTerms() {
                               type="radio" 
                               name="active" 
                               id="status-active"
-                              value="Active"
-                              checked={params.active === 'Active'}
+                              value="true"
+                              checked={params.active === 'true'}
                               onChange={e => handleFilterChange('active', e.target.value)}
                             />
                             <label className="form-check-label" htmlFor="status-active" style={{ color: 'white' }}>
@@ -364,12 +266,91 @@ export default function PaymentTerms() {
                               type="radio" 
                               name="active" 
                               id="status-inactive"
-                              value="Inactive"
-                              checked={params.active === 'Inactive'}
+                              value="false"
+                              checked={params.active === 'false'}
                               onChange={e => handleFilterChange('active', e.target.value)}
                             />
                             <label className="form-check-label" htmlFor="status-inactive" style={{ color: 'white' }}>
                               Inactive
+                            </label>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Gender Filter */}
+                  <div className="mb-4">
+                    <div 
+                      className="d-flex justify-content-between align-items-center cursor-pointer" 
+                      onClick={() => toggleSection('gender')}
+                      style={{ cursor: 'pointer' }}>
+                      <h6 className="fw-bold mb-0" style={{ color: '#3b82f6' }}>Gender</h6>
+                      <span style={{ color: '#9ca3af' }}>
+                        <img 
+                          src={collapsedSections.gender ? "/assets/new-icons/icons-bold/fi-br-angle-small-down.svg" : "/assets/new-icons/icons-bold/fi-br-angle-small-up.svg"} 
+                          alt="Toggle" 
+                          style={{ width: '12px', height: '12px' }} 
+                        />
+                      </span>
+                    </div>
+                    {!collapsedSections.gender && (
+                      <div className="mt-3">
+                        <div className="border rounded p-3" style={{ borderColor: '#404040', backgroundColor: 'rgba(0,0,0,0.2)' }}>
+                          <div className="form-check">
+                            <input 
+                              className="form-check-input" 
+                              type="radio" 
+                              name="gender" 
+                              id="gender-all"
+                              value=""
+                              checked={params.gender === ''}
+                              onChange={e => handleFilterChange('gender', e.target.value)}
+                            />
+                            <label className="form-check-label" htmlFor="gender-all" style={{ color: 'white' }}>
+                              All Genders
+                            </label>
+                          </div>
+                          <div className="form-check">
+                            <input 
+                              className="form-check-input" 
+                              type="radio" 
+                              name="gender" 
+                              id="gender-male"
+                              value="male"
+                              checked={params.gender === 'male'}
+                              onChange={e => handleFilterChange('gender', e.target.value)}
+                            />
+                            <label className="form-check-label" htmlFor="gender-male" style={{ color: 'white' }}>
+                              Male
+                            </label>
+                          </div>
+                          <div className="form-check">
+                            <input 
+                              className="form-check-input" 
+                              type="radio" 
+                              name="gender" 
+                              id="gender-female"
+                              value="female"
+                              checked={params.gender === 'female'}
+                              onChange={e => handleFilterChange('gender', e.target.value)}
+                            />
+                            <label className="form-check-label" htmlFor="gender-female" style={{ color: 'white' }}>
+                              Female
+                            </label>
+                          </div>
+                          <div className="form-check">
+                            <input 
+                              className="form-check-input" 
+                              type="radio" 
+                              name="gender" 
+                              id="gender-other"
+                              value="other"
+                              checked={params.gender === 'other'}
+                              onChange={e => handleFilterChange('gender', e.target.value)}
+                            />
+                            <label className="form-check-label" htmlFor="gender-other" style={{ color: 'white' }}>
+                              Other
                             </label>
                           </div>
                         </div>
@@ -400,7 +381,7 @@ export default function PaymentTerms() {
                             <input 
                               type="text" 
                               className="form-control" 
-                              placeholder="Search payment terms..."
+                              placeholder="Search customers..."
                               style={{ backgroundColor: '#374151', borderColor: '#4b5563', color: 'white' }}
                               value={params.search || ''}
                               onChange={e => {
@@ -439,7 +420,7 @@ export default function PaymentTerms() {
         </>
       )}
 
-      <NotificationModal params={modalParams} ref={modalAction} confirmEvent={onConfirm} />
+      <NotificationModal params={modalParams} ref={modalAction} />
       <ToastMessage ref={toastAction} />
     </>
   );

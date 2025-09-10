@@ -26,7 +26,7 @@ class FeeTest extends TestCase
         Fee::factory(3)->create();
 
         $response = $this->actingAs($this->user, 'sanctum')
-            ->getJson('/api/financial-config/fees');
+            ->getJson('/api/financial-management/fees');
 
         $response->assertStatus(200)
             ->assertJsonStructure([
@@ -57,7 +57,7 @@ class FeeTest extends TestCase
         ];
 
         $response = $this->actingAs($this->user, 'sanctum')
-            ->postJson('/api/financial-config/fees', $feeData);
+            ->postJson('/api/financial-management/fees', $feeData);
 
         $response->assertStatus(201);
         $this->assertDatabaseHas('fees', ['code' => 'TEST_FEE']);

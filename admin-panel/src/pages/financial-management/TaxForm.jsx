@@ -29,7 +29,7 @@ export default function TaxForm() {
     if (id) {
       setButtonText('Save');
       setIsLoading(true);
-      axiosClient.get(`/financial-config/taxes/${id}`)
+      axiosClient.get(`/financial-management/taxes/${id}`)
         .then(({ data }) => {
           setTax(data);
           setIsLoading(false);
@@ -69,8 +69,8 @@ export default function TaxForm() {
     };
 
     const request = tax.id
-      ? axiosClient.put(`/financial-config/taxes/${tax.id}`, submitData)
-      : axiosClient.post('/financial-config/taxes', submitData);
+      ? axiosClient.put(`/financial-management/taxes/${tax.id}`, submitData)
+      : axiosClient.post('/financial-management/taxes', submitData);
 
     request
       .then(() => {
@@ -91,7 +91,7 @@ export default function TaxForm() {
     
     if (window.confirm('Are you sure you want to delete this tax?')) {
       setIsLoading(true);
-      axiosClient.delete(`/financial-config/taxes/${tax.id}`)
+      axiosClient.delete(`/financial-management/taxes/${tax.id}`)
         .then(() => {
           toastAction.current.showToast('Tax has been deleted.', 'success');
           setIsLoading(false);

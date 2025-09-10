@@ -90,6 +90,18 @@ class PaymentTermSeeder extends Seeder
         }
 
         // Create additional random payment terms using factory
-        PaymentTerm::factory(2)->create();
+        PaymentTerm::factory(2)->create()->each(function ($paymentTerm) {
+            // Create schedules for installment plans
+            if ($paymentTerm->term_months > 1 && $paymentTerm->remaining_percentage > 0) {
+                $equalPercentage = $paymentTerm->remaining_percentage / $paymentTerm->term_months;
+                for ($i = 1; $i <= $paymentTerm->term_months; $i++) {
+                    $paymentTerm->schedules()->create([
+                        'month_number' => $i,
+                        'percentage' => round($equalPercentage, 2),
+                        'description' => "Month {$i} payment"
+                    ]);
+                }
+            }
+        });
     }
 }

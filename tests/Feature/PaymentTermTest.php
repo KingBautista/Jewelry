@@ -30,7 +30,7 @@ class PaymentTermTest extends TestCase
         PaymentTerm::factory(2)->create();
 
         $response = $this->actingAs($this->user, 'sanctum')
-            ->getJson('/api/financial-config/payment-terms');
+            ->getJson('/api/financial-management/payment-terms');
 
         $response->assertStatus(200)
             ->assertJsonStructure([
@@ -85,7 +85,7 @@ class PaymentTermTest extends TestCase
         ];
 
         $response = $this->actingAs($this->user, 'sanctum')
-            ->postJson('/api/financial-config/payment-terms', $paymentTermData);
+            ->postJson('/api/financial-management/payment-terms', $paymentTermData);
 
         $response->assertStatus(201)
             ->assertJsonFragment([
@@ -111,7 +111,7 @@ class PaymentTermTest extends TestCase
         PaymentTermSchedule::factory(2)->create(['payment_term_id' => $paymentTerm->id]);
 
         $response = $this->actingAs($this->user, 'sanctum')
-            ->getJson("/api/financial-config/payment-terms/{$paymentTerm->id}");
+            ->getJson("/api/financial-management/payment-terms/{$paymentTerm->id}");
 
         $response->assertStatus(200)
             ->assertJsonFragment([
@@ -159,7 +159,7 @@ class PaymentTermTest extends TestCase
         ];
 
         $response = $this->actingAs($this->user, 'sanctum')
-            ->putJson("/api/financial-config/payment-terms/{$paymentTerm->id}", $updateData);
+            ->putJson("/api/financial-management/payment-terms/{$paymentTerm->id}", $updateData);
 
         $response->assertStatus(200)
             ->assertJsonFragment([
@@ -178,7 +178,7 @@ class PaymentTermTest extends TestCase
         $paymentTerm = PaymentTerm::factory()->create();
 
         $response = $this->actingAs($this->user, 'sanctum')
-            ->deleteJson("/api/financial-config/payment-terms/{$paymentTerm->id}");
+            ->deleteJson("/api/financial-management/payment-terms/{$paymentTerm->id}");
 
         $response->assertStatus(200);
 
@@ -215,7 +215,7 @@ class PaymentTermTest extends TestCase
     public function it_validates_payment_term_creation()
     {
         $response = $this->actingAs($this->user, 'sanctum')
-            ->postJson('/api/financial-config/payment-terms', []);
+            ->postJson('/api/financial-management/payment-terms', []);
 
         $response->assertStatus(422)
             ->assertJsonValidationErrors(['name', 'code', 'down_payment_percentage', 'remaining_percentage', 'term_months']);
@@ -242,9 +242,215 @@ class PaymentTermTest extends TestCase
         ];
 
         $response = $this->actingAs($this->user, 'sanctum')
-            ->postJson('/api/financial-config/payment-terms', $paymentTermData);
+            ->postJson('/api/financial-management/payment-terms', $paymentTermData);
 
         $response->assertStatus(422)
             ->assertJsonValidationErrors(['schedules.0.percentage']);
+    }
+
+    /** @test */
+    public function it_can_generate_equal_payment_schedule()
+    {
+        $requestData = [
+            'term_months' => 5,
+            'remaining_percentage' => 70.00
+        ];
+
+        $response = $this->actingAs($this->user, 'sanctum')
+            ->postJson('/api/financial-management/payment-terms/generate-equal-schedule', $requestData);
+
+        $response->assertStatus(200)
+            ->assertJsonStructure([
+                'success',
+                'schedules' => [
+                    '*' => [
+                        'month_number',
+                        'percentage',
+                        'description'
+                    ]
+                ],
+                'message'
+            ])
+            ->assertJson([
+                'success' => true,
+                'schedules' => [
+                    ['month_number' => 1, 'percentage' => 14.00, 'description' => 'Month 1 payment'],
+                    ['month_number' => 2, 'percentage' => 14.00, 'description' => 'Month 2 payment'],
+                    ['month_number' => 3, 'percentage' => 14.00, 'description' => 'Month 3 payment'],
+                    ['month_number' => 4, 'percentage' => 14.00, 'description' => 'Month 4 payment'],
+                    ['month_number' => 5, 'percentage' => 14.00, 'description' => 'Month 5 payment'],
+                ]
+            ]);
+    }
+
+    /** @test */
+    public function it_can_validate_payment_term_completeness()
+    {
+        $paymentTerm = PaymentTerm::factory()->create([
+            'term_months' => 3,
+            'remaining_percentage' => 60.00
+        ]);
+
+        // Create schedules that don't match the remaining percentage
+        PaymentTermSchedule::factory()->create([
+            'payment_term_id' => $paymentTerm->id,
+            'month_number' => 1,
+            'percentage' => 20.00
+        ]);
+        PaymentTermSchedule::factory()->create([
+            'payment_term_id' => $paymentTerm->id,
+            'month_number' => 2,
+            'percentage' => 20.00
+        ]);
+        // Missing third month schedule
+
+        $response = $this->actingAs($this->user, 'sanctum')
+            ->getJson("/api/financial-management/payment-terms/{$paymentTerm->id}/validate-completeness");
+
+        $response->assertStatus(200)
+            ->assertJsonStructure([
+                'success',
+                'validation' => [
+                    'is_complete',
+                    'issues'
+                ]
+            ])
+            ->assertJson([
+                'success' => true,
+                'validation' => [
+                    'is_complete' => false,
+                    'issues' => [
+                        "Schedule count (2) doesn't match term months (3)",
+                        "Schedule percentages (40%) don't match remaining percentage (60%)"
+                    ]
+                ]
+            ]);
+    }
+
+    /** @test */
+    public function it_validates_payment_breakdown_percentages()
+    {
+        $paymentTermData = [
+            'name' => 'Test Payment Plan',
+            'code' => 'TEST_PLAN',
+            'down_payment_percentage' => 30.00,
+            'remaining_percentage' => 80.00, // Total = 110%, should fail
+            'term_months' => 2,
+            'description' => 'Test payment plan',
+            'active' => true,
+        ];
+
+        $response = $this->actingAs($this->user, 'sanctum')
+            ->postJson('/api/financial-management/payment-terms', $paymentTermData);
+
+        $response->assertStatus(422)
+            ->assertJsonValidationErrors(['payment_breakdown']);
+    }
+
+    /** @test */
+    public function it_validates_schedule_month_numbers_are_sequential()
+    {
+        $paymentTermData = [
+            'name' => 'Test Payment Plan',
+            'code' => 'TEST_PLAN',
+            'down_payment_percentage' => 30.00,
+            'remaining_percentage' => 70.00,
+            'term_months' => 3,
+            'description' => 'Test payment plan',
+            'active' => true,
+            'schedules' => [
+                [
+                    'month_number' => 1,
+                    'percentage' => 25.00,
+                    'description' => 'First month'
+                ],
+                [
+                    'month_number' => 3, // Missing month 2
+                    'percentage' => 25.00,
+                    'description' => 'Third month'
+                ],
+                [
+                    'month_number' => 4, // Should be month 3
+                    'percentage' => 20.00,
+                    'description' => 'Fourth month'
+                ]
+            ]
+        ];
+
+        $response = $this->actingAs($this->user, 'sanctum')
+            ->postJson('/api/financial-management/payment-terms', $paymentTermData);
+
+        $response->assertStatus(422)
+            ->assertJsonValidationErrors(['schedules']);
+    }
+
+    /** @test */
+    public function it_validates_unique_month_numbers()
+    {
+        $paymentTermData = [
+            'name' => 'Test Payment Plan',
+            'code' => 'TEST_PLAN',
+            'down_payment_percentage' => 30.00,
+            'remaining_percentage' => 70.00,
+            'term_months' => 2,
+            'description' => 'Test payment plan',
+            'active' => true,
+            'schedules' => [
+                [
+                    'month_number' => 1,
+                    'percentage' => 35.00,
+                    'description' => 'First month'
+                ],
+                [
+                    'month_number' => 1, // Duplicate month number
+                    'percentage' => 35.00,
+                    'description' => 'Duplicate month'
+                ]
+            ]
+        ];
+
+        $response = $this->actingAs($this->user, 'sanctum')
+            ->postJson('/api/financial-management/payment-terms', $paymentTermData);
+
+        $response->assertStatus(422)
+            ->assertJsonValidationErrors(['schedules']);
+    }
+
+    /** @test */
+    public function it_can_soft_delete_payment_terms()
+    {
+        $paymentTerm = PaymentTerm::factory()->create();
+
+        $response = $this->actingAs($this->user, 'sanctum')
+            ->deleteJson("/api/financial-management/payment-terms/{$paymentTerm->id}");
+
+        $response->assertStatus(200);
+
+        $this->assertSoftDeleted('payment_terms', [
+            'id' => $paymentTerm->id
+        ]);
+
+        // Verify schedules are also soft deleted (cascade)
+        $this->assertDatabaseMissing('payment_term_schedules', [
+            'payment_term_id' => $paymentTerm->id
+        ]);
+    }
+
+    /** @test */
+    public function it_can_bulk_delete_payment_terms()
+    {
+        $paymentTerms = PaymentTerm::factory(3)->create();
+        $ids = $paymentTerms->pluck('id')->toArray();
+
+        $response = $this->actingAs($this->user, 'sanctum')
+            ->postJson('/api/financial-management/payment-terms/bulk/delete', [
+                'ids' => $ids
+            ]);
+
+        $response->assertStatus(200);
+
+        foreach ($ids as $id) {
+            $this->assertSoftDeleted('payment_terms', ['id' => $id]);
+        }
     }
 }

@@ -32,12 +32,13 @@ export default function PaymentTermForm() {
     if (id) {
       setButtonText('Save');
       setIsLoading(true);
-      axiosClient.get(`/financial-config/payment-terms/${id}`)
+      axiosClient.get(`/financial-management/payment-terms/${id}`)
         .then(({ data }) => {
-          setPaymentTerm(data);
-          setSchedules(data.schedules || []);
+          const paymentTermData = data.data || data;
+          setPaymentTerm(paymentTermData);
+          setSchedules(paymentTermData.schedules || []);
           setIsLoading(false);
-          setIsActive(data.active);
+          setIsActive(paymentTermData.active);
         })
         .catch((errors) => {
           toastAction.current.showError(errors.response);
@@ -166,8 +167,8 @@ export default function PaymentTermForm() {
     };
 
     const request = paymentTerm.id
-      ? axiosClient.put(`/financial-config/payment-terms/${paymentTerm.id}`, submitData)
-      : axiosClient.post('/financial-config/payment-terms', submitData);
+      ? axiosClient.put(`/financial-management/payment-terms/${paymentTerm.id}`, submitData)
+      : axiosClient.post('/financial-management/payment-terms', submitData);
 
     request
       .then(() => {
@@ -188,7 +189,7 @@ export default function PaymentTermForm() {
     
     if (window.confirm('Are you sure you want to delete this payment term?')) {
       setIsLoading(true);
-      axiosClient.delete(`/financial-config/payment-terms/${paymentTerm.id}`)
+      axiosClient.delete(`/financial-management/payment-terms/${paymentTerm.id}`)
         .then(() => {
           toastAction.current.showToast('Payment term has been deleted.', 'success');
           setIsLoading(false);
@@ -287,7 +288,7 @@ export default function PaymentTermForm() {
                     <label className="form-label">Remaining (%)</label>
                     <div className="input-group">
                       <input
-                        className="form-control"
+                        className="form-control bg-body-secondary"
                         type="number"
                         step="0.01"
                         min="0"
@@ -297,7 +298,7 @@ export default function PaymentTermForm() {
                         required
                         placeholder="e.g., 70.00"
                         readOnly
-                        style={{ backgroundColor: '#f8f9fa' }}
+                        style={{ flex: 1 }}
                       />
                       <span className="input-group-text">%</span>
                     </div>
@@ -394,8 +395,8 @@ export default function PaymentTermForm() {
                   </div>
                 ) : (
                   <>
-                    <div className="table-responsive">
-                      <table className="table table-sm table-hover">
+                    <div className="table-responsive" style={{ height: 'auto', maxHeight: 'none', overflow: 'visible' }}>
+                      <table className="table table-sm table-hover" style={{ whiteSpace: 'nowrap' }}>
                         <thead className="table-light">
                           <tr>
                             <th width="15%">Month</th>
@@ -454,7 +455,7 @@ export default function PaymentTermForm() {
                     </div>
                     
                     {/* Schedule Summary */}
-                    <div className="mt-3 p-3 bg-light rounded">
+                    <div className="mt-2 p-3 bg-body-secondary rounded">
                       <div className="row">
                         <div className="col-md-6">
                           <strong>Schedule Summary:</strong>

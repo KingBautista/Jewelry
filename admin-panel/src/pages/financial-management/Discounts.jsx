@@ -24,7 +24,7 @@ export default function Discounts() {
   });
 
   const [options, setOptions] = useState({
-    dataSource: '/financial-config/discounts',
+    dataSource: '/financial-management/discounts',
     dataFields: {
       name: { name: "Name", withSort: true },
       code: { name: "Code", withSort: true },
@@ -101,7 +101,7 @@ export default function Discounts() {
 
     setOptions(prevOptions => ({
       ...prevOptions,
-      dataSource: isTrash ? '/financial-config/archived/discounts' : '/financial-config/discounts',
+      dataSource: isTrash ? '/financial-management/archived/discounts' : '/financial-management/discounts',
     }));
   };
 
@@ -217,9 +217,9 @@ export default function Discounts() {
   const getBulkActionUrl = (action, isTrash) => {
     switch (action) {
       case 'restore':
-        return '/financial-config/discounts/bulk/restore';
+        return '/financial-management/discounts/bulk/restore';
       case 'delete':
-        return isTrash ? '/financial-config/discounts/bulk/force-delete' : '/financial-config/discounts/bulk/delete';
+        return isTrash ? '/financial-management/discounts/bulk/force-delete' : '/financial-management/discounts/bulk/delete';
       default:
         return '';
     }

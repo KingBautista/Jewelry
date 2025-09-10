@@ -24,7 +24,7 @@ export default function Taxes() {
   });
 
   const [options, setOptions] = useState({
-    dataSource: '/financial-config/taxes',
+    dataSource: '/financial-management/taxes',
     dataFields: {
       name: { name: "Name", withSort: true },
       code: { name: "Code", withSort: true },
@@ -90,7 +90,7 @@ export default function Taxes() {
 
     setOptions(prevOptions => ({
       ...prevOptions,
-      dataSource: isTrash ? '/financial-config/archived/taxes' : '/financial-config/taxes',
+      dataSource: isTrash ? '/financial-management/archived/taxes' : '/financial-management/taxes',
     }));
   };
 
@@ -205,9 +205,9 @@ export default function Taxes() {
   const getBulkActionUrl = (action, isTrash) => {
     switch (action) {
       case 'restore':
-        return '/financial-config/taxes/bulk/restore';
+        return '/financial-management/taxes/bulk/restore';
       case 'delete':
-        return isTrash ? '/financial-config/taxes/bulk/force-delete' : '/financial-config/taxes/bulk/delete';
+        return isTrash ? '/financial-management/taxes/bulk/force-delete' : '/financial-management/taxes/bulk/delete';
       default:
         return '';
     }

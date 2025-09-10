@@ -26,6 +26,9 @@ class DatabaseSeeder extends Seeder
     $this->call(PaymentTermSeeder::class);
     $this->call(PaymentMethodSeeder::class);
     
+    // Customer Management Seeder
+    $this->call(CustomerSeeder::class);
+    
     // $this->call(MediaLibrarySeeder::class);
   }
 }

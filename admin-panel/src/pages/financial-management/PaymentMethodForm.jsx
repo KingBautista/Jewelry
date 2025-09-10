@@ -32,13 +32,14 @@ export default function PaymentMethodForm() {
     if (id) {
       setButtonText('Save');
       setIsLoading(true);
-      axiosClient.get(`/financial-config/payment-methods/${id}`)
+      axiosClient.get(`/financial-management/payment-methods/${id}`)
         .then(({ data }) => {
-          setPaymentMethod(data);
+          const paymentMethodData = data.data || data;
+          setPaymentMethod(paymentMethodData);
           setIsLoading(false);
-          setIsActive(data.active);
-          if (data.qr_code_image) {
-            setQrCodePreview(data.qr_code_image);
+          setIsActive(paymentMethodData.active);
+          if (paymentMethodData.qr_code_image) {
+            setQrCodePreview(paymentMethodData.qr_code_image);
           }
         })
         .catch((errors) => {
@@ -106,17 +107,20 @@ export default function PaymentMethodForm() {
     formData.append('account_name', DOMPurify.sanitize(paymentMethod.account_name));
     formData.append('account_number', DOMPurify.sanitize(paymentMethod.account_number));
     formData.append('description', DOMPurify.sanitize(paymentMethod.description || ''));
-    formData.append('active', isActive);
+    formData.append('active', isActive ? '1' : '0');
     
     if (qrCodeFile) {
       formData.append('qr_code_image', qrCodeFile);
     }
 
     const request = paymentMethod.id
-      ? axiosClient.post(`/financial-config/payment-methods/${paymentMethod.id}`, formData, {
-          headers: { 'Content-Type': 'multipart/form-data' }
-        })
-      : axiosClient.post('/financial-config/payment-methods', formData, {
+      ? (() => {
+          formData.append('_method', 'PUT');
+          return axiosClient.post(`/financial-management/payment-methods/${paymentMethod.id}`, formData, {
+            headers: { 'Content-Type': 'multipart/form-data' }
+          });
+        })()
+      : axiosClient.post('/financial-management/payment-methods', formData, {
           headers: { 'Content-Type': 'multipart/form-data' }
         });
 
@@ -139,7 +143,7 @@ export default function PaymentMethodForm() {
     
     if (window.confirm('Are you sure you want to delete this payment method?')) {
       setIsLoading(true);
-      axiosClient.delete(`/financial-config/payment-methods/${paymentMethod.id}`)
+      axiosClient.delete(`/financial-management/payment-methods/${paymentMethod.id}`)
         .then(() => {
           toastAction.current.showToast('Payment method has been deleted.', 'success');
           setIsLoading(false);

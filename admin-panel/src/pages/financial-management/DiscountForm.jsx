@@ -33,7 +33,7 @@ export default function DiscountForm() {
     if (id) {
       setButtonText('Save');
       setIsLoading(true);
-      axiosClient.get(`/financial-config/discounts/${id}`)
+      axiosClient.get(`/financial-management/discounts/${id}`)
         .then(({ data }) => {
           setDiscount({
             ...data,
@@ -103,8 +103,8 @@ export default function DiscountForm() {
     };
 
     const request = discount.id
-      ? axiosClient.put(`/financial-config/discounts/${discount.id}`, submitData)
-      : axiosClient.post('/financial-config/discounts', submitData);
+      ? axiosClient.put(`/financial-management/discounts/${discount.id}`, submitData)
+      : axiosClient.post('/financial-management/discounts', submitData);
 
     request
       .then(() => {
@@ -125,7 +125,7 @@ export default function DiscountForm() {
     
     if (window.confirm('Are you sure you want to delete this discount?')) {
       setIsLoading(true);
-      axiosClient.delete(`/financial-config/discounts/${discount.id}`)
+      axiosClient.delete(`/financial-management/discounts/${discount.id}`)
         .then(() => {
           toastAction.current.showToast('Discount has been deleted.', 'success');
           setIsLoading(false);

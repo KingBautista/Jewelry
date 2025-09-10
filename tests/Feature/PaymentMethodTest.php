@@ -26,7 +26,7 @@ class PaymentMethodTest extends TestCase
         PaymentMethod::factory(3)->create();
 
         $response = $this->actingAs($this->user, 'sanctum')
-            ->getJson('/api/financial-config/payment-methods');
+            ->getJson('/api/financial-management/payment-methods');
 
         $response->assertStatus(200)
             ->assertJsonStructure([
@@ -56,7 +56,7 @@ class PaymentMethodTest extends TestCase
         ];
 
         $response = $this->actingAs($this->user, 'sanctum')
-            ->postJson('/api/financial-config/payment-methods', $paymentMethodData);
+            ->postJson('/api/financial-management/payment-methods', $paymentMethodData);
 
         $response->assertStatus(201);
         $this->assertDatabaseHas('payment_methods', ['bank_name' => 'Test Bank']);

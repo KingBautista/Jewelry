@@ -26,7 +26,7 @@ class DiscountTest extends TestCase
         Discount::factory(3)->create();
 
         $response = $this->actingAs($this->user, 'sanctum')
-            ->getJson('/api/financial-config/discounts');
+            ->getJson('/api/financial-management/discounts');
 
         $response->assertStatus(200)
             ->assertJsonStructure([
@@ -57,7 +57,7 @@ class DiscountTest extends TestCase
         ];
 
         $response = $this->actingAs($this->user, 'sanctum')
-            ->postJson('/api/financial-config/discounts', $discountData);
+            ->postJson('/api/financial-management/discounts', $discountData);
 
         $response->assertStatus(201);
         $this->assertDatabaseHas('discounts', ['code' => 'TEST_DISCOUNT']);
@@ -69,7 +69,7 @@ class DiscountTest extends TestCase
         $discount = Discount::factory()->valid()->create(['code' => 'VALID_CODE']);
 
         $response = $this->actingAs($this->user, 'sanctum')
-            ->postJson('/api/financial-config/discounts/validate-code', [
+            ->postJson('/api/financial-management/discounts/validate-code', [
                 'code' => 'VALID_CODE'
             ]);
 

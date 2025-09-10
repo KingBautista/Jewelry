@@ -29,7 +29,7 @@ class TaxTest extends TestCase
         Tax::factory(3)->create();
 
         $response = $this->actingAs($this->user, 'sanctum')
-            ->getJson('/api/financial-config/taxes');
+            ->getJson('/api/financial-management/taxes');
 
         $response->assertStatus(200)
             ->assertJsonStructure([
@@ -63,7 +63,7 @@ class TaxTest extends TestCase
         ];
 
         $response = $this->actingAs($this->user, 'sanctum')
-            ->postJson('/api/financial-config/taxes', $taxData);
+            ->postJson('/api/financial-management/taxes', $taxData);
 
         $response->assertStatus(201)
             ->assertJsonFragment([
@@ -85,7 +85,7 @@ class TaxTest extends TestCase
         $tax = Tax::factory()->create();
 
         $response = $this->actingAs($this->user, 'sanctum')
-            ->getJson("/api/financial-config/taxes/{$tax->id}");
+            ->getJson("/api/financial-management/taxes/{$tax->id}");
 
         $response->assertStatus(200)
             ->assertJsonFragment([
@@ -109,7 +109,7 @@ class TaxTest extends TestCase
         ];
 
         $response = $this->actingAs($this->user, 'sanctum')
-            ->putJson("/api/financial-config/taxes/{$tax->id}", $updateData);
+            ->putJson("/api/financial-management/taxes/{$tax->id}", $updateData);
 
         $response->assertStatus(200)
             ->assertJsonFragment([
@@ -132,7 +132,7 @@ class TaxTest extends TestCase
         $tax = Tax::factory()->create();
 
         $response = $this->actingAs($this->user, 'sanctum')
-            ->deleteJson("/api/financial-config/taxes/{$tax->id}");
+            ->deleteJson("/api/financial-management/taxes/{$tax->id}");
 
         $response->assertStatus(200);
 
@@ -166,7 +166,7 @@ class TaxTest extends TestCase
     public function it_validates_tax_creation()
     {
         $response = $this->actingAs($this->user, 'sanctum')
-            ->postJson('/api/financial-config/taxes', []);
+            ->postJson('/api/financial-management/taxes', []);
 
         $response->assertStatus(422)
             ->assertJsonValidationErrors(['name', 'code', 'rate']);
@@ -186,7 +186,7 @@ class TaxTest extends TestCase
         ];
 
         $response = $this->actingAs($this->user, 'sanctum')
-            ->postJson('/api/financial-config/taxes', $taxData);
+            ->postJson('/api/financial-management/taxes', $taxData);
 
         $response->assertStatus(422)
             ->assertJsonValidationErrors(['code']);
@@ -204,7 +204,7 @@ class TaxTest extends TestCase
         ];
 
         $response = $this->actingAs($this->user, 'sanctum')
-            ->postJson('/api/financial-config/taxes', $taxData);
+            ->postJson('/api/financial-management/taxes', $taxData);
 
         $response->assertStatus(422)
             ->assertJsonValidationErrors(['rate']);
@@ -217,7 +217,7 @@ class TaxTest extends TestCase
         Tax::factory()->inactive()->create();
 
         $response = $this->actingAs($this->user, 'sanctum')
-            ->getJson('/api/financial-config/taxes?active=Active');
+            ->getJson('/api/financial-management/taxes?active=Active');
 
         $response->assertStatus(200);
         
@@ -238,7 +238,7 @@ class TaxTest extends TestCase
         Tax::factory()->create(['code' => 'SERVICE_TAX']);
 
         $response = $this->actingAs($this->user, 'sanctum')
-            ->getJson('/api/financial-config/taxes?search=VAT');
+            ->getJson('/api/financial-management/taxes?search=VAT');
 
         $response->assertStatus(200);
         
