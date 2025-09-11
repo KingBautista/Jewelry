@@ -33,6 +33,15 @@ const PaymentMethodForm = lazy(() => import('./financial-management/PaymentMetho
 const Customers = lazy(() => import('./customer-management/Customers'));
 const CustomerForm = lazy(() => import('./customer-management/CustomerForm'));
 
+// Invoice Management Components
+const Invoices = lazy(() => import('./invoice-management/Invoices'));
+const InvoiceForm = lazy(() => import('./invoice-management/InvoiceForm'));
+
+// Payment Management Components
+const Payments = lazy(() => import('./payment-management/Payments'));
+const PaymentForm = lazy(() => import('./payment-management/PaymentForm'));
+const PaymentSubmissions = lazy(() => import('./payment-management/PaymentSubmissions'));
+
 // Mapping paths to components
 const routeMap = {
   '/dashboard': Dashboard,
@@ -70,6 +79,18 @@ const routeMap = {
   '/customer-management/customers/create': CustomerForm,
   '/customer-management/customers/:id': CustomerForm,
   '/customer-management/customers/:id/edit': CustomerForm,
+  // Invoice Management Routes
+  '/invoice-management/invoices': Invoices,
+  '/invoice-management/invoices/create': InvoiceForm,
+  '/invoice-management/invoices/:id': InvoiceForm,
+  '/invoice-management/invoices/:id/edit': InvoiceForm,
+  // Payment Management Routes
+  '/payment-management/payments': Payments,
+  '/payment-management/payments/create': PaymentForm,
+  '/payment-management/payments/:id': PaymentForm,
+  '/payment-management/payments/:id/edit': PaymentForm,
+  '/payment-management/submissions': PaymentSubmissions,
+  '/payment-management/submissions/create': PaymentSubmissions,
 };
 
 const Index = () => {

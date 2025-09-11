@@ -14,6 +14,8 @@ use App\Http\Controllers\Api\DiscountController;
 use App\Http\Controllers\Api\PaymentTermController;
 use App\Http\Controllers\Api\PaymentMethodController;
 use App\Http\Controllers\Api\CustomerController;
+use App\Http\Controllers\Api\InvoiceController;
+use App\Http\Controllers\Api\PaymentController;
 
 /*
 |--------------------------------------------------------------------------
@@ -37,23 +39,42 @@ Route::middleware('auth:sanctum')->group(function () {
 	| Options Management Routes
 	|--------------------------------------------------------------------------
 	*/
+	// Options Management Routes - All dropdown endpoints
 	Route::prefix('options')->group(function () {
-		// media date folder
-		Route::get('/dates', [MediaController::class, 'dateFolder']);
-		// navigation-related routes
-		Route::get('/navigations', [NavigationController::class, 'index']);  // Retrieve all categories for dropdown
-		Route::get('/navigations/{id}', [NavigationController::class, 'getSubNavigations']);  // Retrieve subcategories for a specific category		
-		Route::get('/routes', [NavigationController::class, 'getRoutes']);  // Retrieve all routes
-		Route::get('/roles', [RoleController::class, 'getRoles']);  // Retrieve all routes
-		// users for dropdowns
+		// Media Management Options
+		Route::get('/media/dates', [MediaController::class, 'dateFolder']);
+		
+		// Navigation Options
+		Route::get('/navigations', [NavigationController::class, 'index']);
+		Route::get('/navigations/{id}/sub', [NavigationController::class, 'getSubNavigations']);
+		Route::get('/routes', [NavigationController::class, 'getRoutes']);
+		
+		// User Management Options
 		Route::get('/users', [UserController::class, 'getUsersForDropdown']);
-		// financial configurations for dropdowns
+		Route::get('/roles', [RoleController::class, 'getRoles']);
+		
+		// Customer Management Options
+		Route::get('/customers', [CustomerController::class, 'getCustomersForDropdown']);
+		
+		// Financial Management Options
 		Route::get('/taxes', [TaxController::class, 'getActiveTaxes']);
 		Route::get('/fees', [FeeController::class, 'getActiveFees']);
 		Route::get('/discounts', [DiscountController::class, 'getActiveDiscounts']);
 		Route::get('/payment-terms', [PaymentTermController::class, 'getActivePaymentTerms']);
 		Route::get('/payment-methods', [PaymentMethodController::class, 'getActivePaymentMethods']);
-		Route::get('/customers', [CustomerController::class, 'getCustomersForDropdown']);
+		
+		// Invoice Management Options
+		Route::get('/invoices', [InvoiceController::class, 'getInvoicesForDropdown']);
+		Route::get('/invoice-statuses', [InvoiceController::class, 'getInvoiceStatuses']);
+		
+		// Payment Management Options
+		Route::get('/payments', [PaymentController::class, 'getPaymentsForDropdown']);
+		Route::get('/payment-types', [PaymentController::class, 'getPaymentTypes']);
+		Route::get('/payment-statuses', [PaymentController::class, 'getPaymentStatuses']);
+		Route::get('/payment-submissions', [PaymentController::class, 'getPaymentSubmissionsForDropdown']);
+		
+		// Item Status Options
+		Route::get('/item-statuses', [PaymentController::class, 'getItemStatuses']);
 	});
 
 	// User Management Routes
@@ -224,6 +245,58 @@ Route::middleware('auth:sanctum')->group(function () {
 			Route::get('/{id}', [CustomerController::class, 'show']);
 			Route::put('/{id}', [CustomerController::class, 'update']);
 			Route::delete('/{id}', [CustomerController::class, 'destroy']);
+		});
+	});
+
+	// Invoice Management Routes
+	Route::prefix('invoice-management')->group(function () {
+		// Invoices Management
+		Route::prefix('invoices')->group(function () {
+			Route::get('/', [InvoiceController::class, 'index']);
+			Route::get('/statistics', [InvoiceController::class, 'getInvoiceStats']);
+			Route::get('/export', [InvoiceController::class, 'exportInvoices']);
+			Route::post('/', [InvoiceController::class, 'store']);
+			Route::get('/{id}', [InvoiceController::class, 'show']);
+			Route::put('/{id}', [InvoiceController::class, 'update']);
+			Route::delete('/{id}', [InvoiceController::class, 'destroy']);
+			Route::patch('/{id}/cancel', [InvoiceController::class, 'cancel']);
+			Route::get('/{id}/pdf', [InvoiceController::class, 'generatePdf']);
+			Route::post('/{id}/send-email', [InvoiceController::class, 'sendEmail']);
+		});
+	});
+
+	// Payment Management Routes
+	Route::prefix('payment-management')->group(function () {
+		// Payments Management
+		Route::prefix('payments')->group(function () {
+			Route::get('/', [PaymentController::class, 'index']);
+			Route::get('/statistics', [PaymentController::class, 'getPaymentStats']);
+			Route::get('/export', [PaymentController::class, 'exportPayments']);
+			Route::post('/', [PaymentController::class, 'store']);
+			Route::get('/{id}', [PaymentController::class, 'show']);
+			Route::put('/{id}', [PaymentController::class, 'update']);
+			Route::delete('/{id}', [PaymentController::class, 'destroy']);
+			Route::patch('/{id}/approve', [PaymentController::class, 'approve']);
+			Route::patch('/{id}/reject', [PaymentController::class, 'reject']);
+			Route::patch('/{id}/confirm', [PaymentController::class, 'confirm']);
+		});
+		
+		// Payment Submissions
+		Route::prefix('submissions')->group(function () {
+			Route::get('/', [PaymentController::class, 'getPaymentSubmissions']);
+			Route::post('/', [PaymentController::class, 'submitPayment']);
+			Route::patch('/{id}/approve', [PaymentController::class, 'approveSubmission']);
+			Route::patch('/{id}/reject', [PaymentController::class, 'rejectSubmission']);
+		});
+		
+		// Payment Schedules
+		Route::prefix('schedules')->group(function () {
+			Route::get('/invoice/{invoiceId}', [PaymentController::class, 'getPaymentSchedules']);
+		});
+		
+		// Item Status Management
+		Route::prefix('item-status')->group(function () {
+			Route::patch('/invoice/{invoiceId}', [PaymentController::class, 'updateItemStatus']);
 		});
 	});
 

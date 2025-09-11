@@ -28,5 +28,12 @@ class DatabaseSeeder extends Seeder
     
     // Customer Management Seeder
     $this->call(CustomerSeeder::class);
+    
+    // Invoice Management Seeder
+    $this->call(InvoiceSeeder::class);
+    
+    // Payment Management Seeders
+    $this->call(PaymentTypeSeeder::class);
+    $this->call(PaymentSeeder::class);
   }
 }
