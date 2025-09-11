@@ -4,7 +4,7 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
-use App\Models\Customer;
+use App\Models\User;
 use App\Helpers\PasswordHelper;
 
 class CustomerSeeder extends Seeder
@@ -174,16 +174,97 @@ class CustomerSeeder extends Seeder
             $password = PasswordHelper::generatePassword($salt, 'password123'); // Default password
             $activation_key = PasswordHelper::generateSalt();
             
-            $customerDataWithPassword = array_merge($customerData, [
-                'customer_salt' => $salt,
-                'customer_pass' => $password,
-                'customer_activation_key' => $activation_key,
-            ]);
+            // Prepare user data
+            $userData = [
+                'user_login' => $customerData['email'],
+                'user_email' => $customerData['email'],
+                'user_salt' => $salt,
+                'user_pass' => $password,
+                'user_status' => 1,
+                'user_activation_key' => $activation_key,
+                'user_role_id' => null,
+            ];
+
+            // Prepare customer meta data
+            $customerMetaData = [
+                'user_type' => 'customer',
+                'customer_code' => User::generateCustomerCode(),
+                'first_name' => $customerData['first_name'],
+                'last_name' => $customerData['last_name'],
+                'phone' => $customerData['phone'],
+                'address' => $customerData['address'],
+                'city' => $customerData['city'],
+                'state' => $customerData['state'],
+                'postal_code' => $customerData['postal_code'],
+                'country' => $customerData['country'],
+                'date_of_birth' => $customerData['date_of_birth'],
+                'gender' => $customerData['gender'],
+                'notes' => $customerData['notes'],
+            ];
             
-            Customer::firstOrCreate(['email' => $customerData['email']], $customerDataWithPassword);
+            // Check if user already exists
+            $existingUser = User::where('user_email', $customerData['email'])->first();
+            
+            if (!$existingUser) {
+                $user = User::create($userData);
+                $user->saveUserMeta($customerMetaData);
+            }
         }
 
-        // Create additional random customers using factory
-        Customer::factory(15)->create();
+        // Create additional random customers to reach 25 total
+        $faker = \Faker\Factory::create();
+        $cities = ['Manila', 'Quezon City', 'Makati', 'Taguig', 'Pasig', 'Mandaluyong', 'San Juan', 'Marikina', 'Pasay', 'Parañaque', 'Las Piñas', 'Muntinlupa', 'Caloocan', 'Malabon', 'Navotas', 'Valenzuela'];
+        $genders = ['male', 'female', 'other'];
+        
+        // Calculate how many more customers we need to reach 25
+        $existingCount = count($customers);
+        $additionalCount = 25 - $existingCount;
+        
+        for ($i = 0; $i < $additionalCount; $i++) {
+            $firstName = $faker->firstName();
+            $lastName = $faker->lastName();
+            $email = strtolower($firstName . '.' . $lastName . '@' . $faker->domainName());
+            
+            // Generate password fields
+            $salt = PasswordHelper::generateSalt();
+            $password = PasswordHelper::generatePassword($salt, 'password123');
+            $activation_key = PasswordHelper::generateSalt();
+            
+            // Prepare user data
+            $userData = [
+                'user_login' => $email,
+                'user_email' => $email,
+                'user_salt' => $salt,
+                'user_pass' => $password,
+                'user_status' => $faker->boolean(80) ? 1 : 0, // 80% active
+                'user_activation_key' => $activation_key,
+                'user_role_id' => null,
+            ];
+
+            // Prepare customer meta data
+            $customerMetaData = [
+                'user_type' => 'customer',
+                'customer_code' => User::generateCustomerCode(),
+                'first_name' => $firstName,
+                'last_name' => $lastName,
+                'phone' => '+63 9' . $faker->numerify('## ### ####'),
+                'address' => $faker->streetAddress(),
+                'city' => $faker->randomElement($cities),
+                'state' => 'Metro Manila',
+                'postal_code' => $faker->numerify('####'),
+                'country' => 'Philippines',
+                'date_of_birth' => $faker->date('Y-m-d', '2000-01-01'),
+                'gender' => $faker->randomElement($genders),
+                'notes' => $faker->optional(0.3)->sentence(),
+            ];
+            
+            // Check if user already exists
+            $existingUser = User::where('user_email', $email)->first();
+            
+            if (!$existingUser) {
+                $user = User::create($userData);
+                $user->saveUserMeta($customerMetaData);
+            }
+        }
     }
 }

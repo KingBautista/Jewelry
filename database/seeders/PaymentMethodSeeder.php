@@ -61,7 +61,27 @@ class PaymentMethodSeeder extends Seeder
             PaymentMethod::create($method);
         }
 
-        // Create additional random payment methods using factory
-        PaymentMethod::factory(3)->create();
+        // Create additional random payment methods to reach 25 total
+        $faker = \Faker\Factory::create();
+        $bankNames = ['BDO', 'BPI', 'Metrobank', 'Security Bank', 'EastWest Bank', 'RCBC', 'PNB', 'UnionBank', 'Chinabank', 'Landbank', 'PSBank', 'Robinsons Bank', 'CIMB Bank', 'ING Bank', 'Maybank', 'AUB', 'Sterling Bank', 'UCPB', 'Philippine Bank of Communications', 'Bank of Commerce'];
+        $accountTypes = ['Savings Account', 'Checking Account', 'Current Account', 'Business Account', 'Corporate Account'];
+        
+        // Calculate how many more payment methods we need to reach 25 total
+        $existingCount = count($paymentMethods);
+        $additionalCount = 25 - $existingCount;
+        
+        for ($i = 0; $i < $additionalCount; $i++) {
+            $bankName = $faker->randomElement($bankNames);
+            $accountType = $faker->randomElement($accountTypes);
+            
+            PaymentMethod::create([
+                'bank_name' => $bankName,
+                'account_name' => 'Jewelry Store Inc.',
+                'account_number' => $faker->numerify('##########'),
+                'description' => $bankName . ' ' . $accountType . ' for jewelry payments',
+                'qr_code_image' => null,
+                'active' => $faker->boolean(90), // 90% active
+            ]);
+        }
     }
 }

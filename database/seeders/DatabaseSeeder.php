@@ -28,7 +28,5 @@ class DatabaseSeeder extends Seeder
     
     // Customer Management Seeder
     $this->call(CustomerSeeder::class);
-    
-    // $this->call(MediaLibrarySeeder::class);
   }
 }

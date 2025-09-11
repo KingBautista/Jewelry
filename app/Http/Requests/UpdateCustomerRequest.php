@@ -30,9 +30,9 @@ class UpdateCustomerRequest extends FormRequest
             'email' => [
                 'required',
                 'email',
-                Rule::unique('customers', 'email')->ignore($customerId)
+                Rule::unique('users', 'user_email')->ignore($customerId)
             ],
-            'customer_pass' => 'nullable|string|min:6',
+            'user_pass' => 'nullable|string|min:6',
             'phone' => 'nullable|string|max:20',
             'address' => 'nullable|string',
             'city' => 'nullable|string|max:100',
@@ -61,8 +61,8 @@ class UpdateCustomerRequest extends FormRequest
             'email.required' => 'Email address is required.',
             'email.email' => 'Please provide a valid email address.',
             'email.unique' => 'This email address is already registered.',
-            'customer_pass.string' => 'Password must be a string.',
-            'customer_pass.min' => 'Password must be at least 6 characters.',
+            'user_pass.string' => 'Password must be a string.',
+            'user_pass.min' => 'Password must be at least 6 characters.',
             'phone.string' => 'Phone number must be a string.',
             'phone.max' => 'Phone number cannot exceed 20 characters.',
             'address.string' => 'Address must be a string.',

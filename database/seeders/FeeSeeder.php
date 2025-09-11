@@ -61,7 +61,33 @@ class FeeSeeder extends Seeder
             Fee::firstOrCreate(['code' => $fee['code']], $fee);
         }
 
-        // Create additional random fees using factory
-        Fee::factory(3)->create();
+        // Create additional random fees to reach 25 total
+        $faker = \Faker\Factory::create();
+        $feeTypes = ['fixed', 'percentage'];
+        $feeNames = ['Delivery Fee', 'Processing Fee', 'Installation Fee', 'Service Fee', 'Handling Fee', 'Shipping Fee', 'Packaging Fee', 'Insurance Fee', 'Customization Fee', 'Rush Fee', 'Express Fee', 'Standard Fee', 'Premium Fee', 'Basic Fee', 'Advanced Fee'];
+        $feeCodes = ['DELIVERY', 'PROCESSING', 'INSTALLATION', 'SERVICE', 'HANDLING', 'SHIPPING', 'PACKAGING', 'INSURANCE', 'CUSTOM', 'RUSH', 'EXPRESS', 'STANDARD', 'PREMIUM', 'BASIC', 'ADVANCED'];
+        
+        // Calculate how many more fees we need to reach 25 total
+        $existingCount = count($fees);
+        $additionalCount = 25 - $existingCount;
+        
+        for ($i = 0; $i < $additionalCount; $i++) {
+            $feeType = $faker->randomElement($feeTypes);
+            $feeCode = $faker->randomElement($feeCodes) . '_' . $faker->unique()->numberBetween(1, 999);
+            $feeName = $faker->randomElement($feeNames) . ' ' . $faker->numberBetween(1, 10);
+            
+            $amount = $feeType === 'fixed' 
+                ? $faker->randomFloat(2, 10, 2000) 
+                : $faker->randomFloat(2, 0.5, 15.0);
+            
+            Fee::firstOrCreate(['code' => $feeCode], [
+                'name' => $feeName,
+                'code' => $feeCode,
+                'amount' => $amount,
+                'type' => $feeType,
+                'description' => $faker->sentence(),
+                'active' => $faker->boolean(80), // 80% active
+            ]);
+        }
     }
 }

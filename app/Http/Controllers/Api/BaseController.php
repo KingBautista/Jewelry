@@ -24,7 +24,8 @@ class BaseController extends Controller
   public function index()
   {
     try {
-      $items = $this->service->list();
+      $perPage = request('per_page', 10);
+      $items = $this->service->list($perPage);
       return $items;
     } catch (\Exception $e) {
       return $this->messageService->responseError();
@@ -70,7 +71,8 @@ class BaseController extends Controller
   public function getTrashed() 
   {
     try {
-      $items = $this->service->list(10, true);
+      $perPage = request('per_page', 10);
+      $items = $this->service->list($perPage, true);
       return $items;
     } catch (\Exception $e) {
       return $this->messageService->responseError();

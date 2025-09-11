@@ -21,7 +21,7 @@ export default function CustomerForm() {
     first_name: '',
     last_name: '',
     email: '',
-    customer_pass: '',
+    user_pass: '',
     phone: '',
     address: '',
     city: '',

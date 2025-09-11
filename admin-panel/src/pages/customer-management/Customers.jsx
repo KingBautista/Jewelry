@@ -26,20 +26,20 @@ export default function Customers() {
     dataSource: '/customer-management/customers',
     dataFields: {
       customer_code: { name: "Customer Code", withSort: true },
-      first_name: { name: "Name", withSort: true },
-      email: { name: "Email", withSort: true },
+      full_name: { name: "Name", withSort: true },
+      user_email: { name: "Email", withSort: true },
       phone: { name: "Phone", withSort: true },
       gender: { name: "Gender", withSort: false },
-      active: {
+      user_status: {
         name: "Status",
         withSort: true,
         badge: {
-          'true': 'bg-success',
-          'false': 'bg-secondary'
+          'Active': 'bg-success',
+          'Inactive': 'bg-secondary'
         },
         badgeLabels: {
-          'true': 'Active',
-          'false': 'Inactive'
+          'Active': 'Active',
+          'Inactive': 'Inactive'
         }
       },
       created_at: { name: "Created At", withSort: true },
@@ -131,7 +131,7 @@ export default function Customers() {
   const clearFilters = () => {
     setParams({
       search: '',
-      active: '',
+      user_status: '',
       gender: '',
     });
     // Clear search input
@@ -236,11 +236,11 @@ export default function Customers() {
                             <input 
                               className="form-check-input" 
                               type="radio" 
-                              name="active" 
+                              name="user_status" 
                               id="status-all"
                               value=""
-                              checked={params.active === ''}
-                              onChange={e => handleFilterChange('active', e.target.value)}
+                              checked={params.user_status === ''}
+                              onChange={e => handleFilterChange('user_status', e.target.value)}
                             />
                             <label className="form-check-label" htmlFor="status-all" style={{ color: 'white' }}>
                               All Status
@@ -250,11 +250,11 @@ export default function Customers() {
                             <input 
                               className="form-check-input" 
                               type="radio" 
-                              name="active" 
+                              name="user_status" 
                               id="status-active"
-                              value="true"
-                              checked={params.active === 'true'}
-                              onChange={e => handleFilterChange('active', e.target.value)}
+                              value="Active"
+                              checked={params.user_status === 'Active'}
+                              onChange={e => handleFilterChange('user_status', e.target.value)}
                             />
                             <label className="form-check-label" htmlFor="status-active" style={{ color: 'white' }}>
                               Active
@@ -264,11 +264,11 @@ export default function Customers() {
                             <input 
                               className="form-check-input" 
                               type="radio" 
-                              name="active" 
+                              name="user_status" 
                               id="status-inactive"
-                              value="false"
-                              checked={params.active === 'false'}
-                              onChange={e => handleFilterChange('active', e.target.value)}
+                              value="Inactive"
+                              checked={params.user_status === 'Inactive'}
+                              onChange={e => handleFilterChange('user_status', e.target.value)}
                             />
                             <label className="form-check-label" htmlFor="status-inactive" style={{ color: 'white' }}>
                               Inactive

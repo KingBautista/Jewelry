@@ -2,8 +2,8 @@
 
 namespace App\Services;
 
-use App\Models\Customer;
-use App\Http\Resources\CustomerResource;
+use App\Models\User;
+use App\Http\Resources\UserResource;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\CustomerWelcomeEmail;
 
@@ -11,8 +11,8 @@ class CustomerService extends BaseService
 {
     public function __construct()
     {
-        // Pass the CustomerResource class to the parent constructor
-        parent::__construct(new CustomerResource(new Customer), new Customer());
+        // Pass the UserResource class to the parent constructor
+        parent::__construct(new UserResource(new User), new User());
     }
 
     /**
@@ -23,7 +23,8 @@ class CustomerService extends BaseService
         $allCustomers = $this->getTotalCount();
         $trashedCustomers = $this->getTrashedCount();
 
-        return CustomerResource::collection(Customer::query()
+        return UserResource::collection(User::query()
+            ->customers() // Only get users with customer type
             ->when($trash, function ($query) {
                 return $query->onlyTrashed();
             })
@@ -36,11 +37,11 @@ class CustomerService extends BaseService
             ->when(request('city'), function ($query) {
                 return $query->byCity(request('city'));
             })
-            ->when(request('active'), function ($query) {
-                $active = request('active');
-                if ($active === 'Active') {
+            ->when(request('user_status'), function ($query) {
+                $status = request('user_status');
+                if ($status === 'Active') {
                     $query->active();
-                } elseif ($active === 'Inactive') {
+                } elseif ($status === 'Inactive') {
                     $query->inactive();
                 }
             })
@@ -55,27 +56,36 @@ class CustomerService extends BaseService
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Store a newly created resource in storage with meta data.
      */
-    public function store(array $data)
+    public function storeWithMeta(array $userData, array $metaData)
     {
-        $customer = parent::store($data);
-        
-        // Auto-send welcome email with default password
-        $this->sendWelcomeEmail($customer);
+        $user = parent::store($userData);
+        if(count($metaData))
+            $user->saveUserMeta($metaData);
 
-        return $customer;
+        return new UserResource($user);
     }
 
     /**
-     * Update the specified resource in storage.
+     * Update the specified resource in storage with meta data.
      */
-    public function update(array $data, int $id)
+    public function updateWithMeta(array $userData, array $metaData, User $user)
     {
-        $customer = $this->model::findOrFail($id);
-        $customer->update($data);
+        $user->update($userData);
+        if(count($metaData))
+            $user->saveUserMeta($metaData);
 
-        return $this->resource::make($customer);
+        return new UserResource($user);
+    }
+
+    /**
+     * Display the specified resource.
+     */
+    public function show($id)
+    {
+        $user = User::customers()->findOrFail($id);
+        return new UserResource($user);
     }
 
     /**
@@ -84,18 +94,24 @@ class CustomerService extends BaseService
     public function getCustomerStats()
     {
         return [
-            'total_customers' => Customer::count(),
-            'active_customers' => Customer::active()->count(),
-            'inactive_customers' => Customer::inactive()->count(),
-            'new_customers_this_month' => Customer::whereMonth('created_at', now()->month)
+            'total_customers' => User::customers()->count(),
+            'active_customers' => User::customers()->active()->count(),
+            'inactive_customers' => User::customers()->inactive()->count(),
+            'new_customers_this_month' => User::customers()->whereMonth('created_at', now()->month)
                 ->whereYear('created_at', now()->year)
                 ->count(),
-            'customers_by_gender' => Customer::selectRaw('gender, COUNT(*) as count')
-                ->groupBy('gender')
+            'customers_by_gender' => User::customers()
+                ->join('user_meta', 'users.id', '=', 'user_meta.user_id')
+                ->where('user_meta.meta_key', 'gender')
+                ->selectRaw('user_meta.meta_value as gender, COUNT(*) as count')
+                ->groupBy('user_meta.meta_value')
                 ->get(),
-            'customers_by_city' => Customer::selectRaw('city, COUNT(*) as count')
-                ->whereNotNull('city')
-                ->groupBy('city')
+            'customers_by_city' => User::customers()
+                ->join('user_meta', 'users.id', '=', 'user_meta.user_id')
+                ->where('user_meta.meta_key', 'city')
+                ->whereNotNull('user_meta.meta_value')
+                ->selectRaw('user_meta.meta_value as city, COUNT(*) as count')
+                ->groupBy('user_meta.meta_value')
                 ->orderBy('count', 'desc')
                 ->limit(10)
                 ->get(),
@@ -107,10 +123,25 @@ class CustomerService extends BaseService
      */
     public function getCustomersForDropdown()
     {
-        return Customer::select('id', 'customer_code', 'first_name', 'last_name', 'email')
+        return User::customers()
             ->active()
-            ->orderBy('first_name')
-            ->get();
+            ->select('id', 'user_email')
+            ->with(['getUserMetas' => function($query) {
+                $query->whereIn('meta_key', ['customer_code', 'first_name', 'last_name']);
+            }])
+            ->get()
+            ->map(function($user) {
+                $meta = $user->getUserMetas->pluck('meta_value', 'meta_key');
+                return [
+                    'id' => $user->id,
+                    'customer_code' => $meta['customer_code'] ?? null,
+                    'first_name' => $meta['first_name'] ?? null,
+                    'last_name' => $meta['last_name'] ?? null,
+                    'email' => $user->user_email,
+                ];
+            })
+            ->sortBy('first_name')
+            ->values();
     }
 
 
@@ -161,7 +192,7 @@ class CustomerService extends BaseService
      */
     public function exportCustomers($format = 'csv')
     {
-        $customers = Customer::withTrashed()->get();
+        $customers = User::customers()->withTrashed()->with('getUserMetas')->get();
         
         if ($format === 'csv') {
             $filename = 'customers_export_' . date('Y-m-d_H-i-s') . '.csv';
@@ -183,22 +214,23 @@ class CustomerService extends BaseService
 
                 // CSV data
                 foreach ($customers as $customer) {
+                    $meta = $customer->getUserMetas->pluck('meta_value', 'meta_key');
                     fputcsv($file, [
                         $customer->id,
-                        $customer->customer_code,
-                        $customer->first_name,
-                        $customer->last_name,
-                        $customer->email,
-                        $customer->phone,
-                        $customer->address,
-                        $customer->city,
-                        $customer->state,
-                        $customer->postal_code,
-                        $customer->country,
-                        $customer->date_of_birth ? $customer->date_of_birth->format('Y-m-d') : '',
-                        $customer->gender,
-                        $customer->notes,
-                        $customer->active ? 'Yes' : 'No',
+                        $meta['customer_code'] ?? '',
+                        $meta['first_name'] ?? '',
+                        $meta['last_name'] ?? '',
+                        $customer->user_email,
+                        $meta['phone'] ?? '',
+                        $meta['address'] ?? '',
+                        $meta['city'] ?? '',
+                        $meta['state'] ?? '',
+                        $meta['postal_code'] ?? '',
+                        $meta['country'] ?? '',
+                        $meta['date_of_birth'] ?? '',
+                        $meta['gender'] ?? '',
+                        $meta['notes'] ?? '',
+                        $customer->user_status ? 'Yes' : 'No',
                         $customer->created_at->format('Y-m-d H:i:s'),
                         $customer->updated_at->format('Y-m-d H:i:s'),
                     ]);

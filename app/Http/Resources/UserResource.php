@@ -14,7 +14,7 @@ class UserResource extends JsonResource
    */
   public function toArray(Request $request): array
   {
-    return [
+    $baseData = [
       'id' => $this->id,
       'user_login' => $this->user_login,
       'user_email' => $this->user_email,
@@ -32,5 +32,33 @@ class UserResource extends JsonResource
       'updated_at' => $this->updated_at->format('Y-m-d H:m:s'),
       'deleted_at' => ($this->deleted_at) ? $this->deleted_at->format('Y-m-d H:m:s') : null
     ];
+
+    // Add customer-specific fields if this is a customer
+    if (isset($this->user_details['user_type']) && $this->user_details['user_type'] === 'customer') {
+      $customerData = [
+        'customer_code' => $this->customer_code,
+        'full_name' => $this->full_name,
+        'phone' => (isset($this->user_details['phone'])) ? $this->user_details['phone'] : '',
+        'address' => (isset($this->user_details['address'])) ? $this->user_details['address'] : '',
+        'city' => (isset($this->user_details['city'])) ? $this->user_details['city'] : '',
+        'state' => (isset($this->user_details['state'])) ? $this->user_details['state'] : '',
+        'postal_code' => (isset($this->user_details['postal_code'])) ? $this->user_details['postal_code'] : '',
+        'country' => (isset($this->user_details['country'])) ? $this->user_details['country'] : '',
+        'date_of_birth' => (isset($this->user_details['date_of_birth'])) ? $this->user_details['date_of_birth'] : '',
+        'gender' => (isset($this->user_details['gender'])) ? $this->user_details['gender'] : '',
+        'notes' => (isset($this->user_details['notes'])) ? $this->user_details['notes'] : '',
+        'formatted_phone' => $this->formatted_phone,
+        'formatted_address' => $this->formatted_address,
+        'age' => $this->age,
+        'customer_status_text' => $this->customer_status_text,
+        'active' => $this->user_status == 1,
+        'email' => $this->user_email, // For compatibility with frontend
+        'created_at' => $this->created_at->format('Y-m-d H:m:s'),
+      ];
+      
+      return array_merge($baseData, $customerData);
+    }
+
+    return $baseData;
   }
 }

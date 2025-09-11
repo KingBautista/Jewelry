@@ -160,5 +160,46 @@ class UserSeeder extends Seeder
             'theme' => 'light',
         ];
         $accountantUser->saveUserMeta($accountantMetaData);
+
+        // Create additional staff users to reach 25 total
+        $faker = \Faker\Factory::create();
+        $roles = [2, 3, 4, 5, 6]; // Admin, Finance Manager, Customer Service, Sales Rep, Accountant
+        $themes = ['light', 'dark'];
+        
+        // Calculate how many more users we need to reach 25 total
+        $existingCount = 5; // developer, admin, finance, customer service, accountant
+        $additionalCount = 25 - $existingCount;
+        
+        for ($i = 0; $i < $additionalCount; $i++) {
+            $firstName = $faker->firstName();
+            $lastName = $faker->lastName();
+            $email = strtolower($firstName . '.' . $lastName . '@invoice-system.com');
+            $username = strtolower($firstName . '.' . $lastName);
+            
+            // Generate password fields
+            $salt = PasswordHelper::generateSalt();
+            $password = PasswordHelper::generatePassword($salt, 'password123');
+            
+            $user = User::create([
+                'user_login' => $username,
+                'user_email' => $email,
+                'user_pass' => $password,
+                'user_salt' => $salt,
+                'user_status' => $faker->boolean(90) ? 1 : 0, // 90% active
+                'user_activation_key' => $faker->boolean(10) ? PasswordHelper::generateSalt() : null, // 10% pending
+                'remember_token' => null,
+                'user_role_id' => $faker->randomElement($roles),
+            ]);
+            
+            $userMetaData = [
+                'first_name' => $firstName,
+                'last_name' => $lastName,
+                'nickname' => $faker->optional(0.7)->firstName(),
+                'biography' => $faker->optional(0.6)->sentence(),
+                'theme' => $faker->randomElement($themes),
+            ];
+            
+            $user->saveUserMeta($userMetaData);
+        }
     }
 } 

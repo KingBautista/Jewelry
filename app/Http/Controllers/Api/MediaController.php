@@ -24,7 +24,8 @@ class MediaController extends Controller
 	public function index()
 	{
 		try {
-			return $this->mediaService->list();
+			$perPage = request('per_page', 10);
+			return $this->mediaService->list($perPage);
     } catch (\Exception $e) {
       return $this->messageService->responseError();
     }

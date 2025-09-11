@@ -89,19 +89,49 @@ class PaymentTermSeeder extends Seeder
             }
         }
 
-        // Create additional random payment terms using factory
-        PaymentTerm::factory(2)->create()->each(function ($paymentTerm) {
+        // Create additional random payment terms to reach 25 total
+        $faker = \Faker\Factory::create();
+        $termNames = ['Installment Plan', 'Payment Plan', 'Credit Plan', 'Layaway Plan', 'Financing Plan', 'Payment Option', 'Credit Option', 'Installment Option', 'Payment Scheme', 'Credit Scheme'];
+        $termCodes = ['INSTALLMENT', 'PAYMENT', 'CREDIT', 'LAYAWAY', 'FINANCING', 'OPTION', 'SCHEME'];
+        
+        // Calculate how many more payment terms we need to reach 25 total
+        $existingCount = count($paymentTerms);
+        $additionalCount = 25 - $existingCount;
+        
+        for ($i = 0; $i < $additionalCount; $i++) {
+            $termName = $faker->randomElement($termNames) . ' ' . $faker->randomElement(['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J']) . $faker->numberBetween(1, 10);
+            $termCode = $faker->randomElement($termCodes) . '_' . $faker->unique()->numberBetween(1, 999);
+            
+            $downPayment = $faker->randomFloat(2, 10, 80);
+            $termMonths = $faker->numberBetween(1, 12);
+            
+            $paymentTerm = PaymentTerm::firstOrCreate(['code' => $termCode], [
+                'name' => $termName,
+                'code' => $termCode,
+                'down_payment_percentage' => $downPayment,
+                'remaining_percentage' => 100 - $downPayment,
+                'term_months' => $termMonths,
+                'description' => $faker->sentence(),
+                'active' => $faker->boolean(85), // 85% active
+            ]);
+            
             // Create schedules for installment plans
-            if ($paymentTerm->term_months > 1 && $paymentTerm->remaining_percentage > 0) {
-                $equalPercentage = $paymentTerm->remaining_percentage / $paymentTerm->term_months;
-                for ($i = 1; $i <= $paymentTerm->term_months; $i++) {
+            if ($paymentTerm->wasRecentlyCreated && $termMonths > 1 && (100 - $downPayment) > 0) {
+                $remainingPercentage = 100 - $downPayment;
+                $equalPercentage = $remainingPercentage / $termMonths;
+                
+                for ($j = 1; $j <= $termMonths; $j++) {
+                    $percentage = $j === $termMonths 
+                        ? $remainingPercentage - ($equalPercentage * ($termMonths - 1)) // Last month gets remainder
+                        : $equalPercentage;
+                    
                     $paymentTerm->schedules()->create([
-                        'month_number' => $i,
-                        'percentage' => round($equalPercentage, 2),
-                        'description' => "Month {$i} payment"
+                        'month_number' => $j,
+                        'percentage' => round($percentage, 2),
+                        'description' => "Month {$j} payment"
                     ]);
                 }
             }
-        });
+        }
     }
 }

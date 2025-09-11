@@ -7,7 +7,7 @@ use App\Http\Requests\StoreCustomerRequest;
 use App\Http\Requests\UpdateCustomerRequest;
 use App\Services\CustomerService;
 use App\Services\MessageService;
-use App\Models\Customer;
+use App\Models\User;
 use App\Helpers\PasswordHelper;
 
 class CustomerController extends BaseController
@@ -24,17 +24,26 @@ class CustomerController extends BaseController
             $data = $request->validated();
 
             $salt = PasswordHelper::generateSalt();
-            $password = PasswordHelper::generatePassword($salt, $data['customer_pass']);
+            $password = PasswordHelper::generatePassword($salt, $data['user_pass']);
             $activation_key = PasswordHelper::generateSalt();
 
-            $customerData = [
-                'customer_code' => $data['customer_code'] ?? null,
+            // Prepare user data
+            $userData = [
+                'user_login' => $data['email'], // Use email as login
+                'user_email' => $data['email'],
+                'user_salt' => $salt,
+                'user_pass' => $password,
+                'user_status' => 1, // Active
+                'user_activation_key' => $activation_key,
+                'user_role_id' => null, // Will be set based on customer role
+            ];
+
+            // Prepare customer meta data
+            $customerMetaData = [
+                'user_type' => 'customer',
+                'customer_code' => $data['customer_code'] ?? User::generateCustomerCode(),
                 'first_name' => $data['first_name'],
                 'last_name' => $data['last_name'],
-                'email' => $data['email'],
-                'customer_salt' => $salt,
-                'customer_pass' => $password,
-                'customer_activation_key' => $activation_key,
                 'phone' => $data['phone'] ?? null,
                 'address' => $data['address'] ?? null,
                 'city' => $data['city'] ?? null,
@@ -44,13 +53,12 @@ class CustomerController extends BaseController
                 'date_of_birth' => $data['date_of_birth'] ?? null,
                 'gender' => $data['gender'] ?? null,
                 'notes' => $data['notes'] ?? null,
-                'active' => $data['active'] ?? true,
             ];
             
-            $customer = $this->service->store($customerData);
+            $customer = $this->service->storeWithMeta($userData, $customerMetaData);
             
             // Auto-send email with default password
-            $this->service->sendWelcomeEmail($customer, $data['customer_pass']);
+            $this->service->sendWelcomeEmail($customer, $data['user_pass']);
             
             return response($customer, 201);
         } catch (\Exception $e) {
@@ -62,13 +70,20 @@ class CustomerController extends BaseController
     {
         try {
             $data = $request->validated();
-            $customer = Customer::findOrFail($id);
+            $customer = User::findOrFail($id);
             $oldData = $customer->toArray();
 
-            $upData = [
+            // Prepare user data updates
+            $userData = [
+                'user_login' => $data['email'], // Update login if email changed
+                'user_email' => $data['email'],
+                'user_status' => $data['active'] ?? true ? 1 : 0,
+            ];
+
+            // Prepare customer meta data updates
+            $customerMetaData = [
                 'first_name' => $data['first_name'],
                 'last_name' => $data['last_name'],
-                'email' => $data['email'],
                 'phone' => $data['phone'] ?? null,
                 'address' => $data['address'] ?? null,
                 'city' => $data['city'] ?? null,
@@ -78,16 +93,15 @@ class CustomerController extends BaseController
                 'date_of_birth' => $data['date_of_birth'] ?? null,
                 'gender' => $data['gender'] ?? null,
                 'notes' => $data['notes'] ?? null,
-                'active' => $data['active'] ?? true,
             ];
 
             // Handle password update if provided
-            if (isset($data['customer_pass'])) {
-                $salt = $customer->customer_salt;
-                $upData['customer_pass'] = PasswordHelper::generatePassword($salt, $data['customer_pass']);
+            if (isset($data['user_pass'])) {
+                $salt = $customer->user_salt;
+                $userData['user_pass'] = PasswordHelper::generatePassword($salt, $data['user_pass']);
             }
 
-            $customer = $this->service->update($upData, $id);
+            $customer = $this->service->updateWithMeta($userData, $customerMetaData, $customer);
 
             return response($customer, 200);
         } catch (\Exception $e) {
