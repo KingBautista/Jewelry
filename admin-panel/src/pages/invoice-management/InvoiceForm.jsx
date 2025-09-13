@@ -3,7 +3,6 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import axiosClient from "../../axios-client";
 import ToastMessage from "../../components/ToastMessage";
 import Field from "../../components/Field";
-import Dropzone from "../../components/Dropzone";
 import DOMPurify from 'dompurify';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { solidIconMap } from '../../utils/solidIcons';
@@ -21,7 +20,7 @@ export default function InvoiceForm() {
     product_name: '',
     description: '',
     price: '',
-    product_image: '',
+    product_images: [],
     payment_term_id: '',
     tax_id: '',
     fee_id: '',
@@ -35,7 +34,7 @@ export default function InvoiceForm() {
   });
   const [isLoading, setIsLoading] = useState(false);
   const [isActive, setIsActive] = useState(true);
-  const [uploadedImages, setUploadedImages] = useState([]);
+  const [selectedFiles, setSelectedFiles] = useState([]);
   
   // Dropdown data
   const [customers, setCustomers] = useState([]);
@@ -77,6 +76,24 @@ export default function InvoiceForm() {
       axiosClient.get(`/invoice-management/invoices/${id}`)
         .then(({ data }) => {
           const invoiceData = data.data || data;
+          
+          // Ensure dates are in the correct format for HTML date inputs
+          if (invoiceData.issue_date) {
+            // If the date is already in YYYY-MM-DD format, use it as is
+            // If it's in a different format, convert it
+            const issueDate = new Date(invoiceData.issue_date);
+            if (!isNaN(issueDate.getTime())) {
+              invoiceData.issue_date = issueDate.toISOString().split('T')[0];
+            }
+          }
+          
+          if (invoiceData.due_date) {
+            const dueDate = new Date(invoiceData.due_date);
+            if (!isNaN(dueDate.getTime())) {
+              invoiceData.due_date = dueDate.toISOString().split('T')[0];
+            }
+          }
+          
           setInvoice(invoiceData);
           setIsLoading(false);
           setIsActive(invoiceData.active);
@@ -92,18 +109,56 @@ export default function InvoiceForm() {
   const onSubmit = (ev) => {
     ev.preventDefault();
     
+    // Validate required fields
+    if (!invoice.customer_id || !invoice.product_name || !invoice.price) {
+      toastAction.current.showToast('Please fill in all required fields', 'warning');
+      return;
+    }
+
+    // Validate amount
+    const amount = parseFloat(invoice.price);
+    if (isNaN(amount) || amount < 0) {
+      toastAction.current.showToast('Price must be a positive number', 'warning');
+      return;
+    }
+
     setIsLoading(true);
 
-    // Prepare the data for submission
-    const submitData = {
-      ...invoice,
-      price: parseFloat(invoice.price) || 0,
-      active: isActive,
-    };
+    // Create FormData for file uploads
+    const formData = new FormData();
+    
+    // Add all invoice data with proper formatting - only append if value exists
+    if (invoice.invoice_number) formData.append('invoice_number', invoice.invoice_number);
+    if (invoice.customer_id) formData.append('customer_id', invoice.customer_id);
+    if (invoice.product_name) formData.append('product_name', invoice.product_name);
+    if (invoice.description) formData.append('description', invoice.description);
+    if (invoice.price) formData.append('price', invoice.price);
+    if (invoice.payment_term_id) formData.append('payment_term_id', invoice.payment_term_id);
+    if (invoice.tax_id) formData.append('tax_id', invoice.tax_id);
+    if (invoice.fee_id) formData.append('fee_id', invoice.fee_id);
+    if (invoice.discount_id) formData.append('discount_id', invoice.discount_id);
+    if (invoice.shipping_address) formData.append('shipping_address', invoice.shipping_address);
+    if (invoice.issue_date) formData.append('issue_date', invoice.issue_date);
+    if (invoice.due_date) formData.append('due_date', invoice.due_date);
+    if (invoice.status) formData.append('status', invoice.status);
+    if (invoice.notes) formData.append('notes', invoice.notes);
+    formData.append('active', isActive);
+    
+    // Add invoice ID for updates
+    if (invoice.id) {
+      formData.append('invoice_id', invoice.id);
+    }
+    
+    // Add selected files
+    selectedFiles.forEach((file, index) => {
+      formData.append(`product_images[${index}]`, file);
+    });
 
-    const request = invoice.id
-      ? axiosClient.put(`/invoice-management/invoices/${invoice.id}`, submitData)
-      : axiosClient.post('/invoice-management/invoices', submitData);
+    // Let axios handle the Content-Type header automatically
+    const config = {};
+
+    // Use POST for both create and update to avoid FormData parsing issues with PUT
+    const request = axiosClient.post('/invoice-management/invoices', formData, config);
 
     request
       .then(() => {
@@ -156,13 +211,31 @@ export default function InvoiceForm() {
     }
   };
 
-  // Handle image upload
-  const handleImageUpload = (uploadedFiles) => {
-    if (uploadedFiles && uploadedFiles.length > 0) {
-      const imageUrl = uploadedFiles[0].url || uploadedFiles[0].path;
-      setInvoice({ ...invoice, product_image: imageUrl });
-      setUploadedImages(uploadedFiles);
-    }
+  // Handle file selection
+  const handleFileSelect = (event) => {
+    const files = Array.from(event.target.files);
+    setSelectedFiles(files);
+    
+    // Create preview URLs for display
+    const previewUrls = files.map(file => URL.createObjectURL(file));
+    setInvoice({ 
+      ...invoice, 
+      product_images: previewUrls // Replace with new preview URLs, don't append to existing
+    });
+  };
+
+  // Handle remove individual image
+  const handleRemoveImage = (indexToRemove) => {
+    const updatedImages = invoice.product_images.filter((_, index) => index !== indexToRemove);
+    const updatedFiles = selectedFiles.filter((_, index) => index !== indexToRemove);
+    setInvoice({ ...invoice, product_images: updatedImages });
+    setSelectedFiles(updatedFiles);
+  };
+
+  // Handle remove all images
+  const handleRemoveAllImages = () => {
+    setInvoice({ ...invoice, product_images: [] });
+    setSelectedFiles([]);
   };
 
   return (
@@ -206,7 +279,7 @@ export default function InvoiceForm() {
                 <option value="">Select Customer</option>
                 {customers.map(customer => (
                   <option key={customer.id} value={customer.id}>
-                    {customer.full_name || customer.name} ({customer.email})
+                    {`${customer.first_name} ${customer.last_name}`} ({customer.email})
                   </option>
                 ))}
               </select>
@@ -272,44 +345,74 @@ export default function InvoiceForm() {
             inputClass="col-sm-12 col-md-9"
           />
 
-          {/* Product Image Field */}
+          {/* Product Images Field */}
           <Field
-            label="Product Image"
+            label="Product Images"
             inputComponent={
               <div>
-                {invoice.product_image && (
+                {invoice.product_images && invoice.product_images.length > 0 && (
                   <div className="mb-3">
-                    <img 
-                      src={invoice.product_image} 
-                      alt="Product" 
-                      style={{ maxWidth: '200px', maxHeight: '200px', objectFit: 'cover' }}
-                      className="img-thumbnail"
-                    />
-                    <div className="mt-2">
-                      <button 
-                        type="button" 
-                        className="btn btn-sm btn-danger"
-                        onClick={() => setInvoice({ ...invoice, product_image: '' })}
-                      >
-                        <FontAwesomeIcon icon={solidIconMap.trash} className="me-1" />
-                        Remove Image
-                      </button>
+                    <div className="d-flex flex-wrap gap-2 mb-2">
+                      {invoice.product_images.map((imageUrl, index) => (
+                        <div key={index} className="position-relative d-inline-block">
+                          <img 
+                            src={imageUrl} 
+                            alt={`Product ${index + 1}`} 
+                            style={{ maxWidth: '150px', maxHeight: '150px', objectFit: 'cover' }}
+                            className="img-thumbnail"
+                            onLoad={() => {
+                              console.log('Image loaded successfully:', imageUrl);
+                            }}
+                            onError={(e) => {
+                              console.error('Image failed to load:', imageUrl);
+                              console.error('Error details:', e);
+                              // Show a placeholder instead of hiding
+                              e.target.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTUwIiBoZWlnaHQ9IjE1MCIgdmlld0JveD0iMCAwIDE1MCAxNTAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIxNTAiIGhlaWdodD0iMTUwIiBmaWxsPSIjRjNGNEY2Ii8+CjxwYXRoIGQ9Ik03NSA0MEM4NS41IDQwIDk0IDQ4LjUgOTQgNTlDOTQgNjkuNSA4NS41IDc4IDc1IDc4QzY0LjUgNzggNTYgNjkuNSA1NiA1OUM1NiA0OC41IDY0LjUgNDAgNzUgNDBaIiBmaWxsPSIjOUNBM0FGIi8+CjxwYXRoIGQ9Ik03NSA4MEM4NS41IDgwIDk0IDg4LjUgOTQgOTlDOTQgMTA5LjUgODUuNSAxMTggNzUgMTE4QzY0LjUgMTE4IDU2IDEwOS41IDU2IDk5QzU2IDg4LjUgNjQuNSA4MCA3NSA4MFoiIGZpbGw9IiM5Q0EzQUYiLz4KPC9zdmc+';
+                              e.target.alt = 'Image failed to load';
+                            }}
+                          />
+                          <button 
+                            type="button" 
+                            className="btn btn-sm btn-danger position-absolute top-0 end-0"
+                            style={{ transform: 'translate(50%, -50%)' }}
+                            onClick={() => handleRemoveImage(index)}
+                            title="Remove this image"
+                          >
+                            <FontAwesomeIcon icon={solidIconMap.times} />
+                          </button>
+                        </div>
+                      ))}
                     </div>
+                    <button 
+                      type="button" 
+                      className="btn btn-sm btn-outline-danger"
+                      onClick={handleRemoveAllImages}
+                    >
+                      <FontAwesomeIcon icon={solidIconMap.trash} className="me-1" />
+                      Remove All Images
+                    </button>
                   </div>
                 )}
-                <Dropzone
-                  options={{
-                    accept: {
-                      image: {
-                        type: ['jpg', 'jpeg', 'png', 'gif', 'webp'],
-                        maxSize: 2 * 1024 * 1024 // 2MB
-                      }
-                    },
-                    postUrl: '/content-management/media-library/upload',
-                    redirectUrl: '#'
-                  }}
-                  onChange={handleImageUpload}
-                />
+                <div className="mb-3">
+                  <input
+                    type="file"
+                    className="form-control"
+                    multiple
+                    accept="image/*"
+                    onChange={handleFileSelect}
+                    id="product-images"
+                  />
+                  <label htmlFor="product-images" className="form-label">
+                    <small className="text-muted">
+                      Select multiple images (JPG, PNG, GIF, WebP). Each image should be less than 2MB.
+                      {selectedFiles.length > 0 && (
+                        <span className="text-info d-block mt-1">
+                          {selectedFiles.length} new file(s) selected. These will replace existing images.
+                        </span>
+                      )}
+                    </small>
+                  </label>
+                </div>
               </div>
             }
             labelClass="col-sm-12 col-md-3"
@@ -427,6 +530,7 @@ export default function InvoiceForm() {
                 value={invoice.issue_date || ''}
                 onChange={ev => setInvoice({ ...invoice, issue_date: ev.target.value })}
                 required
+                placeholder="YYYY-MM-DD"
               />
             }
             labelClass="col-sm-12 col-md-3"
@@ -442,6 +546,7 @@ export default function InvoiceForm() {
                 type="date"
                 value={invoice.due_date || ''}
                 onChange={ev => setInvoice({ ...invoice, due_date: ev.target.value })}
+                placeholder="YYYY-MM-DD"
               />
             }
             labelClass="col-sm-12 col-md-3"

@@ -32,6 +32,12 @@ class InvoiceService extends BaseService
             ->when(request('status'), function ($query) {
                 return $query->byStatus(request('status'));
             })
+            ->when(request('payment_status'), function ($query) {
+                return $query->byPaymentStatus(request('payment_status'));
+            })
+            ->when(request('item_status'), function ($query) {
+                return $query->byItemStatus(request('item_status'));
+            })
             ->when(request('customer_id'), function ($query) {
                 return $query->byCustomer(request('customer_id'));
             })
@@ -127,7 +133,7 @@ class InvoiceService extends BaseService
                 // CSV headers
                 fputcsv($file, [
                     'ID', 'Invoice Number', 'Customer Name', 'Product Name', 'Description',
-                    'Price', 'Payment Term', 'Tax', 'Fee', 'Discount', 'Subtotal',
+                    'Price', 'Product Images', 'Payment Term', 'Tax', 'Fee', 'Discount', 'Subtotal',
                     'Tax Amount', 'Fee Amount', 'Discount Amount', 'Total Amount',
                     'Status', 'Issue Date', 'Due Date', 'Created At', 'Updated At'
                 ]);
@@ -141,6 +147,7 @@ class InvoiceService extends BaseService
                         $invoice->product_name,
                         $invoice->description,
                         $invoice->formatted_price,
+                        is_array($invoice->product_images) ? implode('; ', $invoice->product_images) : $invoice->product_images,
                         $invoice->payment_term_name,
                         $invoice->tax_name,
                         $invoice->fee_name,

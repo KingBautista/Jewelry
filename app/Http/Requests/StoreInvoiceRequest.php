@@ -16,19 +16,41 @@ class StoreInvoiceRequest extends FormRequest
     }
 
     /**
+     * Prepare the data for validation.
+     */
+    protected function prepareForValidation()
+    {
+        if ($this->has('active')) {
+            $active = $this->input('active');
+            if (is_string($active)) {
+                $this->merge([
+                    'active' => filter_var($active, FILTER_VALIDATE_BOOLEAN)
+                ]);
+            }
+        }
+    }
+
+    /**
      * Get the validation rules that apply to the request.
      *
      * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
      */
     public function rules(): array
     {
+        // Check if this is an update operation (has invoice_id)
+        $invoiceId = $this->input('invoice_id');
+        
         return [
-            'invoice_number' => 'nullable|string|max:255|unique:invoices,invoice_number',
+            'invoice_id' => 'nullable|integer|exists:invoices,id',
+            'invoice_number' => $invoiceId 
+                ? 'nullable|string|max:255|unique:invoices,invoice_number,' . $invoiceId
+                : 'nullable|string|max:255|unique:invoices,invoice_number',
             'customer_id' => 'required|exists:users,id',
             'product_name' => 'required|string|max:255',
             'description' => 'nullable|string',
             'price' => 'required|numeric|min:0',
-            'product_image' => 'nullable|string|max:255',
+            'product_images' => 'nullable|array',
+            'product_images.*' => 'nullable|file|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
             'payment_term_id' => 'nullable|exists:payment_terms,id',
             'tax_id' => 'nullable|exists:taxes,id',
             'fee_id' => 'nullable|exists:fees,id',
@@ -64,6 +86,10 @@ class StoreInvoiceRequest extends FormRequest
             'due_date.after_or_equal' => 'Due date must be after or equal to issue date.',
             'status.in' => 'Status must be one of: draft, sent, paid, overdue, cancelled.',
             'invoice_number.unique' => 'Invoice number already exists.',
+            'product_images.*.file' => 'Each product image must be a valid file.',
+            'product_images.*.image' => 'Each product image must be an image file.',
+            'product_images.*.mimes' => 'Product images must be in JPEG, PNG, JPG, GIF, or WebP format.',
+            'product_images.*.max' => 'Each product image must not be larger than 2MB.',
         ];
     }
 }

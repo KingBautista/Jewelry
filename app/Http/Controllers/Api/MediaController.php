@@ -26,9 +26,9 @@ class MediaController extends Controller
 		try {
 			$perPage = request('per_page', 10);
 			return $this->mediaService->list($perPage);
-    } catch (\Exception $e) {
-      return $this->messageService->responseError();
-    }
+		} catch (\Exception $e) {
+			return $this->messageService->responseError();
+		}
 	}
 
 	/**
@@ -36,16 +36,16 @@ class MediaController extends Controller
 	 */
 	public function store(Request $request)
 	{
-		try {
+		// try {
 			$user = $request->user();
 			$files = $request->file('files');
 
 			$media = $this->mediaService->uploadFiles($files, $user);
 			return response($media, 201);
 
-		} catch (\Exception $e) {
-      return $this->messageService->responseError();
-    }
+		// } catch (\Exception $e) {
+		// 	return $this->messageService->responseError();
+		// }
 	}
 
 	/**
@@ -55,9 +55,9 @@ class MediaController extends Controller
 	{
 		try {
 			return $this->mediaService->show($id);
-    } catch (\Exception $e) {
-      return $this->messageService->responseError();
-    }
+		} catch (\Exception $e) {
+			return $this->messageService->responseError();
+		}
 	}
 
 	/**
@@ -69,8 +69,8 @@ class MediaController extends Controller
 			$mediaLibrary = $this->mediaService->update($request->all(), $id);
 			return response($mediaLibrary, 201);
 		} catch (\Exception $e) {
-      return $this->messageService->responseError();
-    }
+			return $this->messageService->responseError();
+		}
 	}
 
 	/**
@@ -81,10 +81,10 @@ class MediaController extends Controller
 		try {
 			$this->mediaService->destroy($id);
 			$message = 'Media has been deleted permanently.';
-      return response(compact('message'));
-    } catch (\Exception $e) {
-      return $this->messageService->responseError();
-    }
+     		 return response(compact('message'));
+		} catch (\Exception $e) {
+			return $this->messageService->responseError();
+		}
 	}
 
 	public function bulkDelete(Request $request) 
@@ -92,10 +92,10 @@ class MediaController extends Controller
 		try {
 			$this->mediaService->bulkDelete($request->ids);
 			$message = 'Media/s has been deleted permanently.';
-      return response(compact('message'));
+			return response(compact('message'));
 		} catch (\Exception $e) {
-      return $this->messageService->responseError();
-    }
+			return $this->messageService->responseError();
+		}
 	}
 
 	public function dateFolder() 
@@ -103,7 +103,7 @@ class MediaController extends Controller
 		try {
 			return $this->mediaService->folderList();
 		} catch (\Exception $e) {
-      return $this->messageService->responseError();
-    }
+			return $this->messageService->responseError();
+		}
 	}
 }

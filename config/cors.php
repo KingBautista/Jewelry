@@ -15,7 +15,7 @@ return [
     |
     */
 
-    'paths' => ['api/*','storage/app/public/*', 'docs/*'], // Adjust this to match your API routes
+    'paths' => ['api/*', 'storage/*', 'docs/*'], // Adjust this to match your API routes
     'allowed_methods' => ['*'],
     'allowed_origins' => ['*'], // Add your React app's URL here
     'allowed_origins_patterns' => [],

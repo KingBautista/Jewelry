@@ -20,7 +20,28 @@ class InvoiceController extends BaseController
     public function store(StoreInvoiceRequest $request)
     {
         try {
+            // Check if this is an update operation
+            $invoiceId = $request->input('invoice_id');
+            
+            if ($invoiceId) {
+                // Handle update operation
+                return $this->update($request, $invoiceId);
+            }
+            
+            // Handle create operation
             $data = $request->validated();
+
+            // Handle file uploads
+            if ($request->hasFile('product_images')) {
+                $uploadedImages = [];
+                foreach ($request->file('product_images') as $file) {
+                    if ($file->isValid()) {
+                        $path = $file->store('invoices/products', 'public');
+                        $uploadedImages[] = asset('storage/' . $path);
+                    }
+                }
+                $data['product_images'] = $uploadedImages;
+            }
 
             // Generate invoice number if not provided
             if (!isset($data['invoice_number'])) {
@@ -42,15 +63,32 @@ class InvoiceController extends BaseController
             
             return response($invoice, 201);
         } catch (\Exception $e) {
+            \Log::error('Store Invoice Error: ' . $e->getMessage());
             return $this->messageService->responseError();
         }
     }
 
-    public function update(UpdateInvoiceRequest $request, Int $id)
+    public function update(StoreInvoiceRequest $request, Int $id)
     {
         try {
             $data = $request->validated();
             $invoice = Invoice::findOrFail($id);
+
+            // Handle file uploads - only if new files are provided
+            if ($request->hasFile('product_images')) {
+                $uploadedImages = [];
+                foreach ($request->file('product_images') as $file) {
+                    if ($file->isValid()) {
+                        $path = $file->store('invoices/products', 'public');
+                        $uploadedImages[] = asset('storage/' . $path);
+                    }
+                }
+                $data['product_images'] = $uploadedImages;
+            } else {
+                // If no new files, keep existing images
+                unset($data['product_images']);
+            }
+
 
             $invoice = $this->service->update($data, $id);
             
@@ -131,6 +169,15 @@ class InvoiceController extends BaseController
             return $this->service->exportInvoices($format);
         } catch (\Exception $e) {
             return response()->json(['error' => 'Failed to export invoices'], 500);
+        }
+    }
+
+    public function getInvoicesForDropdown()
+    {
+        try {
+            return response()->json($this->service->getInvoicesForDropdown());
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Failed to fetch invoices for dropdown'], 500);
         }
     }
 }

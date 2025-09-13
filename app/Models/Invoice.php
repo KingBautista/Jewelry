@@ -18,7 +18,7 @@ class Invoice extends Model
         'product_name',
         'description',
         'price',
-        'product_image',
+        'product_images',
         'payment_term_id',
         'tax_id',
         'fee_id',
@@ -46,6 +46,7 @@ class Invoice extends Model
         'issue_date' => 'date',
         'due_date' => 'date',
         'price' => 'decimal:2',
+        'product_images' => 'array',
         'subtotal' => 'decimal:2',
         'tax_amount' => 'decimal:2',
         'fee_amount' => 'decimal:2',
@@ -358,6 +359,22 @@ class Invoice extends Model
     public function scopeByDateRange($query, $startDate, $endDate)
     {
         return $query->whereBetween('issue_date', [$startDate, $endDate]);
+    }
+
+    /**
+     * Scope a query to filter by payment status.
+     */
+    public function scopeByPaymentStatus($query, $paymentStatus)
+    {
+        return $query->where('payment_status', $paymentStatus);
+    }
+
+    /**
+     * Scope a query to filter by item status.
+     */
+    public function scopeByItemStatus($query, $itemStatus)
+    {
+        return $query->where('item_status', $itemStatus);
     }
 
     /**

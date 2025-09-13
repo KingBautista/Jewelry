@@ -18,7 +18,7 @@ return new class extends Migration
             $table->string('product_name');
             $table->text('description')->nullable();
             $table->decimal('price', 10, 2);
-            $table->string('product_image')->nullable();
+            $table->json('product_images')->nullable();
             $table->foreignId('payment_term_id')->nullable()->constrained('payment_terms')->onDelete('set null');
             $table->foreignId('tax_id')->nullable()->constrained('taxes')->onDelete('set null');
             $table->foreignId('fee_id')->nullable()->constrained('fees')->onDelete('set null');
