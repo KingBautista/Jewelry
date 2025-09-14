@@ -33,10 +33,11 @@ export default function CustomerForm() {
     notes: '',
     active: true
   });
+  const [nextCustomerCode, setNextCustomerCode] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [isActive, setIsActive] = useState(true);
 
-  // Load customer data for editing (if ID exists)
+  // Load customer data for editing (if ID exists) or get next customer code for new customer
   useEffect(() => {
     if (id) {
       setButtonText('Save');
@@ -51,6 +52,19 @@ export default function CustomerForm() {
         .catch((errors) => {
           toastAction.current.showError(errors.response);
           setIsLoading(false); // Ensure loading state is cleared
+        });
+    } else {
+      // Get next customer code for new customer
+      axiosClient.get('/customer-management/customers/next-code')
+        .then(({ data }) => {
+          setNextCustomerCode(data.next_code);
+          setCustomer(prev => ({ ...prev, customer_code: data.next_code }));
+        })
+        .catch((errors) => {
+          console.error('Error fetching next customer code:', errors);
+          // Fallback to manual code if API fails
+          setNextCustomerCode('CUST001');
+          setCustomer(prev => ({ ...prev, customer_code: 'CUST001' }));
         });
     }
   }, [id]);
@@ -122,7 +136,14 @@ export default function CustomerForm() {
                 className="form-control"
                 type="text"
                 value={customer.customer_code || ''}
-                onChange={ev => setCustomer({ ...customer, customer_code: DOMPurify.sanitize(ev.target.value) })}
+                readOnly
+                style={{ 
+                  backgroundColor: 'var(--bs-secondary-bg)', 
+                  color: 'var(--bs-body-color)',
+                  cursor: 'not-allowed',
+                  opacity: '0.7'
+                }}
+                title="Customer code is auto-generated"
               />
             }
             labelClass="col-sm-12 col-md-3"

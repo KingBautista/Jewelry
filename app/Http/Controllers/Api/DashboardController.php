@@ -9,26 +9,75 @@ use Illuminate\Http\Request;
 
 class DashboardController extends Controller
 {
-    protected $dashboardService;
+    protected $service;
     protected $messageService;
 
-    public function __construct(DashboardService $dashboardService, MessageService $messageService)
+    public function __construct(DashboardService $service, MessageService $messageService)
     {
-        $this->dashboardService = $dashboardService;
+        $this->service = $service;
         $this->messageService = $messageService;
     }
 
     /**
-     * Get dashboard statistics
+     * Get dashboard overview data
      */
-    public function statistics()
+    public function overview()
     {
         try {
-            $stats = $this->dashboardService->getStatistics();
-            return response()->json([
-                'success' => true,
-                'data' => $stats
-            ]);
+            $data = $this->service->getOverviewData();
+            return response($data, 200);
+        } catch (\Exception $e) {
+            return $this->messageService->responseError();
+        }
+    }
+
+    /**
+     * Get revenue data for charts
+     */
+    public function revenue()
+    {
+        try {
+            $data = $this->service->getRevenueData();
+            return response($data, 200);
+        } catch (\Exception $e) {
+            return $this->messageService->responseError();
+        }
+    }
+
+    /**
+     * Get customer summary data
+     */
+    public function customers()
+    {
+        try {
+            $data = $this->service->getCustomerSummary();
+            return response($data, 200);
+        } catch (\Exception $e) {
+            return $this->messageService->responseError();
+        }
+    }
+
+    /**
+     * Get item status summary
+     */
+    public function itemStatus()
+    {
+        try {
+            $data = $this->service->getItemStatusSummary();
+            return response($data, 200);
+        } catch (\Exception $e) {
+            return $this->messageService->responseError();
+        }
+    }
+
+    /**
+     * Get payment breakdown data
+     */
+    public function paymentBreakdown()
+    {
+        try {
+            $data = $this->service->getPaymentBreakdown();
+            return response($data, 200);
         } catch (\Exception $e) {
             return $this->messageService->responseError();
         }

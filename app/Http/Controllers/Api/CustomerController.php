@@ -139,4 +139,17 @@ class CustomerController extends BaseController
             return response()->json(['error' => 'Failed to export customers'], 500);
         }
     }
+
+    /**
+     * Get the next customer code
+     */
+    public function nextCode()
+    {
+        try {
+            $nextCode = User::generateCustomerCode();
+            return response(['next_code' => $nextCode], 200);
+        } catch (\Exception $e) {
+            return $this->messageService->responseError();
+        }
+    }
 }

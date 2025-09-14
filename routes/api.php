@@ -36,6 +36,19 @@ Route::middleware('auth:sanctum')->group(function () {
 
 	/*
 	|--------------------------------------------------------------------------
+	| Dashboard Routes
+	|--------------------------------------------------------------------------
+	*/
+	Route::prefix('dashboard')->group(function () {
+		Route::get('/overview', [DashboardController::class, 'overview']);
+		Route::get('/revenue', [DashboardController::class, 'revenue']);
+		Route::get('/customers', [DashboardController::class, 'customers']);
+		Route::get('/item-status', [DashboardController::class, 'itemStatus']);
+		Route::get('/payment-breakdown', [DashboardController::class, 'paymentBreakdown']);
+	});
+
+	/*
+	|--------------------------------------------------------------------------
 	| Options Management Routes
 	|--------------------------------------------------------------------------
 	*/
@@ -242,6 +255,7 @@ Route::middleware('auth:sanctum')->group(function () {
 			Route::get('/', [CustomerController::class, 'index']);
 			Route::get('/statistics', [CustomerController::class, 'getCustomerStats']);
 			Route::get('/export', [CustomerController::class, 'exportCustomers']);
+			Route::get('/next-code', [CustomerController::class, 'nextCode']);
 			Route::post('/', [CustomerController::class, 'store']);
 			Route::get('/{id}', [CustomerController::class, 'show']);
 			Route::put('/{id}', [CustomerController::class, 'update']);

@@ -2,6 +2,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { solidIconMap } from '../utils/solidIcons';
 import Chart from 'chart.js/auto';
+import axiosClient from '../axios-client';
 
 const getCurrentDate = () => {
 	const now = new Date();
@@ -13,120 +14,30 @@ const getCurrentDate = () => {
 export default function Dashboard() {
 	const chartRef = useRef(null);
 	const chartInstance = useRef(null);
-
-	// Static data for the dashboard
-	const [dashboardData] = useState({
+	const [dashboardData, setDashboardData] = useState({
 		revenue: {
-			currentMonth: 1250000,
-			previousMonth: 1180000,
-			yearlyTotal: 14500000
+			currentMonth: 0,
+			previousMonth: 0,
+			yearlyTotal: 0,
+			growthPercentage: 0
 		},
-		outstandingBalances: 450000,
+		outstandingBalances: 0,
 		invoiceStats: {
-			totalIssued: 156,
-			totalSent: 142,
-			totalCancelled: 14
+			totalIssued: 0,
+			totalSent: 0,
+			totalCancelled: 0
 		},
 		paymentBreakdown: {
-			paid: 1250000,
-			pending: 450000
+			fully_paid: { count: 0, total_amount: 0, total_paid: 0, remaining_balance: 0 },
+			partially_paid: { count: 0, total_amount: 0, total_paid: 0, remaining_balance: 0 },
+			unpaid: { count: 0, total_amount: 0, total_paid: 0, remaining_balance: 0 },
+			overdue: { count: 0, total_amount: 0, total_paid: 0, remaining_balance: 0 }
 		},
-		customerSummary: [
-			{
-				username: 'John D.',
-				items: 4,
-				paid: 12000,
-				pending: 3500
-			},
-			{
-				username: 'Maria S.',
-				items: 3,
-				paid: 8500,
-				pending: 2200
-			},
-			{
-				username: 'Robert L.',
-				items: 2,
-				paid: 6800,
-				pending: 1800
-			},
-			{
-				username: 'Sarah M.',
-				items: 5,
-				paid: 15200,
-				pending: 4200
-			},
-			{
-				username: 'David K.',
-				items: 1,
-				paid: 3200,
-				pending: 800
-			}
-		],
-		itemizedSummary: [
-			{
-				itemName: 'LV Bag',
-				paid: 5000,
-				pending: 1000,
-				terms: '2/10',
-				total: 6000
-			},
-			{
-				itemName: 'Diamond Ring',
-				paid: 8500,
-				pending: 2500,
-				terms: '3/12',
-				total: 11000
-			},
-			{
-				itemName: 'Gold Necklace',
-				paid: 4200,
-				pending: 800,
-				terms: '1/5',
-				total: 5000
-			},
-			{
-				itemName: 'Pearl Earrings',
-				paid: 2800,
-				pending: 700,
-				terms: '1/4',
-				total: 3500
-			},
-			{
-				itemName: 'Silver Bracelet',
-				paid: 3200,
-				pending: 800,
-				terms: '2/8',
-				total: 4000
-			}
-		],
-		topCustomers: [
-			{
-				username: 'Sarah M.',
-				items: 5,
-				totalAmount: 19400
-			},
-			{
-				username: 'John D.',
-				items: 4,
-				totalAmount: 15500
-			},
-			{
-				username: 'Maria S.',
-				items: 3,
-				totalAmount: 10700
-			},
-			{
-				username: 'Robert L.',
-				totalAmount: 8600,
-				items: 2
-			},
-			{
-				username: 'David K.',
-				items: 1,
-				totalAmount: 4000
-			}
-		]
+		customerSummary: [],
+		topCustomers: [],
+		itemStatusSummary: {},
+		loading: true,
+		error: null
 	});
 
 	const formatCurrency = (amount) => {
@@ -137,9 +48,81 @@ export default function Dashboard() {
 		return ((value / total) * 100).toFixed(1);
 	};
 
+	// Fetch dashboard data
+	const fetchDashboardData = async () => {
+		try {
+			setDashboardData(prev => ({ ...prev, loading: true, error: null }));
+			
+			const [overviewRes, customersRes, paymentBreakdownRes, itemStatusRes] = await Promise.all([
+				axiosClient.get('/dashboard/overview'),
+				axiosClient.get('/dashboard/customers'),
+				axiosClient.get('/dashboard/payment-breakdown'),
+				axiosClient.get('/dashboard/item-status')
+			]);
+
+			const overview = overviewRes.data;
+			const customers = customersRes.data;
+			const paymentBreakdown = paymentBreakdownRes.data;
+			const itemStatus = itemStatusRes.data;
+
+			// Calculate total paid and pending for chart
+			const totalPaid = Object.values(paymentBreakdown.payment_breakdown || {})
+				.reduce((sum, status) => sum + (status.total_paid || 0), 0);
+			const totalPending = Object.values(paymentBreakdown.payment_breakdown || {})
+				.reduce((sum, status) => sum + (status.remaining_balance || 0), 0);
+
+			setDashboardData({
+				revenue: {
+					currentMonth: overview.revenue?.current_month || 0,
+					previousMonth: overview.revenue?.previous_month || 0,
+					yearlyTotal: overview.revenue?.yearly_total || 0,
+					growthPercentage: overview.revenue?.growth_percentage || 0
+				},
+				outstandingBalances: overview.outstanding_balances || 0,
+				invoiceStats: {
+					totalIssued: overview.invoice_stats?.total_issued || 0,
+					totalSent: overview.invoice_stats?.total_sent || 0,
+					totalCancelled: overview.invoice_stats?.total_cancelled || 0
+				},
+				paymentBreakdown: {
+					paid: totalPaid,
+					pending: totalPending,
+					details: paymentBreakdown.payment_breakdown || {}
+				},
+				customerSummary: customers.top_customers?.map(customer => ({
+					username: customer.name || customer.email,
+					items: customer.invoice_count,
+					paid: customer.total_paid,
+					pending: customer.remaining_balance,
+					total: customer.total_amount
+				})) || [],
+				topCustomers: customers.top_customers?.map(customer => ({
+					username: customer.name || customer.email,
+					items: customer.invoice_count,
+					totalAmount: customer.total_amount
+				})) || [],
+				itemStatusSummary: itemStatus.status_summary || {},
+				loading: false,
+				error: null
+			});
+		} catch (error) {
+			console.error('Error fetching dashboard data:', error);
+			setDashboardData(prev => ({
+				...prev,
+				loading: false,
+				error: 'Failed to load dashboard data'
+			}));
+		}
+	};
+
+	// Fetch data on component mount
+	useEffect(() => {
+		fetchDashboardData();
+	}, []);
+
 	// Initialize Chart.js pie chart
 	useEffect(() => {
-		if (chartRef.current && !chartInstance.current) {
+		if (chartRef.current && !chartInstance.current && !dashboardData.loading) {
 			const ctx = chartRef.current.getContext('2d');
 			
 			chartInstance.current = new Chart(ctx, {
@@ -197,7 +180,50 @@ export default function Dashboard() {
 				chartInstance.current = null;
 			}
 		};
-	}, [dashboardData.paymentBreakdown]);
+	}, [dashboardData.paymentBreakdown, dashboardData.loading]);
+
+	// Show loading state
+	if (dashboardData.loading) {
+		return (
+			<div className="dashboard-metrics container-fluid">
+				<div className="row mb-4">
+					<div className="col-12">
+						<div className="card">
+							<div className="card-body text-center">
+								<div className="spinner-border text-primary" role="status">
+									<span className="visually-hidden">Loading...</span>
+								</div>
+								<h5 className="mt-3">Loading Dashboard Data...</h5>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		);
+	}
+
+	// Show error state
+	if (dashboardData.error) {
+		return (
+			<div className="dashboard-metrics container-fluid">
+				<div className="row mb-4">
+					<div className="col-12">
+						<div className="card border-danger">
+							<div className="card-body text-center">
+								<FontAwesomeIcon icon={solidIconMap.exclamationTriangle} className="mb-3 text-danger" size="3x" />
+								<h5 className="text-danger">Error Loading Dashboard</h5>
+								<p className="text-muted">{dashboardData.error}</p>
+								<button className="btn btn-primary" onClick={fetchDashboardData}>
+									<FontAwesomeIcon icon={solidIconMap.refresh} className="me-2" />
+									Retry
+								</button>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		);
+	}
 
 	return (
 		<div className="dashboard-metrics container-fluid">
@@ -210,6 +236,10 @@ export default function Dashboard() {
 							<h3 className="card-title">Financial Dashboard</h3>
 							<p className="card-text text-muted">Quick view of financial health and customer activity</p>
 							<h5 className="text-info">{getCurrentDate()}</h5>
+							<button className="btn btn-outline-primary btn-sm mt-2" onClick={fetchDashboardData}>
+								<FontAwesomeIcon icon={solidIconMap.refresh} className="me-1" />
+								Refresh Data
+							</button>
 						</div>
 					</div>
 				</div>
@@ -223,6 +253,11 @@ export default function Dashboard() {
 							<FontAwesomeIcon icon={solidIconMap.chart} className="mb-2 text-success" size="2x" />
 							<h6 className="card-title">Current Month Revenue</h6>
 							<p className="card-text fs-4 fw-bold text-success">{formatCurrency(dashboardData.revenue.currentMonth)}</p>
+							{dashboardData.revenue.growthPercentage !== 0 && (
+								<small className={`badge ${dashboardData.revenue.growthPercentage > 0 ? 'text-bg-success' : 'text-bg-danger'}`}>
+									{dashboardData.revenue.growthPercentage > 0 ? '+' : ''}{dashboardData.revenue.growthPercentage}% vs last month
+								</small>
+							)}
 						</div>
 					</div>
 				</div>
@@ -300,7 +335,7 @@ export default function Dashboard() {
 								Payment Breakdown
 							</h6>
 						</div>
-						<div className="card-body" style={{ padding: '0.25rem' }}>
+						<div className="card-body" style={{ padding: '0.5rem' }}>
 							<div className="row text-center">
 								<div className="col-6">
 									<div className="p-2">
@@ -321,7 +356,7 @@ export default function Dashboard() {
 									</div>
 								</div>
 							</div>
-							<div className="chart-container" style={{ position: 'relative', height: '150px' }}>
+							<div className="chart-container" style={{ position: 'relative', height: '200px' }}>
 								<canvas ref={chartRef}></canvas>
 							</div>
 						</div>
@@ -346,18 +381,24 @@ export default function Dashboard() {
 										</tr>
 									</thead>
 									<tbody style={{ margin: '0' }}>
-										{dashboardData.topCustomers.map((customer, index) => (
-											<tr key={index} style={{ margin: '0' }}>
-												<td style={{ padding: '0.25rem', margin: '0' }}>
-													<span className={`badge bg-${index === 0 ? 'warning' : index === 1 ? 'secondary' : index === 2 ? 'info' : 'light'} text-dark`}>
-														#{index + 1}
-													</span>
-													{' '}{customer.username}
-												</td>
-												<td style={{ padding: '0.25rem', margin: '0' }}>{customer.items}</td>
-												<td className="fw-bold" style={{ padding: '0.25rem', margin: '0' }}>{formatCurrency(customer.totalAmount)}</td>
+										{dashboardData.topCustomers.length > 0 ? (
+											dashboardData.topCustomers.map((customer, index) => (
+												<tr key={index} style={{ margin: '0' }}>
+													<td style={{ padding: '0.25rem', margin: '0' }}>
+														<span className={`badge text-bg-${index === 0 ? 'warning' : index === 1 ? 'secondary' : index === 2 ? 'info' : 'light'}`}>
+															#{index + 1}
+														</span>
+														{' '}{customer.username}
+													</td>
+													<td style={{ padding: '0.25rem', margin: '0' }}>{customer.items}</td>
+													<td className="fw-bold" style={{ padding: '0.25rem', margin: '0' }}>{formatCurrency(customer.totalAmount)}</td>
+												</tr>
+											))
+										) : (
+											<tr>
+												<td colSpan="3" className="text-center text-muted py-3">No customer data available</td>
 											</tr>
-										))}
+										)}
 									</tbody>
 								</table>
 							</div>
@@ -389,17 +430,23 @@ export default function Dashboard() {
 										</tr>
 									</thead>
 									<tbody style={{ margin: '0' }}>
-										{dashboardData.customerSummary.map((customer, index) => (
-											<tr key={index} style={{ margin: '0' }}>
-												<td className="fw-bold" style={{ padding: '0.25rem', margin: '0' }}>{customer.username}</td>
-												<td style={{ padding: '0.25rem', margin: '0' }}>
-													<span className="badge bg-info">{customer.items}</span>
-												</td>
-												<td className="text-success fw-bold" style={{ padding: '0.25rem', margin: '0' }}>{formatCurrency(customer.paid)}</td>
-												<td className="text-warning fw-bold" style={{ padding: '0.25rem', margin: '0' }}>{formatCurrency(customer.pending)}</td>
-												<td className="fw-bold" style={{ padding: '0.25rem', margin: '0' }}>{formatCurrency(customer.paid + customer.pending)}</td>
+										{dashboardData.customerSummary.length > 0 ? (
+											dashboardData.customerSummary.map((customer, index) => (
+												<tr key={index} style={{ margin: '0' }}>
+													<td className="fw-bold" style={{ padding: '0.25rem', margin: '0' }}>{customer.username}</td>
+													<td style={{ padding: '0.25rem', margin: '0' }}>
+														<span className="badge bg-info">{customer.items}</span>
+													</td>
+													<td className="text-success fw-bold" style={{ padding: '0.25rem', margin: '0' }}>{formatCurrency(customer.paid)}</td>
+													<td className="text-warning fw-bold" style={{ padding: '0.25rem', margin: '0' }}>{formatCurrency(customer.pending)}</td>
+													<td className="fw-bold" style={{ padding: '0.25rem', margin: '0' }}>{formatCurrency(customer.total)}</td>
+												</tr>
+											))
+										) : (
+											<tr>
+												<td colSpan="5" className="text-center text-muted py-3">No customer data available</td>
 											</tr>
-										))}
+										)}
 									</tbody>
 								</table>
 							</div>
@@ -408,14 +455,14 @@ export default function Dashboard() {
 				</div>
 			</div>
 
-			{/* Itemized Summary Table */}
+			{/* Payment Status Breakdown */}
 			<div className="row g-3 mb-4">
 				<div className="col-12">
 					<div className="card">
 						<div className="card-header">
 							<h6 className="mb-0">
 								<FontAwesomeIcon icon={solidIconMap.list} className="me-2" />
-								Itemized Summary per Customer
+								Payment Status Breakdown
 							</h6>
 						</div>
 						<div className="card-body" style={{ padding: '0.25rem' }}>
@@ -423,25 +470,33 @@ export default function Dashboard() {
 								<table className="table table-sm table-striped table-hover mb-0" style={{ marginBottom: '0', marginTop: '0' }}>
 									<thead className="table-dark">
 										<tr style={{ margin: '0' }}>
-											<th style={{ fontSize: '0.8rem', padding: '0.25rem', margin: '0' }}>Item Name</th>
+											<th style={{ fontSize: '0.8rem', padding: '0.25rem', margin: '0' }}>Status</th>
+											<th style={{ fontSize: '0.8rem', padding: '0.25rem', margin: '0' }}>Count</th>
+											<th style={{ fontSize: '0.8rem', padding: '0.25rem', margin: '0' }}>Total Amount</th>
 											<th style={{ fontSize: '0.8rem', padding: '0.25rem', margin: '0' }}>Paid</th>
-											<th style={{ fontSize: '0.8rem', padding: '0.25rem', margin: '0' }}>Pending</th>
-											<th style={{ fontSize: '0.8rem', padding: '0.25rem', margin: '0' }}>Terms</th>
-											<th style={{ fontSize: '0.8rem', padding: '0.25rem', margin: '0' }}>Total</th>
+											<th style={{ fontSize: '0.8rem', padding: '0.25rem', margin: '0' }}>Remaining</th>
 										</tr>
 									</thead>
 									<tbody style={{ margin: '0' }}>
-										{dashboardData.itemizedSummary.map((item, index) => (
-											<tr key={index} style={{ margin: '0' }}>
-												<td className="fw-bold" style={{ padding: '0.25rem', margin: '0' }}>{item.itemName}</td>
-												<td className="text-success fw-bold" style={{ padding: '0.25rem', margin: '0' }}>{formatCurrency(item.paid)}</td>
-												<td className="text-warning fw-bold" style={{ padding: '0.25rem', margin: '0' }}>{formatCurrency(item.pending)}</td>
-												<td style={{ padding: '0.25rem', margin: '0' }}>
-													<span className="badge bg-secondary">{item.terms}</span>
-												</td>
-												<td className="fw-bold" style={{ padding: '0.25rem', margin: '0' }}>{formatCurrency(item.total)}</td>
+										{Object.keys(dashboardData.paymentBreakdown.details || {}).length > 0 ? (
+											Object.entries(dashboardData.paymentBreakdown.details).map(([status, data]) => (
+												<tr key={status} style={{ margin: '0' }}>
+													<td className="fw-bold" style={{ padding: '0.25rem', margin: '0' }}>
+														<span className={`badge text-bg-${status === 'fully_paid' ? 'success' : status === 'partially_paid' ? 'warning' : status === 'unpaid' ? 'secondary' : 'danger'}`}>
+															{status.replace('_', ' ').toUpperCase()}
+														</span>
+													</td>
+													<td style={{ padding: '0.25rem', margin: '0' }}>{data.count}</td>
+													<td className="fw-bold" style={{ padding: '0.25rem', margin: '0' }}>{formatCurrency(data.total_amount)}</td>
+													<td className="text-success fw-bold" style={{ padding: '0.25rem', margin: '0' }}>{formatCurrency(data.total_paid)}</td>
+													<td className="text-warning fw-bold" style={{ padding: '0.25rem', margin: '0' }}>{formatCurrency(data.remaining_balance)}</td>
+												</tr>
+											))
+										) : (
+											<tr>
+												<td colSpan="5" className="text-center text-muted py-3">No payment data available</td>
 											</tr>
-										))}
+										)}
 									</tbody>
 								</table>
 							</div>
