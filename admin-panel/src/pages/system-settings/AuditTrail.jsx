@@ -265,13 +265,13 @@ export default function AuditTrail() {
           <div className="modal-backdrop fade show" onClick={toggleFilterModal}></div>
           <div className={`modal fade show ${showFilterModal ? 'd-block' : ''}`} style={{ zIndex: 1050 }} onClick={toggleFilterModal}>
             <div className="modal-dialog modal-dialog-centered" style={{ maxWidth: '350px', margin: '0 0 0 auto' }} onClick={(e) => e.stopPropagation()}>
-              <div className="modal-content h-100" style={{ height: '100vh', borderRadius: '0', border: 'none' }}>
-                <div className="modal-header border-0" style={{ backgroundColor: '#047857', color: 'white' }}>
+              <div className="modal-content h-100" style={{ height: '100vh', borderRadius: '0', border: 'none', backgroundColor: '#1a1a1a', color: 'white' }}>
+                <div className="modal-header border-0" style={{ backgroundColor: '#1a1a1a', color: 'white', borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
                   <h5 className="modal-title" style={{ color: 'white' }}>Filters</h5>
                   <button type="button" className="btn-close btn-close-white" onClick={toggleFilterModal}></button>
                 </div>
                 <div className="modal-body p-4">
-                  <p className="text-muted mb-4">Refine results using the filters below.</p>
+                  <p className="mb-4" style={{ color: '#9ca3af' }}>Refine results using the filters below.</p>
                   
                   {/* Date Range Filter */}
                   <div className="mb-4">
@@ -279,8 +279,8 @@ export default function AuditTrail() {
                       className="d-flex justify-content-between align-items-center cursor-pointer" 
                       onClick={() => toggleSection('dateRange')}
                       style={{ cursor: 'pointer' }}>
-                      <h6 className="fw-bold text-primary mb-0">Date Range</h6>
-                      <span className="text-muted">
+                      <h6 className="fw-bold mb-0" style={{ color: '#3b82f6' }}>Date Range</h6>
+                      <span style={{ color: '#9ca3af' }}>
                         <FontAwesomeIcon 
                           icon={collapsedSections.dateRange ? solidIconMap.chevronDown : solidIconMap.chevronUp} 
                           style={{ width: '12px', height: '12px' }} 
@@ -319,8 +319,8 @@ export default function AuditTrail() {
                       className="d-flex justify-content-between align-items-center cursor-pointer" 
                       onClick={() => toggleSection('module')}
                       style={{ cursor: 'pointer' }}>
-                      <h6 className="fw-bold text-primary mb-0">Module</h6>
-                      <span className="text-muted">
+                      <h6 className="fw-bold mb-0" style={{ color: '#3b82f6' }}>Module</h6>
+                      <span style={{ color: '#9ca3af' }}>
                         <FontAwesomeIcon 
                           icon={collapsedSections.module ? solidIconMap.chevronDown : solidIconMap.chevronUp} 
                           style={{ width: '12px', height: '12px' }} 
@@ -329,7 +329,7 @@ export default function AuditTrail() {
                     </div>
                     {!collapsedSections.module && (
                       <div className="mt-3">
-                        <div className="border rounded p-3" style={{ maxHeight: '200px', overflowY: 'auto' }}>
+                        <div className="border rounded p-3" style={{ maxHeight: '200px', overflowY: 'auto', borderColor: '#404040', backgroundColor: 'rgba(0,0,0,0.2)' }}>
                           {modules.map(m => (
                             <div key={m.value} className="form-check">
                               <input 
@@ -341,7 +341,7 @@ export default function AuditTrail() {
                                 checked={params.module === m.value}
                                 onChange={e => handleFilterChange('module', e.target.value)}
                               />
-                              <label className="form-check-label" htmlFor={`module-${m.value}`}>
+                              <label className="form-check-label" htmlFor={`module-${m.value}`} style={{ color: 'white' }}>
                                 {m.label}
                               </label>
                             </div>
@@ -357,8 +357,8 @@ export default function AuditTrail() {
                       className="d-flex justify-content-between align-items-center cursor-pointer" 
                       onClick={() => toggleSection('action')}
                       style={{ cursor: 'pointer' }}>
-                      <h6 className="fw-bold text-primary mb-0">Action</h6>
-                      <span className="text-muted">
+                      <h6 className="fw-bold mb-0" style={{ color: '#3b82f6' }}>Action</h6>
+                      <span style={{ color: '#9ca3af' }}>
                         <FontAwesomeIcon 
                           icon={collapsedSections.action ? solidIconMap.chevronDown : solidIconMap.chevronUp} 
                           style={{ width: '12px', height: '12px' }} 
@@ -367,7 +367,7 @@ export default function AuditTrail() {
                     </div>
                     {!collapsedSections.action && (
                       <div className="mt-3">
-                        <div className="border rounded p-3" style={{ maxHeight: '200px', overflowY: 'auto' }}>
+                        <div className="border rounded p-3" style={{ maxHeight: '200px', overflowY: 'auto', borderColor: '#404040', backgroundColor: 'rgba(0,0,0,0.2)' }}>
                           {actions.map(a => (
                             <div key={a.value} className="form-check">
                               <input 
@@ -379,7 +379,7 @@ export default function AuditTrail() {
                                 checked={params.action === a.value}
                                 onChange={e => handleFilterChange('action', e.target.value)}
                               />
-                              <label className="form-check-label" htmlFor={`action-${a.value}`}>
+                              <label className="form-check-label" htmlFor={`action-${a.value}`} style={{ color: 'white' }}>
                                 {a.label}
                               </label>
                             </div>
@@ -395,8 +395,8 @@ export default function AuditTrail() {
                       className="d-flex justify-content-between align-items-center cursor-pointer" 
                       onClick={() => toggleSection('user')}
                       style={{ cursor: 'pointer' }}>
-                      <h6 className="fw-bold text-primary mb-0">User Name</h6>
-                      <span className="text-muted">
+                      <h6 className="fw-bold mb-0" style={{ color: '#3b82f6' }}>User Name</h6>
+                      <span style={{ color: '#9ca3af' }}>
                         <FontAwesomeIcon 
                           icon={collapsedSections.user ? solidIconMap.chevronDown : solidIconMap.chevronUp} 
                           style={{ width: '12px', height: '12px' }} 
@@ -405,7 +405,7 @@ export default function AuditTrail() {
                     </div>
                     {!collapsedSections.user && (
                       <div className="mt-3">
-                        <div className="border rounded p-3" style={{ maxHeight: '200px', overflowY: 'auto' }}>
+                        <div className="border rounded p-3" style={{ maxHeight: '200px', overflowY: 'auto', borderColor: '#404040', backgroundColor: 'rgba(0,0,0,0.2)' }}>
                           {users.map(u => (
                             <div key={u.value} className="form-check">
                               <input 
@@ -417,7 +417,7 @@ export default function AuditTrail() {
                                 checked={params.user_id === u.value || params.user_id === u.value.toString()}
                                 onChange={e => handleFilterChange('user_id', e.target.value)}
                               />
-                              <label className="form-check-label" htmlFor={`user-${u.value}`}>
+                              <label className="form-check-label" htmlFor={`user-${u.value}`} style={{ color: 'white' }}>
                                 {u.label}
                               </label>
                             </div>
@@ -433,8 +433,8 @@ export default function AuditTrail() {
                       className="d-flex justify-content-between align-items-center cursor-pointer" 
                       onClick={() => toggleSection('search')}
                       style={{ cursor: 'pointer' }}>
-                      <h6 className="fw-bold text-primary mb-0">Search</h6>
-                      <span className="text-muted">
+                      <h6 className="fw-bold mb-0" style={{ color: '#3b82f6' }}>Search</h6>
+                      <span style={{ color: '#9ca3af' }}>
                         <FontAwesomeIcon 
                           icon={collapsedSections.search ? solidIconMap.chevronDown : solidIconMap.chevronUp} 
                           style={{ width: '12px', height: '12px' }} 
@@ -444,12 +444,13 @@ export default function AuditTrail() {
                     {!collapsedSections.search && (
                       <div className="mt-3">
                         <div className="mb-3">
-                          <label className="form-label">Search</label>
+                          <label className="form-label" style={{ color: 'white' }}>Search</label>
                           <div className="input-group">
                             <input 
                               type="text" 
                               className="form-control" 
                               placeholder="Search audit trail..."
+                              style={{ backgroundColor: '#374151', borderColor: '#4b5563', color: 'white' }}
                               value={params.search}
                               onChange={e => handleFilterChange('search', e.target.value)}
                               onKeyPress={(e) => {
@@ -459,7 +460,7 @@ export default function AuditTrail() {
                               }}
                             />
                             <button 
-                              className="btn btn-primary" 
+                              className="btn btn-secondary" 
                               type="button"
                               onClick={handleSearch}
                             >

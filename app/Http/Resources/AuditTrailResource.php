@@ -34,7 +34,7 @@ class AuditTrailResource extends JsonResource
             'new_values' => $this->new_values,
             'model_type' => $this->model_type,
             'model_id' => $this->model_id,
-            'created_at' => $this->created_at,
+            'created_at' => $this->created_at->format('Y-m-d H:m:s'),
             'formatted_created_at' => $this->formatted_created_at,
             'action_badge_class' => $this->action_badge_class,
         ];

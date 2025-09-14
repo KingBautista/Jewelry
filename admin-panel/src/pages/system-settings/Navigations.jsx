@@ -76,7 +76,13 @@ export default function Navigations() {
     setParams(prev => ({ ...prev, [key]: value }));
     // Auto-trigger search for non-search fields
     if (key !== 'search') {
-      setTimeout(() => handleSearch(), 100);
+      setTimeout(() => {
+        handleSearch();
+        // Trigger table reload
+        if (tableRef.current) {
+          tableRef.current.reload();
+        }
+      }, 100);
     }
   };
 
@@ -104,6 +110,14 @@ export default function Navigations() {
     }
     // Close modal after clearing
     setShowFilterModal(false);
+    // Trigger reload to show all data
+    setTimeout(() => {
+      handleSearch();
+      // Trigger table reload
+      if (tableRef.current) {
+        tableRef.current.reload();
+      }
+    }, 100);
   };
 
   const toggleFilterModal = () => {
@@ -163,13 +177,13 @@ export default function Navigations() {
           <div className="modal-backdrop fade show" onClick={toggleFilterModal}></div>
           <div className={`modal fade show ${showFilterModal ? 'd-block' : ''}`} style={{ zIndex: 1050 }} onClick={toggleFilterModal}>
             <div className="modal-dialog modal-dialog-centered" style={{ maxWidth: '350px', margin: '0 0 0 auto', height: '100vh' }} onClick={(e) => e.stopPropagation()}>
-              <div className="modal-content h-100" style={{ height: '100vh', borderRadius: '0', border: 'none' }}>
-                <div className="modal-header border-0" style={{ backgroundColor: '#047857', color: 'white' }}>
+              <div className="modal-content h-100" style={{ height: '100vh', borderRadius: '0', border: 'none', backgroundColor: '#1a1a1a', color: 'white' }}>
+                <div className="modal-header border-0" style={{ backgroundColor: '#1a1a1a', color: 'white', borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
                   <h5 className="modal-title" style={{ color: 'white' }}>Filters</h5>
                   <button type="button" className="btn-close btn-close-white" onClick={toggleFilterModal}></button>
                 </div>
                 <div className="modal-body p-4">
-                  <p className="text-muted mb-4">Refine results using the filters below.</p>
+                  <p className="mb-4" style={{ color: '#9ca3af' }}>Refine results using the filters below.</p>
                   
                   {/* Status Filter */}
                   <div className="mb-4">
@@ -177,8 +191,8 @@ export default function Navigations() {
                       className="d-flex justify-content-between align-items-center cursor-pointer" 
                       onClick={() => toggleSection('status')}
                       style={{ cursor: 'pointer' }}>
-                      <h6 className="fw-bold text-primary mb-0">Status</h6>
-                      <span className="text-muted">
+                      <h6 className="fw-bold mb-0" style={{ color: '#3b82f6' }}>Status</h6>
+                      <span style={{ color: '#9ca3af' }}>
                         <img 
                           src={collapsedSections.status ? "/assets/new-icons/icons-bold/fi-br-angle-small-down.svg" : "/assets/new-icons/icons-bold/fi-br-angle-small-up.svg"} 
                           alt="Toggle" 
@@ -188,7 +202,7 @@ export default function Navigations() {
                     </div>
                     {!collapsedSections.status && (
                       <div className="mt-3">
-                        <div className="border rounded p-3">
+                        <div className="border rounded p-3" style={{ borderColor: '#404040', backgroundColor: 'rgba(0,0,0,0.2)' }}>
                           <div className="form-check">
                             <input 
                               className="form-check-input" 
@@ -199,7 +213,7 @@ export default function Navigations() {
                               checked={params.active === ''}
                               onChange={e => handleFilterChange('active', e.target.value)}
                             />
-                            <label className="form-check-label" htmlFor="status-all">
+                            <label className="form-check-label" htmlFor="status-all" style={{ color: 'white' }}>
                               All Status
                             </label>
                           </div>
@@ -213,7 +227,7 @@ export default function Navigations() {
                               checked={params.active === 'Active'}
                               onChange={e => handleFilterChange('active', e.target.value)}
                             />
-                            <label className="form-check-label" htmlFor="status-active">
+                            <label className="form-check-label" htmlFor="status-active" style={{ color: 'white' }}>
                               Active
                             </label>
                           </div>
@@ -227,7 +241,7 @@ export default function Navigations() {
                               checked={params.active === 'Inactive'}
                               onChange={e => handleFilterChange('active', e.target.value)}
                             />
-                            <label className="form-check-label" htmlFor="status-inactive">
+                            <label className="form-check-label" htmlFor="status-inactive" style={{ color: 'white' }}>
                               Inactive
                             </label>
                           </div>
@@ -242,8 +256,8 @@ export default function Navigations() {
                       className="d-flex justify-content-between align-items-center cursor-pointer" 
                       onClick={() => toggleSection('displayStatus')}
                       style={{ cursor: 'pointer' }}>
-                      <h6 className="fw-bold text-primary mb-0">Display Status</h6>
-                      <span className="text-muted">
+                      <h6 className="fw-bold mb-0" style={{ color: '#3b82f6' }}>Display Status</h6>
+                      <span style={{ color: '#9ca3af' }}>
                         <img 
                           src={collapsedSections.displayStatus ? "/assets/new-icons/icons-bold/fi-br-angle-small-down.svg" : "/assets/new-icons/icons-bold/fi-br-angle-small-up.svg"} 
                           alt="Toggle" 
@@ -253,7 +267,7 @@ export default function Navigations() {
                     </div>
                     {!collapsedSections.displayStatus && (
                       <div className="mt-3">
-                        <div className="border rounded p-3">
+                        <div className="border rounded p-3" style={{ borderColor: '#404040', backgroundColor: 'rgba(0,0,0,0.2)' }}>
                           <div className="form-check">
                             <input 
                               className="form-check-input" 
@@ -264,7 +278,7 @@ export default function Navigations() {
                               checked={params.show_in_menu === ''}
                               onChange={e => handleFilterChange('show_in_menu', e.target.value)}
                             />
-                            <label className="form-check-label" htmlFor="display-all">
+                            <label className="form-check-label" htmlFor="display-all" style={{ color: 'white' }}>
                               All Display Status
                             </label>
                           </div>
@@ -278,7 +292,7 @@ export default function Navigations() {
                               checked={params.show_in_menu === 'Yes'}
                               onChange={e => handleFilterChange('show_in_menu', e.target.value)}
                             />
-                            <label className="form-check-label" htmlFor="display-yes">
+                            <label className="form-check-label" htmlFor="display-yes" style={{ color: 'white' }}>
                               Show in Menu
                             </label>
                           </div>
@@ -292,7 +306,7 @@ export default function Navigations() {
                               checked={params.show_in_menu === 'No'}
                               onChange={e => handleFilterChange('show_in_menu', e.target.value)}
                             />
-                            <label className="form-check-label" htmlFor="display-no">
+                            <label className="form-check-label" htmlFor="display-no" style={{ color: 'white' }}>
                               Hide from Menu
                             </label>
                           </div>
@@ -307,8 +321,8 @@ export default function Navigations() {
                       className="d-flex justify-content-between align-items-center cursor-pointer" 
                       onClick={() => toggleSection('search')}
                       style={{ cursor: 'pointer' }}>
-                      <h6 className="fw-bold text-primary mb-0">Search</h6>
-                      <span className="text-muted">
+                      <h6 className="fw-bold mb-0" style={{ color: '#3b82f6' }}>Search</h6>
+                      <span style={{ color: '#9ca3af' }}>
                         <img 
                           src={collapsedSections.search ? "/assets/new-icons/icons-bold/fi-br-angle-small-down.svg" : "/assets/new-icons/icons-bold/fi-br-angle-small-up.svg"} 
                           alt="Toggle" 
@@ -319,12 +333,13 @@ export default function Navigations() {
                     {!collapsedSections.search && (
                       <div className="mt-3">
                         <div className="mb-3">
-                          <label className="form-label">Search</label>
+                          <label className="form-label" style={{ color: 'white' }}>Search</label>
                           <div className="input-group">
                             <input 
                               type="text" 
                               className="form-control" 
                               placeholder="Search navigation..."
+                              style={{ backgroundColor: '#374151', borderColor: '#4b5563', color: 'white' }}
                               value={params.search || ''}
                               onChange={e => {
                                 handleFilterChange('search', e.target.value);
@@ -332,17 +347,35 @@ export default function Navigations() {
                                 if (searchRef.current) {
                                   searchRef.current.value = e.target.value;
                                 }
+                                // Trigger search immediately for search input
+                                setTimeout(() => {
+                                  handleSearch();
+                                  // Trigger table reload
+                                  if (tableRef.current) {
+                                    tableRef.current.reload();
+                                  }
+                                }, 100);
                               }}
                               onKeyPress={(e) => {
                                 if (e.key === 'Enter') {
                                   handleSearch();
+                                  // Trigger table reload
+                                  if (tableRef.current) {
+                                    tableRef.current.reload();
+                                  }
                                 }
                               }}
                             />
                             <button 
                               className="btn btn-secondary" 
                               type="button"
-                              onClick={handleSearch}
+                              onClick={() => {
+                                handleSearch();
+                                // Trigger table reload
+                                if (tableRef.current) {
+                                  tableRef.current.reload();
+                                }
+                              }}
                             >
                               <img 
                                 src="/assets/new-icons/icons-bold/fi-br-search.svg" 

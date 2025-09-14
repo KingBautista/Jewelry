@@ -37,6 +37,16 @@ class NavigationService extends BaseService
         });
       }
 
+      // Apply active filter
+      if (request('active')) {
+        $query->where('active', request('active') === 'Active' ? 1 : 0);
+      }
+
+      // Apply show_in_menu filter
+      if (request('show_in_menu')) {
+        $query->where('show_in_menu', request('show_in_menu') === 'Yes' ? 1 : 0);
+      }
+
       // Apply ordering
       if (request('order')) {
         $query->orderBy(request('order'), request('sort'));
