@@ -65,6 +65,7 @@ Route::middleware('auth:sanctum')->group(function () {
 		
 		// Invoice Management Options
 		Route::get('/invoices', [InvoiceController::class, 'getInvoicesForDropdown']);
+		Route::get('/invoices/search', [InvoiceController::class, 'searchInvoices']);
 		Route::get('/invoice-statuses', [InvoiceController::class, 'getInvoiceStatuses']);
 		
 		// Payment Management Options

@@ -18,6 +18,8 @@ class InvoiceSeeder extends Seeder
      */
     public function run(): void
     {
+        $faker = \Faker\Factory::create();
+        
         // Create specific invoices with realistic data
         $invoices = [
             [
@@ -26,7 +28,7 @@ class InvoiceSeeder extends Seeder
                 'product_name' => 'Diamond Engagement Ring',
                 'description' => 'Beautiful 1-carat diamond engagement ring with platinum setting',
                 'price' => 150000.00,
-                'product_images' => ['diamond-ring-1.jpg'],
+                'product_images' => ['invoices/products/diamond-ring-1.jpg', 'invoices/products/diamond-ring-2.jpg'],
                 'payment_term_id' => PaymentTerm::first()->id,
                 'tax_id' => Tax::first()->id,
                 'fee_id' => Fee::first()->id,
@@ -44,7 +46,7 @@ class InvoiceSeeder extends Seeder
                 'product_name' => 'Gold Necklace Set',
                 'description' => 'Elegant 18k gold necklace with matching earrings',
                 'price' => 75000.00,
-                'product_images' => ['gold-necklace-set.jpg'],
+                'product_images' => ['invoices/products/gold-necklace-set.jpg'],
                 'payment_term_id' => PaymentTerm::skip(1)->first()->id,
                 'tax_id' => Tax::skip(1)->first()->id,
                 'fee_id' => Fee::skip(1)->first()->id,
@@ -62,7 +64,7 @@ class InvoiceSeeder extends Seeder
                 'product_name' => 'Pearl Earrings',
                 'description' => 'Classic white pearl earrings with sterling silver',
                 'price' => 25000.00,
-                'product_images' => ['pearl-earrings.jpg'],
+                'product_images' => ['invoices/products/pearl-earrings.jpg'],
                 'payment_term_id' => PaymentTerm::skip(2)->first()->id,
                 'tax_id' => null,
                 'fee_id' => null,
@@ -79,6 +81,27 @@ class InvoiceSeeder extends Seeder
         foreach ($invoices as $invoiceData) {
             $invoice = Invoice::create($invoiceData);
             $invoice->calculateTotals()->save();
+            
+            // Generate payment schedules if payment terms exist
+            if ($invoice->payment_term_id) {
+                $invoice->generatePaymentSchedules();
+            }
+            
+            // Create item status for some invoices
+            if ($faker->boolean(60)) {
+                $statuses = ['pending', 'packed', 'for_delivery', 'delivered'];
+                $status = $faker->randomElement($statuses);
+                
+                \App\Models\InvoiceItemStatus::create([
+                    'invoice_id' => $invoice->id,
+                    'status' => $status,
+                    'status_date' => $faker->dateTimeBetween($invoice->created_at, 'now'),
+                    'notes' => $faker->optional(0.5)->sentence(),
+                    'updated_by' => User::inRandomOrder()->first()->id,
+                ]);
+                
+                $invoice->update(['item_status' => $status]);
+            }
         }
 
         // Create additional random invoices to reach 25 total
@@ -114,9 +137,10 @@ class InvoiceSeeder extends Seeder
                 'description' => $faker->sentence(),
                 'price' => $faker->randomFloat(2, 5000, 200000),
                 'product_images' => $faker->optional(0.7)->randomElements([
-                    $faker->imageUrl(400, 400, 'jewelry'),
-                    $faker->imageUrl(400, 400, 'jewelry'),
-                    $faker->imageUrl(400, 400, 'jewelry')
+                    'invoices/products/sample-jewelry-1.jpg',
+                    'invoices/products/sample-jewelry-2.jpg',
+                    'invoices/products/sample-jewelry-3.jpg',
+                    'invoices/products/sample-jewelry-4.jpg'
                 ], $faker->numberBetween(1, 3)),
                 'payment_term_id' => $faker->optional(0.8)->randomElement($paymentTerms)?->id,
                 'tax_id' => $faker->optional(0.6)->randomElement($taxes)?->id,
@@ -132,6 +156,27 @@ class InvoiceSeeder extends Seeder
             
             $invoice = Invoice::create($invoiceData);
             $invoice->calculateTotals()->save();
+            
+            // Generate payment schedules if payment terms exist
+            if ($invoice->payment_term_id) {
+                $invoice->generatePaymentSchedules();
+            }
+            
+            // Create item status for some invoices
+            if ($faker->boolean(60)) {
+                $statuses = ['pending', 'packed', 'for_delivery', 'delivered'];
+                $status = $faker->randomElement($statuses);
+                
+                \App\Models\InvoiceItemStatus::create([
+                    'invoice_id' => $invoice->id,
+                    'status' => $status,
+                    'status_date' => $faker->dateTimeBetween($invoice->created_at, 'now'),
+                    'notes' => $faker->optional(0.5)->sentence(),
+                    'updated_by' => User::inRandomOrder()->first()->id,
+                ]);
+                
+                $invoice->update(['item_status' => $status]);
+            }
         }
     }
 }

@@ -25,13 +25,48 @@ class PaymentController extends BaseController
         try {
             $data = $request->validated();
 
-            $payment = $this->service->store($data);
+            // Handle receipt image uploads
+            if ($request->hasFile('receipt_images')) {
+                $receiptImages = [];
+                foreach ($request->file('receipt_images') as $file) {
+                    $path = $file->store('receipts', 'public');
+                    $receiptImages[] = $path;
+                }
+                $data['receipt_images'] = $receiptImages; // Store all images as JSON array
+            }
+
+            // Handle update vs create
+            if (isset($data['payment_id'])) {
+                $payment = $this->service->update($data, $data['payment_id']);
+            } else {
+                $payment = $this->service->store($data);    
+            }
             
-            // Update invoice payment status
+            // Update invoice payment status (schedules will be marked as paid when payment is confirmed)
             $invoice = Invoice::find($data['invoice_id']);
             $invoice->updatePaymentStatus();
             
             return response($payment, 201);
+        } catch (\Exception $e) {
+            return $this->messageService->responseError();
+        }
+    }
+
+    public function show($id)
+    {
+        try {
+            $payment = Payment::with(['invoice', 'customer', 'paymentMethod', 'confirmedBy'])
+                ->findOrFail($id);
+            
+            // Load all payment schedules for this invoice
+            $allSchedules = $this->service->getAllPaymentSchedules($payment->invoice_id);
+            $payment->payment_schedules = $allSchedules;
+            
+            // Load paid schedules for this payment (for edit mode)
+            $paidSchedules = $this->service->getPaidSchedules($payment->invoice_id);
+            $payment->paid_schedules = $paidSchedules;
+            
+            return response($payment);
         } catch (\Exception $e) {
             return $this->messageService->responseError();
         }
@@ -55,7 +90,7 @@ class PaymentController extends BaseController
         }
     }
 
-    public function confirm(Int $id)
+    public function confirm(Request $request, Int $id)
     {
         try {
             $payment = Payment::findOrFail($id);
@@ -70,9 +105,32 @@ class PaymentController extends BaseController
                 'confirmed_by' => auth()->id()
             ]);
             
-            // Update invoice payment status
+            // Mark selected payment schedules as paid (now that payment is confirmed)
+            $selectedSchedules = $request->input('selected_schedules', []);
+            if (!empty($selectedSchedules)) {
+                $this->service->markSchedulesAsPaid($selectedSchedules, $payment->amount_paid);
+            }
+            
+            // Get the invoice and check if all payment schedules are paid
             $invoice = Invoice::find($payment->invoice_id);
-            $invoice->updatePaymentStatus();
+            
+            // Check if all payment schedules for this invoice are paid
+            $allSchedulesPaid = $invoice->paymentSchedules()
+                ->where('status', '!=', 'paid')
+                ->count() === 0;
+            
+            // If all schedules are paid, mark invoice as fully paid
+            if ($allSchedulesPaid) {
+                $invoice->update([
+                    'status' => 'paid',
+                    'payment_status' => 'fully_paid',
+                    'total_paid_amount' => $invoice->total_amount,
+                    'remaining_balance' => 0
+                ]);
+            } else {
+                // Otherwise, update payment status normally
+                $invoice->updatePaymentStatus();
+            }
             
             return response(['message' => 'Payment has been confirmed.'], 200);
         } catch (\Exception $e) {

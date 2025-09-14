@@ -19,7 +19,7 @@ class Payment extends Model
         'amount_paid',
         'expected_amount',
         'reference_number',
-        'receipt_image',
+        'receipt_images',
         'status',
         'rejection_reason',
         'payment_date',
@@ -33,6 +33,7 @@ class Payment extends Model
         'expected_amount' => 'decimal:2',
         'payment_date' => 'date',
         'confirmed_at' => 'datetime',
+        'receipt_images' => 'array',
     ];
 
     protected $appends = [
@@ -42,6 +43,7 @@ class Payment extends Model
         'customer_name',
         'payment_method_name',
         'confirmed_by_name',
+        'primary_receipt_image',
     ];
 
     /**
@@ -128,6 +130,17 @@ class Payment extends Model
     public function getConfirmedByNameAttribute(): ?string
     {
         return $this->confirmedBy?->full_name;
+    }
+
+    /**
+     * Get primary receipt image attribute (first image from receipt_images array).
+     */
+    public function getPrimaryReceiptImageAttribute(): ?string
+    {
+        if ($this->receipt_images && is_array($this->receipt_images) && count($this->receipt_images) > 0) {
+            return $this->receipt_images[0];
+        }
+        return null;
     }
 
     /**

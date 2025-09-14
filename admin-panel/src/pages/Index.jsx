@@ -40,7 +40,6 @@ const InvoiceForm = lazy(() => import('./invoice-management/InvoiceForm'));
 // Payment Management Components
 const Payments = lazy(() => import('./payment-management/Payments'));
 const PaymentForm = lazy(() => import('./payment-management/PaymentForm'));
-const PaymentSubmissions = lazy(() => import('./payment-management/PaymentSubmissions'));
 
 // Mapping paths to components
 const routeMap = {
@@ -89,8 +88,6 @@ const routeMap = {
   '/payment-management/payments/create': PaymentForm,
   '/payment-management/payments/:id': PaymentForm,
   '/payment-management/payments/:id/edit': PaymentForm,
-  '/payment-management/submissions': PaymentSubmissions,
-  '/payment-management/submissions/create': PaymentSubmissions,
 };
 
 const Index = () => {

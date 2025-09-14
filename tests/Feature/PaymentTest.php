@@ -145,7 +145,120 @@ class PaymentTest extends TestCase
             'invoice_id' => $invoice->id,
             'payment_type' => 'downpayment',
             'amount_paid' => 5000.00,
+            'reference_number' => 'PAY123456',
         ]);
+    }
+
+    public function test_it_requires_reference_number()
+    {
+        $invoice = $this->createInvoice();
+        $paymentMethod = PaymentMethod::first();
+
+        $paymentData = [
+            'invoice_id' => $invoice->id,
+            'customer_id' => $invoice->customer_id,
+            'payment_type' => 'downpayment',
+            'payment_method_id' => $paymentMethod->id,
+            'amount_paid' => 5000.00,
+            'expected_amount' => 5000.00,
+            // 'reference_number' => 'PAY123456', // Missing required field
+            'payment_date' => now()->toDateString(),
+            'status' => 'pending',
+            'notes' => 'Test payment',
+        ];
+
+        $response = $this->actingAs($this->user)->postJson('/api/payment-management/payments', $paymentData);
+
+        $response->assertStatus(422)
+                ->assertJsonValidationErrors(['reference_number']);
+    }
+
+    public function test_it_can_create_payment_with_receipt_images()
+    {
+        $invoice = $this->createInvoice();
+        $paymentMethod = PaymentMethod::first();
+
+        // Create fake receipt image files
+        $receiptImage1 = \Illuminate\Http\UploadedFile::fake()->image('receipt1.jpg');
+        $receiptImage2 = \Illuminate\Http\UploadedFile::fake()->image('receipt2.jpg');
+
+        $paymentData = [
+            'invoice_id' => $invoice->id,
+            'customer_id' => $invoice->customer_id,
+            'payment_type' => 'downpayment',
+            'payment_method_id' => $paymentMethod->id,
+            'amount_paid' => 5000.00,
+            'expected_amount' => 5000.00,
+            'reference_number' => 'PAY123456',
+            'payment_date' => now()->toDateString(),
+            'status' => 'pending',
+            'notes' => 'Test payment with receipt images',
+            'receipt_images' => [$receiptImage1, $receiptImage2],
+        ];
+
+        $response = $this->actingAs($this->user)->postJson('/api/payment-management/payments', $paymentData);
+
+        $response->assertStatus(201);
+
+        $this->assertDatabaseHas('payments', [
+            'invoice_id' => $invoice->id,
+            'reference_number' => 'PAY123456',
+        ]);
+
+        // Verify receipt images were stored
+        $payment = Payment::where('reference_number', 'PAY123456')->first();
+        $this->assertNotNull($payment->receipt_images);
+        $this->assertIsArray($payment->receipt_images);
+        $this->assertCount(2, $payment->receipt_images);
+    }
+
+    public function test_it_can_create_payment_with_selected_schedules()
+    {
+        $invoice = $this->createInvoice();
+        $paymentMethod = PaymentMethod::first();
+
+        // Create payment schedules for the invoice
+        $schedule1 = \App\Models\InvoicePaymentSchedule::create([
+            'invoice_id' => $invoice->id,
+            'payment_type' => 'downpayment',
+            'due_date' => now()->addDays(30),
+            'expected_amount' => 2500.00,
+            'status' => 'pending',
+            'payment_order' => 1,
+        ]);
+
+        $schedule2 = \App\Models\InvoicePaymentSchedule::create([
+            'invoice_id' => $invoice->id,
+            'payment_type' => 'monthly',
+            'due_date' => now()->addDays(60),
+            'expected_amount' => 2500.00,
+            'status' => 'pending',
+            'payment_order' => 2,
+        ]);
+
+        $paymentData = [
+            'invoice_id' => $invoice->id,
+            'customer_id' => $invoice->customer_id,
+            'payment_type' => 'downpayment',
+            'payment_method_id' => $paymentMethod->id,
+            'amount_paid' => 5000.00,
+            'expected_amount' => 5000.00,
+            'reference_number' => 'PAY123456',
+            'payment_date' => now()->toDateString(),
+            'status' => 'pending',
+            'notes' => 'Test payment with selected schedules',
+            'selected_schedules' => [$schedule1->id, $schedule2->id],
+        ];
+
+        $response = $this->actingAs($this->user)->postJson('/api/payment-management/payments', $paymentData);
+
+        $response->assertStatus(201);
+
+        // Verify schedules were marked as paid
+        $schedule1->refresh();
+        $schedule2->refresh();
+        $this->assertEquals('paid', $schedule1->status);
+        $this->assertEquals('paid', $schedule2->status);
     }
 
     public function test_it_can_approve_a_payment()
@@ -254,5 +367,139 @@ class PaymentTest extends TestCase
             'invoice_id' => $invoice->id,
             'status' => 'packed',
         ]);
+    }
+
+    public function test_payment_model_has_primary_receipt_image_attribute()
+    {
+        $invoice = $this->createInvoice();
+        $paymentMethod = PaymentMethod::first();
+
+        $payment = Payment::create([
+            'invoice_id' => $invoice->id,
+            'customer_id' => $invoice->customer_id,
+            'payment_type' => 'downpayment',
+            'payment_method_id' => $paymentMethod->id,
+            'amount_paid' => 5000.00,
+            'expected_amount' => 5000.00,
+            'reference_number' => 'PAY123456',
+            'receipt_images' => ['receipts/receipt1.jpg', 'receipts/receipt2.jpg', 'receipts/receipt3.jpg'],
+            'status' => 'pending',
+            'payment_date' => now()->toDateString(),
+            'notes' => 'Test payment',
+        ]);
+
+        $this->assertEquals('receipts/receipt1.jpg', $payment->primary_receipt_image);
+    }
+
+    public function test_payment_model_handles_empty_receipt_images()
+    {
+        $invoice = $this->createInvoice();
+        $paymentMethod = PaymentMethod::first();
+
+        $payment = Payment::create([
+            'invoice_id' => $invoice->id,
+            'customer_id' => $invoice->customer_id,
+            'payment_type' => 'downpayment',
+            'payment_method_id' => $paymentMethod->id,
+            'amount_paid' => 5000.00,
+            'expected_amount' => 5000.00,
+            'reference_number' => 'PAY123456',
+            'receipt_images' => null,
+            'status' => 'pending',
+            'payment_date' => now()->toDateString(),
+            'notes' => 'Test payment',
+        ]);
+
+        $this->assertNull($payment->primary_receipt_image);
+    }
+
+    public function test_payment_model_casts_receipt_images_to_array()
+    {
+        $invoice = $this->createInvoice();
+        $paymentMethod = PaymentMethod::first();
+
+        $receiptImages = ['receipts/receipt1.jpg', 'receipts/receipt2.jpg'];
+
+        $payment = Payment::create([
+            'invoice_id' => $invoice->id,
+            'customer_id' => $invoice->customer_id,
+            'payment_type' => 'downpayment',
+            'payment_method_id' => $paymentMethod->id,
+            'amount_paid' => 5000.00,
+            'expected_amount' => 5000.00,
+            'reference_number' => 'PAY123456',
+            'receipt_images' => $receiptImages,
+            'status' => 'pending',
+            'payment_date' => now()->toDateString(),
+            'notes' => 'Test payment',
+        ]);
+
+        $this->assertIsArray($payment->receipt_images);
+        $this->assertEquals($receiptImages, $payment->receipt_images);
+    }
+
+    public function test_payment_service_can_mark_schedules_as_paid()
+    {
+        $invoice = $this->createInvoice();
+        
+        // Create payment schedules
+        $schedule1 = \App\Models\InvoicePaymentSchedule::create([
+            'invoice_id' => $invoice->id,
+            'payment_type' => 'downpayment',
+            'due_date' => now()->addDays(30),
+            'expected_amount' => 3000.00,
+            'status' => 'pending',
+            'payment_order' => 1,
+        ]);
+
+        $schedule2 = \App\Models\InvoicePaymentSchedule::create([
+            'invoice_id' => $invoice->id,
+            'payment_type' => 'monthly',
+            'due_date' => now()->addDays(60),
+            'expected_amount' => 2000.00,
+            'status' => 'pending',
+            'payment_order' => 2,
+        ]);
+
+        $paymentService = new \App\Services\PaymentService();
+        $paymentService->markSchedulesAsPaid([$schedule1->id, $schedule2->id], 5000.00);
+
+        $schedule1->refresh();
+        $schedule2->refresh();
+
+        $this->assertEquals('paid', $schedule1->status);
+        $this->assertEquals('paid', $schedule2->status);
+        $this->assertEquals(3000.00, $schedule1->paid_amount);
+        $this->assertEquals(2000.00, $schedule2->paid_amount);
+    }
+
+    public function test_payment_service_can_get_paid_schedules()
+    {
+        $invoice = $this->createInvoice();
+        
+        // Create payment schedules
+        $schedule1 = \App\Models\InvoicePaymentSchedule::create([
+            'invoice_id' => $invoice->id,
+            'payment_type' => 'downpayment',
+            'due_date' => now()->addDays(30),
+            'expected_amount' => 3000.00,
+            'status' => 'paid',
+            'payment_order' => 1,
+        ]);
+
+        $schedule2 = \App\Models\InvoicePaymentSchedule::create([
+            'invoice_id' => $invoice->id,
+            'payment_type' => 'monthly',
+            'due_date' => now()->addDays(60),
+            'expected_amount' => 2000.00,
+            'status' => 'pending',
+            'payment_order' => 2,
+        ]);
+
+        $paymentService = new \App\Services\PaymentService();
+        $paidSchedules = $paymentService->getPaidSchedules($invoice->id);
+
+        $this->assertCount(1, $paidSchedules);
+        $this->assertEquals($schedule1->id, $paidSchedules->first()->id);
     }
 }

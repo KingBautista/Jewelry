@@ -180,4 +180,14 @@ class InvoiceController extends BaseController
             return response()->json(['error' => 'Failed to fetch invoices for dropdown'], 500);
         }
     }
+
+    public function searchInvoices()
+    {
+        try {
+            $search = request('search');
+            return response()->json($this->service->searchInvoices($search));
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Failed to search invoices'], 500);
+        }
+    }
 }

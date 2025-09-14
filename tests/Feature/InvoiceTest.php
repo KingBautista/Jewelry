@@ -21,10 +21,50 @@ class InvoiceTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->seed();
         
         // Create a test user for authentication
         $this->user = User::factory()->create();
+        
+        // Create necessary seed data for tests
+        $this->createSeedData();
+    }
+    
+    protected function createSeedData(): void
+    {
+        // Create payment terms, taxes, fees, and discounts for tests
+        \App\Models\PaymentTerm::create([
+            'name' => 'Test Payment Term',
+            'code' => 'TEST',
+            'down_payment_percentage' => 20,
+            'remaining_percentage' => 80,
+            'term_months' => 6,
+            'description' => 'Test payment term',
+            'active' => true,
+        ]);
+        
+        \App\Models\Tax::create([
+            'name' => 'Test Tax',
+            'type' => 'percentage',
+            'rate' => 12.0,
+            'description' => 'Test tax',
+            'active' => true,
+        ]);
+        
+        \App\Models\Fee::create([
+            'name' => 'Test Fee',
+            'type' => 'fixed',
+            'amount' => 100.0,
+            'description' => 'Test fee',
+            'active' => true,
+        ]);
+        
+        \App\Models\Discount::create([
+            'name' => 'Test Discount',
+            'type' => 'percentage',
+            'amount' => 5.0,
+            'description' => 'Test discount',
+            'active' => true,
+        ]);
     }
 
     protected function createCustomerUser(array $overrides = []): User
@@ -75,7 +115,7 @@ class InvoiceTest extends TestCase
             'product_name' => $overrides['product_name'] ?? $this->faker->words(3, true),
             'description' => $overrides['description'] ?? $this->faker->sentence(),
             'price' => $overrides['price'] ?? $this->faker->randomFloat(2, 1000, 100000),
-            'product_image' => $overrides['product_image'] ?? null,
+            'product_images' => $overrides['product_images'] ?? null,
             'payment_term_id' => $paymentTerm?->id,
             'tax_id' => $tax?->id,
             'fee_id' => $fee?->id,
@@ -325,5 +365,268 @@ class InvoiceTest extends TestCase
         
         $this->assertCount(1, $responseData['data']);
         $this->assertEquals($customer1->id, $responseData['data'][0]['customer_id']);
+    }
+
+    public function test_it_can_create_invoice_with_product_images()
+    {
+        $customer = $this->createCustomerUser();
+        $paymentTerm = PaymentTerm::first();
+
+        // Create fake product image files
+        $productImage1 = \Illuminate\Http\UploadedFile::fake()->image('product1.jpg');
+        $productImage2 = \Illuminate\Http\UploadedFile::fake()->image('product2.jpg');
+
+        $invoiceData = [
+            'customer_id' => $customer->id,
+            'product_name' => 'Test Product with Images',
+            'description' => 'Test Description',
+            'price' => 10000.00,
+            'payment_term_id' => $paymentTerm->id,
+            'shipping_address' => 'Test Address',
+            'issue_date' => now()->toDateString(),
+            'due_date' => now()->addDays(30)->toDateString(),
+            'status' => 'draft',
+            'notes' => 'Test Notes',
+            'product_images' => [$productImage1, $productImage2],
+        ];
+
+        $response = $this->actingAs($this->user)->postJson('/api/invoice-management/invoices', $invoiceData);
+
+        $response->assertStatus(201);
+
+        $this->assertDatabaseHas('invoices', [
+            'product_name' => 'Test Product with Images',
+            'customer_id' => $customer->id,
+        ]);
+
+        // Verify product images were stored
+        $invoice = Invoice::where('product_name', 'Test Product with Images')->first();
+        $this->assertNotNull($invoice->product_images);
+        $this->assertIsArray($invoice->product_images);
+        $this->assertCount(2, $invoice->product_images);
+    }
+
+    public function test_it_can_generate_payment_schedules()
+    {
+        $customer = $this->createCustomerUser();
+        $paymentTerm = PaymentTerm::first();
+
+        $invoiceData = [
+            'customer_id' => $customer->id,
+            'product_name' => 'Test Product with Payment Terms',
+            'description' => 'Test Description',
+            'price' => 10000.00,
+            'payment_term_id' => $paymentTerm->id,
+            'shipping_address' => 'Test Address',
+            'issue_date' => now()->toDateString(),
+            'due_date' => now()->addDays(30)->toDateString(),
+            'status' => 'draft',
+            'notes' => 'Test Notes',
+        ];
+
+        $response = $this->actingAs($this->user)->postJson('/api/invoice-management/invoices', $invoiceData);
+
+        $response->assertStatus(201);
+
+        $invoice = Invoice::where('product_name', 'Test Product with Payment Terms')->first();
+        
+        // Verify payment schedules were generated
+        $schedules = $invoice->paymentSchedules;
+        $this->assertGreaterThan(0, $schedules->count());
+        
+        // Verify down payment schedule exists
+        $downPaymentSchedule = $schedules->where('payment_type', 'downpayment')->first();
+        $this->assertNotNull($downPaymentSchedule);
+        $this->assertEquals('pending', $downPaymentSchedule->status);
+    }
+
+    public function test_it_can_calculate_totals()
+    {
+        $customer = $this->createCustomerUser();
+        $tax = Tax::first();
+        $fee = Fee::first();
+        $discount = Discount::first();
+
+        $invoice = Invoice::create([
+            'invoice_number' => Invoice::generateInvoiceNumber(),
+            'customer_id' => $customer->id,
+            'product_name' => 'Test Product',
+            'description' => 'Test Description',
+            'price' => 10000.00,
+            'tax_id' => $tax->id,
+            'fee_id' => $fee->id,
+            'discount_id' => $discount->id,
+            'shipping_address' => 'Test Address',
+            'issue_date' => now()->toDateString(),
+            'due_date' => now()->addDays(30)->toDateString(),
+            'status' => 'draft',
+            'notes' => 'Test Notes',
+            'active' => true,
+        ]);
+
+        $invoice->calculateTotals()->save();
+
+        $this->assertEquals(10000.00, $invoice->subtotal);
+        $this->assertGreaterThan(0, $invoice->tax_amount);
+        $this->assertGreaterThan(0, $invoice->fee_amount);
+        $this->assertGreaterThan(0, $invoice->discount_amount);
+        $this->assertGreaterThan(0, $invoice->total_amount);
+    }
+
+    public function test_it_can_update_payment_status()
+    {
+        $invoice = $this->createInvoice();
+        
+        // Create some payments
+        \App\Models\Payment::create([
+            'invoice_id' => $invoice->id,
+            'customer_id' => $invoice->customer_id,
+            'payment_type' => 'downpayment',
+            'amount_paid' => 5000.00,
+            'expected_amount' => 5000.00,
+            'reference_number' => 'PAY123456',
+            'status' => 'confirmed',
+            'payment_date' => now()->toDateString(),
+            'notes' => 'Test payment',
+        ]);
+
+        $invoice->updatePaymentStatus();
+
+        $this->assertEquals('partially_paid', $invoice->payment_status);
+        $this->assertEquals(5000.00, $invoice->total_paid_amount);
+        $this->assertGreaterThan(0, $invoice->remaining_balance);
+    }
+
+    public function test_it_can_get_invoices_for_dropdown()
+    {
+        $this->createInvoice(['product_name' => 'Test Product 1']);
+        $this->createInvoice(['product_name' => 'Test Product 2']);
+
+        $response = $this->actingAs($this->user)->getJson('/api/invoice-management/invoices/dropdown');
+
+        $response->assertStatus(200)
+                ->assertJsonStructure([
+                    '*' => [
+                        'id',
+                        'invoice_number',
+                        'product_name',
+                        'total_amount',
+                    ]
+                ]);
+    }
+
+    public function test_it_can_search_invoices_with_details()
+    {
+        $invoice = $this->createInvoice(['product_name' => 'Diamond Ring']);
+
+        $response = $this->actingAs($this->user)->getJson('/api/invoice-management/invoices/search?search=Diamond');
+
+        $response->assertStatus(200)
+                ->assertJsonStructure([
+                    '*' => [
+                        'id',
+                        'invoice_number',
+                        'product_name',
+                        'total_amount',
+                        'customer',
+                        'payment_term',
+                        'payment_schedules',
+                        'payment_status',
+                        'remaining_balance',
+                        'total_paid_amount',
+                    ]
+                ]);
+    }
+
+    public function test_invoice_model_has_formatted_attributes()
+    {
+        $invoice = $this->createInvoice(['price' => 10000.00]);
+
+        $this->assertStringContains('₱', $invoice->formatted_price);
+        $this->assertStringContains('₱', $invoice->formatted_total_amount);
+        $this->assertStringContains('₱', $invoice->formatted_subtotal);
+    }
+
+    public function test_invoice_model_casts_product_images_to_array()
+    {
+        $productImages = ['image1.jpg', 'image2.jpg'];
+
+        $invoice = Invoice::create([
+            'invoice_number' => Invoice::generateInvoiceNumber(),
+            'customer_id' => $this->createCustomerUser()->id,
+            'product_name' => 'Test Product',
+            'description' => 'Test Description',
+            'price' => 10000.00,
+            'product_images' => $productImages,
+            'shipping_address' => 'Test Address',
+            'issue_date' => now()->toDateString(),
+            'due_date' => now()->addDays(30)->toDateString(),
+            'status' => 'draft',
+            'notes' => 'Test Notes',
+            'active' => true,
+        ]);
+
+        $this->assertIsArray($invoice->product_images);
+        $this->assertEquals($productImages, $invoice->product_images);
+    }
+
+    public function test_invoice_payment_schedule_model()
+    {
+        $invoice = $this->createInvoice();
+        
+        $schedule = \App\Models\InvoicePaymentSchedule::create([
+            'invoice_id' => $invoice->id,
+            'payment_type' => 'downpayment',
+            'due_date' => now()->addDays(30),
+            'expected_amount' => 5000.00,
+            'status' => 'pending',
+            'payment_order' => 1,
+        ]);
+
+        $this->assertStringContains('₱', $schedule->formatted_expected_amount);
+        $this->assertStringContains('₱', $schedule->formatted_paid_amount);
+        $this->assertStringContains('₱', $schedule->formatted_remaining_amount);
+        $this->assertEquals('Pending', $schedule->status_text);
+        $this->assertFalse($schedule->is_overdue);
+    }
+
+    public function test_invoice_payment_schedule_can_update_payment()
+    {
+        $invoice = $this->createInvoice();
+        
+        $schedule = \App\Models\InvoicePaymentSchedule::create([
+            'invoice_id' => $invoice->id,
+            'payment_type' => 'downpayment',
+            'due_date' => now()->addDays(30),
+            'expected_amount' => 5000.00,
+            'status' => 'pending',
+            'payment_order' => 1,
+        ]);
+
+        $schedule->updatePayment(3000.00);
+
+        $this->assertEquals(3000.00, $schedule->paid_amount);
+        $this->assertEquals('partial', $schedule->status);
+
+        $schedule->updatePayment(2000.00);
+
+        $this->assertEquals(5000.00, $schedule->paid_amount);
+        $this->assertEquals('paid', $schedule->status);
+    }
+
+    public function test_invoice_item_status_model()
+    {
+        $invoice = $this->createInvoice();
+        
+        $itemStatus = \App\Models\InvoiceItemStatus::create([
+            'invoice_id' => $invoice->id,
+            'status' => 'packed',
+            'status_date' => now()->toDateString(),
+            'notes' => 'Item has been packed',
+            'updated_by' => $this->user->id,
+        ]);
+
+        $this->assertEquals('Packed', $itemStatus->status_text);
+        $this->assertNotNull($itemStatus->updated_by_name);
     }
 }

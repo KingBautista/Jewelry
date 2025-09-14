@@ -44,7 +44,11 @@ class PaymentSeeder extends Seeder
                     'amount_paid' => $amountPaid,
                     'expected_amount' => $faker->randomFloat(2, $amountPaid, $amountPaid * 1.2),
                     'reference_number' => 'PAY' . $faker->unique()->numerify('######'),
-                    'receipt_image' => $faker->optional(0.7)->imageUrl(400, 400, 'receipt'),
+                    'receipt_images' => $faker->optional(0.7)->randomElements([
+                        'receipts/sample_receipt_1.jpg',
+                        'receipts/sample_receipt_2.jpg',
+                        'receipts/sample_receipt_3.jpg'
+                    ], $faker->numberBetween(1, 3)),
                     'status' => $status,
                     'rejection_reason' => $status === 'rejected' ? $faker->sentence() : null,
                     'payment_date' => $faker->dateTimeBetween($invoice->created_at, 'now'),

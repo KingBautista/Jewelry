@@ -19,8 +19,8 @@ return new class extends Migration
             $table->foreignId('payment_method_id')->nullable()->constrained('payment_methods')->onDelete('set null');
             $table->decimal('amount_paid', 10, 2);
             $table->decimal('expected_amount', 10, 2)->nullable();
-            $table->string('reference_number')->nullable();
-            $table->string('receipt_image')->nullable();
+            $table->string('reference_number');
+            $table->json('receipt_images')->nullable();
             $table->enum('status', ['pending', 'approved', 'rejected', 'confirmed'])->default('pending');
             $table->text('rejection_reason')->nullable();
             $table->date('payment_date');

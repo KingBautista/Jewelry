@@ -50,7 +50,7 @@ class PaymentService extends BaseService
                 return $query->orderBy(request('order'), request('sort'));
             })
             ->when(!request('order'), function ($query) {
-                return $query->orderBy('id', 'desc');
+                return $query->orderBy('updated_at', 'desc');
             })
             ->paginate($perPage)->withQueryString()
         )->additional(['meta' => ['all' => $allPayments, 'trashed' => $trashedPayments]]);
@@ -196,5 +196,51 @@ class PaymentService extends BaseService
         }
 
         return response()->json(['error' => 'Unsupported export format'], 400);
+    }
+
+    /**
+     * Mark selected payment schedules as paid
+     */
+    public function markSchedulesAsPaid($scheduleIds, $amountPaid)
+    {
+        $schedules = InvoicePaymentSchedule::whereIn('id', $scheduleIds)->get();
+        
+        foreach ($schedules as $schedule) {
+            // Calculate the amount to allocate to this schedule
+            $scheduleAmount = min($amountPaid, $schedule->expected_amount - $schedule->paid_amount);
+            
+            if ($scheduleAmount > 0) {
+                $schedule->updatePayment($scheduleAmount);
+                $amountPaid -= $scheduleAmount;
+            }
+            
+            // If no more amount to allocate, break
+            if ($amountPaid <= 0) {
+                break;
+            }
+        }
+        
+        return $schedules;
+    }
+
+    /**
+     * Get payment schedules that are already paid (for edit mode)
+     */
+    public function getPaidSchedules($invoiceId)
+    {
+        return InvoicePaymentSchedule::where('invoice_id', $invoiceId)
+            ->where('status', 'paid')
+            ->orderBy('payment_order')
+            ->get();
+    }
+
+    /**
+     * Get all payment schedules for an invoice (for display purposes)
+     */
+    public function getAllPaymentSchedules($invoiceId)
+    {
+        return InvoicePaymentSchedule::where('invoice_id', $invoiceId)
+            ->orderBy('payment_order')
+            ->get();
     }
 }

@@ -48,7 +48,7 @@ class InvoiceService extends BaseService
                 return $query->orderBy(request('order'), request('sort'));
             })
             ->when(!request('order'), function ($query) {
-                return $query->orderBy('id', 'desc');
+                return $query->orderBy('updated_at', 'desc');
             })
             ->paginate($perPage)->withQueryString()
         )->additional(['meta' => ['all' => $allInvoices, 'trashed' => $trashedInvoices]]);
@@ -108,6 +108,56 @@ class InvoiceService extends BaseService
             })
             ->sortBy('invoice_number')
             ->values();
+    }
+
+    /**
+     * Search invoices with detailed information
+     */
+    public function searchInvoices($search)
+    {
+        return Invoice::active()
+            ->with(['customer', 'paymentTerm', 'paymentSchedules'])
+            ->when($search, function ($query) use ($search) {
+                return $query->search($search);
+            })
+            ->limit(20)
+            ->get()
+            ->map(function($invoice) {
+                return [
+                    'id' => $invoice->id,
+                    'invoice_number' => $invoice->invoice_number,
+                    'product_name' => $invoice->product_name,
+                    'total_amount' => $invoice->formatted_total_amount,
+                    'customer' => $invoice->customer ? [
+                        'id' => $invoice->customer->id,
+                        'name' => $invoice->customer->full_name,
+                        'email' => $invoice->customer->user_email,
+                        'phone' => $invoice->customer->formatted_phone,
+                        'address' => $invoice->customer->formatted_address,
+                    ] : null,
+                    'payment_term' => $invoice->paymentTerm ? [
+                        'id' => $invoice->paymentTerm->id,
+                        'name' => $invoice->paymentTerm->name,
+                        'code' => $invoice->paymentTerm->code,
+                        'down_payment_percentage' => $invoice->paymentTerm->down_payment_percentage,
+                        'remaining_percentage' => $invoice->paymentTerm->remaining_percentage,
+                        'term_months' => $invoice->paymentTerm->term_months,
+                    ] : null,
+                    'payment_schedules' => $invoice->paymentSchedules->map(function($schedule) {
+                        return [
+                            'id' => $schedule->id,
+                            'payment_type' => $schedule->payment_type,
+                            'due_date' => $schedule->due_date,
+                            'expected_amount' => $schedule->expected_amount,
+                            'status' => $schedule->status,
+                            'payment_order' => $schedule->payment_order,
+                        ];
+                    }),
+                    'payment_status' => $invoice->payment_status,
+                    'remaining_balance' => $invoice->formatted_remaining_balance,
+                    'total_paid_amount' => $invoice->formatted_total_paid_amount,
+                ];
+            });
     }
 
     /**
