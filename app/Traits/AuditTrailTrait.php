@@ -68,7 +68,7 @@ trait AuditTrailTrait
     protected static function getAuditModuleName()
     {
         $className = class_basename(static::class);
-        return str_replace('_', ' ', snake_case($className));
+        return str_replace('_', ' ', \Str::snake($className));
     }
 
     /**
