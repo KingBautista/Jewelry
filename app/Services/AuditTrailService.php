@@ -1,0 +1,278 @@
+<?php
+
+namespace App\Services;
+
+use App\Models\AuditTrail;
+use App\Http\Resources\AuditTrailResource;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
+
+class AuditTrailService extends BaseService
+{
+    public function __construct()
+    {
+        // Pass the AuditTrailResource class to the parent constructor
+        parent::__construct(new AuditTrailResource(new AuditTrail), new AuditTrail());
+    }
+
+    /**
+     * Display a listing of audit trails with filters.
+     */
+    public function list($perPage = 10, $trash = false)
+    {
+        $perPage = request('per_page') ?? $perPage; // Default to 10 if not provided
+        $allAuditTrails = $this->getTotalCount();
+        $trashedAuditTrails = 0; // AuditTrail doesn't use soft deletes
+        $query = $this->buildAuditQuery();
+        
+        // AuditTrail doesn't use soft deletes, so we ignore the trash parameter
+        
+        if (request('order')) {
+            $query->orderBy(request('order'), request('sort'));
+        } else {
+            $query->orderBy('audit_trails.id', 'desc');
+        }
+        
+        return AuditTrailResource::collection(
+            $query->paginate($perPage)->withQueryString()
+        )->additional(['meta' => ['all' => $allAuditTrails, 'trashed' => $trashedAuditTrails]]);
+    }
+
+    /**
+     * Build the audit query with filters.
+     */
+    private function buildAuditQuery()
+    {
+        $query = AuditTrail::select([
+                'audit_trails.*',
+                'users.user_email as user_email',
+                'user_meta_first_name.meta_value as first_name',
+                'user_meta_last_name.meta_value as last_name'
+            ])
+            ->leftJoin('users', 'audit_trails.user_id', '=', 'users.id')
+            ->leftJoin('user_meta as user_meta_first_name', function($join) {
+                $join->on('users.id', '=', 'user_meta_first_name.user_id')
+                     ->where('user_meta_first_name.meta_key', '=', 'first_name');
+            })
+            ->leftJoin('user_meta as user_meta_last_name', function($join) {
+                $join->on('users.id', '=', 'user_meta_last_name.user_id')
+                     ->where('user_meta_last_name.meta_key', '=', 'last_name');
+            });
+
+        // Apply filters
+        if (request('module')) {
+            $query->where('audit_trails.module', request('module'));
+        }
+
+        if (request('action')) {
+            $query->where('audit_trails.action', request('action'));
+        }
+
+        if (request('user_id')) {
+            $query->where('audit_trails.user_id', request('user_id'));
+        }
+
+        if (request('start_date')) {
+            $query->whereDate('audit_trails.created_at', '>=', request('start_date'));
+        }
+
+        if (request('end_date')) {
+            $query->whereDate('audit_trails.created_at', '<=', request('end_date'));
+        }
+
+        // Apply search
+        if (request('search')) {
+            $search = request('search');
+            $query->where(function($q) use ($search) {
+                $q->where('audit_trails.description', 'like', "%{$search}%")
+                  ->orWhere('audit_trails.module', 'like', "%{$search}%")
+                  ->orWhere('audit_trails.action', 'like', "%{$search}%")
+                  ->orWhere('audit_trails.user_name', 'like', "%{$search}%")
+                  ->orWhere('users.user_email', 'like', "%{$search}%")
+                  ->orWhere('user_meta_first_name.meta_value', 'like', "%{$search}%")
+                  ->orWhere('user_meta_last_name.meta_value', 'like', "%{$search}%");
+            });
+        }
+
+        return $query;
+    }
+
+    /**
+     * Log audit trail entry.
+     */
+    public function log($module, $action, $description, $oldValue = null, $newValue = null)
+    {
+        try {
+            $audit = AuditTrail::create([
+                'user_id' => Auth::id(),
+                'user_name' => Auth::user()?->user_email ?? 'System',
+                'module' => $module,
+                'action' => $action,
+                'description' => $description,
+                'old_values' => $oldValue,
+                'new_values' => $newValue,
+                'ip_address' => request()->ip(),
+                'user_agent' => request()->userAgent()
+            ]);
+
+            // Also log to file
+            $logMessage = sprintf(
+                "[%s] User %s performed %s in %s: %s",
+                now()->format('Y-m-d H:i:s'),
+                Auth::user()?->user_email ?? 'Unknown',
+                $action,
+                $module,
+                $description
+            );
+
+            Log::channel('audit')->info($logMessage, [
+                'old_value' => $oldValue,
+                'new_value' => $newValue,
+                'ip' => request()->ip()
+            ]);
+
+            return $audit;
+        } catch (\Exception $e) {
+            Log::error('Failed to create audit log: ' . $e->getMessage());
+            return null;
+        }
+    }
+
+    /**
+     * Get audit trail statistics.
+     */
+    public function getStatistics(array $filters = [])
+    {
+        $query = $this->buildAuditQuery();
+
+        $stats = [
+            'total_actions' => $query->count(),
+            'actions_by_module' => $query->selectRaw('audit_trails.module, COUNT(*) as count')
+                ->groupBy('audit_trails.module')
+                ->get(),
+            'actions_by_type' => $query->selectRaw('audit_trails.action, COUNT(*) as count')
+                ->groupBy('audit_trails.action')
+                ->get(),
+            'actions_by_user' => $query->selectRaw('audit_trails.user_name, COUNT(*) as count')
+                ->groupBy('audit_trails.user_name')
+                ->get(),
+            'actions_by_date' => $query->selectRaw('DATE(audit_trails.created_at) as date, COUNT(*) as count')
+                ->groupBy('date')
+                ->orderBy('date', 'desc')
+                ->get(),
+        ];
+
+        return $stats;
+    }
+
+    /**
+     * Get available modules.
+     */
+    public function getModules()
+    {
+        return AuditTrail::getModules();
+    }
+
+    /**
+     * Get available actions.
+     */
+    public function getActions()
+    {
+        return AuditTrail::getActions();
+    }
+
+    /**
+     * Export audit trail data.
+     */
+    public function exportAuditTrail($filters = [], $format = 'csv')
+    {
+        $query = $this->buildAuditQuery();
+
+        if ($format === 'csv') {
+            $auditTrails = $query->get();
+            return $this->generateCsv($auditTrails);
+        }
+
+        if ($format === 'pdf') {
+            // For PDF, limit to 100 records to prevent memory issues
+            $auditTrails = $query->limit(100)->get();
+            return $this->generatePdf($auditTrails, $filters);
+        }
+
+        return null;
+    }
+
+    /**
+     * Export to CSV.
+     */
+    private function generateCsv($auditTrails)
+    {
+        $headers = [
+            'Content-Type' => 'text/csv',
+            'Content-Disposition' => 'attachment; filename=audit-trail-' . now()->format('Y-m-d-H-i-s') . '.csv',
+        ];
+
+        $handle = fopen('php://temp', 'w');
+        
+        // Add headers
+        fputcsv($handle, [
+            'Date/Time',
+            'User',
+            'Module',
+            'Action',
+            'Description',
+            'IP Address',
+            'User Agent'
+        ]);
+
+        // Add data
+        foreach ($auditTrails as $auditTrail) {
+            // Build full name from first and last name
+            $firstName = $auditTrail->first_name ?? '';
+            $lastName = $auditTrail->last_name ?? '';
+            $fullName = trim($firstName . ' ' . $lastName);
+            $userName = $fullName ?: ($auditTrail->user_name ?? 'Unknown');
+            
+            fputcsv($handle, [
+                $auditTrail->created_at,
+                $userName,
+                $auditTrail->module,
+                $auditTrail->action,
+                $auditTrail->description,
+                $auditTrail->ip_address,
+                $auditTrail->user_agent
+            ]);
+        }
+
+        rewind($handle);
+        $csv = stream_get_contents($handle);
+        fclose($handle);
+
+        return response($csv, 200, $headers);
+    }
+
+    /**
+     * Export to PDF.
+     */
+    private function generatePdf($auditTrails, $filters)
+    {
+        // Set memory limit for PDF generation
+        ini_set('memory_limit', '256M');
+        
+        $pdf = \PDF::loadView('exports.audit-trail', [
+            'auditTrails' => $auditTrails,
+            'filters' => $filters,
+            'generated_at' => now()->format('Y-m-d H:i:s')
+        ]);
+        
+        // Set PDF options for better performance
+        $pdf->setOptions([
+            'isHtml5ParserEnabled' => true,
+            'isRemoteEnabled' => false,
+            'isPhpEnabled' => false,
+            'defaultFont' => 'Arial'
+        ]);
+        
+        return $pdf->download('audit-trail-' . now()->format('Y-m-d-H-i-s') . '.pdf');
+    }
+}

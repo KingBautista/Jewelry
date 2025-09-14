@@ -9,10 +9,11 @@ use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Models\UserMeta;
+use App\Traits\AuditTrailTrait;
 
 class User extends Authenticatable
 {
-	use HasApiTokens, HasFactory, Notifiable, SoftDeletes;
+	use HasApiTokens, HasFactory, Notifiable, SoftDeletes, AuditTrailTrait;
 
 	/**
 	 * The attributes that are mass assignable.

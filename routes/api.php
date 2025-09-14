@@ -16,6 +16,7 @@ use App\Http\Controllers\Api\PaymentMethodController;
 use App\Http\Controllers\Api\CustomerController;
 use App\Http\Controllers\Api\InvoiceController;
 use App\Http\Controllers\Api\PaymentController;
+use App\Http\Controllers\Api\AuditTrailController;
 
 /*
 |--------------------------------------------------------------------------
@@ -151,6 +152,16 @@ Route::middleware('auth:sanctum')->group(function () {
 			Route::get('/', [NavigationController::class, 'getTrashed']);
 			Route::patch('/restore/{id}', [NavigationController::class, 'restore']);
 			Route::delete('/{id}', [NavigationController::class, 'forceDelete']);
+		});
+		
+		// Audit Trail Routes
+		Route::prefix('audit-trail')->group(function () {
+			Route::get('/', [AuditTrailController::class, 'index']);
+			Route::get('/stats', [AuditTrailController::class, 'stats']);
+			Route::get('/modules', [AuditTrailController::class, 'modules']);
+			Route::get('/actions', [AuditTrailController::class, 'actions']);
+			Route::post('/export', [AuditTrailController::class, 'export']);
+			Route::get('/{id}', [AuditTrailController::class, 'show']);
 		});
 	});
 
