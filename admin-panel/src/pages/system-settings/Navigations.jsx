@@ -140,7 +140,7 @@ export default function Navigations() {
           </h4>
         </div>
 
-        <div className="card-header pb-0 pt-0 border-0">
+        <div className="px-4" style={{ paddingTop: '0.50rem' }}>
           <div className="row">
                                       <div className="col-md-7 col-12">
                <div className="d-flex align-items-center gap-2">

@@ -109,102 +109,102 @@
   background-color: var(--cui-body-bg) !important;
 }
 
-/* Dark theme specific overrides */
+/* Dark theme specific overrides - Champagne Elegance */
 [data-coreui-theme="dark"] .tinymce-container {
-  --editor-bg: var(--cui-dark-bg);
-  --editor-color: var(--cui-dark-color);
-  --editor-border: var(--cui-dark-border-color);
-  --editor-hover: var(--cui-dark-sidebar-nav-link-hover-bg);
-  --editor-active: var(--cui-dark-sidebar-nav-link-hover-bg);
+  --editor-bg: #2C2C2C;
+  --editor-color: #F7E7CE;
+  --editor-border: #3A3A3A;
+  --editor-hover: #3A3A3A;
+  --editor-active: #3A3A3A;
 }
 
 [data-coreui-theme="dark"] .tox-toolbar,
 [data-coreui-theme="dark"] .tox-toolbar__primary,
 [data-coreui-theme="dark"] .tox-toolbar__overflow,
 [data-coreui-theme="dark"] .tox-toolbar__group {
-  background-color: var(--cui-dark-bg) !important;
-  border-color: var(--cui-dark-border-color) !important;
+  background-color: #2C2C2C !important;
+  border-color: #3A3A3A !important;
 }
 
 [data-coreui-theme="dark"] .tox-tbtn {
-  color: #fff !important;
+  color: #F7E7CE !important;
 }
 
 [data-coreui-theme="dark"] .tox-tbtn:hover {
-  background-color: var(--cui-dark-sidebar-nav-link-hover-bg) !important;
+  background-color: #3A3A3A !important;
 }
 
 [data-coreui-theme="dark"] .tox-tbtn--enabled {
-  background-color: var(--cui-dark-sidebar-nav-link-hover-bg) !important;
+  background-color: #3A3A3A !important;
 }
 
 [data-coreui-theme="dark"] .tox-tbtn--enabled:hover {
-  background-color: var(--cui-dark-sidebar-nav-link-hover-bg) !important;
+  background-color: #3A3A3A !important;
 }
 
 [data-coreui-theme="dark"] .tox-dialog,
 [data-coreui-theme="dark"] .tox-dialog__header,
 [data-coreui-theme="dark"] .tox-dialog__body,
 [data-coreui-theme="dark"] .tox-dialog__footer {
-  background-color: var(--cui-dark-bg) !important;
-  border-color: var(--cui-dark-border-color) !important;
-  color: #fff !important;
+  background-color: #2C2C2C !important;
+  border-color: #3A3A3A !important;
+  color: #F7E7CE !important;
 }
 
 [data-coreui-theme="dark"] .tox-dialog input,
 [data-coreui-theme="dark"] .tox-dialog select,
 [data-coreui-theme="dark"] .tox-dialog textarea {
-  background-color: var(--cui-dark-bg) !important;
-  color: #fff !important;
-  border-color: var(--cui-dark-border-color) !important;
+  background-color: #F7E7CE !important;
+  color: #2C2C2C !important;
+  border-color: #E6D3B7 !important;
 }
 
 [data-coreui-theme="dark"] .tox-menu,
 [data-coreui-theme="dark"] .tox-collection__item,
 [data-coreui-theme="dark"] .tox-selected-menu {
-  background-color: var(--cui-dark-bg) !important;
-  border-color: var(--cui-dark-border-color) !important;
-  color: #fff !important;
+  background-color: #2C2C2C !important;
+  border-color: #3A3A3A !important;
+  color: #F7E7CE !important;
 }
 
 [data-coreui-theme="dark"] .tox-collection__item:hover,
 [data-coreui-theme="dark"] .tox-collection__item--active {
-  background-color: var(--cui-dark-sidebar-nav-link-hover-bg) !important;
+  background-color: #3A3A3A !important;
 }
 
 [data-coreui-theme="dark"] .tox-edit-area {
-  background-color: #1e1e2d !important;
+  background-color: #2C2C2C !important;
 }
 
 [data-coreui-theme="dark"] .tox-edit-area__iframe {
-  background-color: #1e1e2d !important;
+  background-color: #2C2C2C !important;
 }
 
 [data-coreui-theme="dark"] .tox-edit-area__iframe body {
-  background-color: #1e1e2d !important;
-  color: #fff !important;
+  background-color: #2C2C2C !important;
+  color: #F7E7CE !important;
 }
 
 [data-coreui-theme="dark"] .tox-edit-area__iframe html {
-  background-color: #1e1e2d !important;
+  background-color: #2C2C2C !important;
 }
 
 [data-coreui-theme="dark"] .tox-edit-area__iframe #tinymce {
-  background-color: #1e1e2d !important;
-  color: #fff !important;
+  background-color: #2C2C2C !important;
+  color: #F7E7CE !important;
 }
 
 [data-coreui-theme="dark"] .tox-edit-area__iframe p,
 [data-coreui-theme="dark"] .tox-edit-area__iframe div,
 [data-coreui-theme="dark"] .tox-edit-area__iframe span {
-  color: #fff !important;
-  background-color: var(--cui-dark-bg) !important;
+  color: #F7E7CE !important;
+  background-color: #2C2C2C !important;
 }
 
 [data-coreui-theme="dark"] .tox-fullscreen,
 [data-coreui-theme="dark"] .tox-preview {
-  background-color: var(--cui-dark-bg) !important;
-  color: #fff !important;
+  background-color: #2C2C2C !important;
+  color: #F7E7CE !important;
 }
 
 /* Editor icons */
@@ -213,7 +213,7 @@
 }
 
 [data-coreui-theme="dark"] .tox-tbtn svg {
-  fill: #fff !important;
+  fill: #F7E7CE !important;
 }
 
 /* Editor toolbar icons */
@@ -222,19 +222,19 @@
 }
 
 [data-coreui-theme="dark"] .tox-tbtn__icon {
-  color: #fff !important;
+  color: #F7E7CE !important;
 }
 
 /* Override any inline styles that might be causing the white background */
 [data-coreui-theme="dark"] .tox-edit-area__iframe [style*="background-color: white"],
 [data-coreui-theme="dark"] .tox-edit-area__iframe [style*="background-color: #fff"],
 [data-coreui-theme="dark"] .tox-edit-area__iframe [style*="background-color: #ffffff"] {
-  background-color: #1e1e2d !important;
+  background-color: #2C2C2C !important;
 }
 
 /* Ensure all editor content has the correct background */
 [data-coreui-theme="dark"] .tox-edit-area__iframe * {
-  background-color: var(--cui-dark-bg) !important;
+  background-color: #2C2C2C !important;
 }
 
 /* Dropdown menus */

@@ -48,7 +48,7 @@ export default function DefaultLayout() {
       <div className="main-content">
         <Header />
         <div className="content-area">
-          <div className="content-container">
+          <div className="content-container mt-3">
             <Outlet />
           </div>
         </div>

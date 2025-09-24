@@ -758,30 +758,20 @@ svg, img, .icon, [class*="icon"], [class*="Icon"] {
   font-variant-ligatures: none !important;
 }
 
-/* Dark Theme Variables - Champagne Elegance */
+/* Dark Theme Variables */
 [data-coreui-theme="dark"] {
-  /* Champagne Elegance Color Palette */
-  --champagne-deep-charcoal: #2C2C2C;
-  --champagne-gold: #F7E7CE;
-  --champagne-cream: #FAF9F6;
-  --champagne-charcoal-light: #3A3A3A;
-  --champagne-charcoal-dark: #1A1A1A;
-  --champagne-gold-light: #FDF5E6;
-  --champagne-gold-dark: #E6D3B7;
-  
-  /* Updated theme variables using Champagne colors */
-  --primary-color: #F7E7CE;
-  --secondary-color: #E6D3B7;
-  --accent-color: #F7E7CE;
-  --surface-color: #2C2C2C;
-  --surface-color-secondary: #3A3A3A;
-  --text-color: #F7E7CE;
-  --text-color-secondary: #FDF5E6;
-  --text-color-muted: #E6D3B7;
+  --primary-color: #10b981;
+  --secondary-color: #9ca3af;
+  --accent-color: #38bdf8;
+  --surface-color: #1f2937;
+  --surface-color-secondary: #374151;
+  --text-color: #f9fafb;
+  --text-color-secondary: #d1d5db;
+  --text-color-muted: #9ca3af;
   --success-color: #34d399;
   --warning-color: #fbbf24;
   --error-color: #f87171;
-  --border-color: #3A3A3A;
+  --border-color: #4b5563;
   --shadow-color: rgba(0, 0, 0, 0.3);
 }
 
@@ -1296,10 +1286,10 @@ hr {
   color: var(--primary-color);
 }
 
-/* Modern Sidebar Styling - Champagne Elegance */
+/* Modern Sidebar Styling */
 .sidebar-modern {
-  background: #F7E7CE;
-  border-right: 1px solid #E6D3B7;
+  background: var(--surface-color-secondary);
+  border-right: 1px solid var(--border-color);
   width: 280px;
   height: 100vh;
   position: fixed;
@@ -1668,15 +1658,15 @@ hr {
   color: white !important;
 }
 
-/* Dark Theme Adjustments - Champagne Elegance */
+/* Dark Theme Adjustments */
 [data-theme="dark"] .sidebar-modern {
-  background: #F7E7CE !important;
-  border-right-color: #E6D3B7 !important;
+  background: #1f2937 !important;
+  border-right-color: #374151 !important;
 }
 
 [data-theme="dark"] .sidebar-header {
-  background: #F7E7CE !important;
-  border-bottom-color: #E6D3B7 !important;
+  background: #1f2937 !important;
+  border-bottom-color: #374151 !important;
 }
 
 [data-theme="dark"] .brand-logo {
@@ -2828,11 +2818,11 @@ hr {
   opacity: 0.7;
 }
 
-/* Main Layout Structure - Champagne Elegance */
+/* Main Layout Structure */
 .main-wrapper {
   display: flex;
   height: 100vh;
-  background: #FAF9F6;
+  background: var(--surface-color);
   overflow: hidden;
 }
 
@@ -2843,13 +2833,12 @@ hr {
   flex-direction: column;
   height: 100vh;
   overflow: hidden;
-  background: #FAF9F6;
 }
 
 .content-area {
   flex: 1;
   padding: 0 0 1.5rem 0;
-  background: #FAF9F6;
+  background: var(--surface-color);
   overflow-y: auto;
   overflow-x: hidden;
 }
@@ -3300,174 +3289,174 @@ hr {
   transition: color 0.3s ease, background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease;
 }
 
-/* ===== DARK THEME ENHANCEMENTS - CHAMPAGNE ELEGANCE ===== */
+/* ===== DARK THEME ENHANCEMENTS ===== */
 [data-coreui-theme="dark"] {
-  /* Core UI Dark Theme Variables - Champagne Elegance */
-  --cui-body-bg: #2C2C2C;
-  --cui-body-color: #F7E7CE;
-  --cui-heading-color: #F7E7CE;
-  --cui-link-color: #F7E7CE;
-  --cui-link-hover-color: #FDF5E6;
+  /* Core UI Dark Theme Variables */
+  --cui-body-bg: #1e1e2d;
+  --cui-body-color: #e1e1e6;
+  --cui-heading-color: #ffffff;
+  --cui-link-color: #5a9fd4;
+  --cui-link-hover-color: #7bb3e6;
   
   /* Background colors */
-  --cui-bg: #2C2C2C;
-  --cui-bg-subtle: #3A3A3A;
-  --cui-tertiary-bg: #3A3A3A;
-  --cui-secondary-bg: #3A3A3A;
-  --cui-dark-bg: #2C2C2C;
-  --cui-dark-bg-subtle: #3A3A3A;
+  --cui-bg: #1e1e2d;
+  --cui-bg-subtle: #2b2b3a;
+  --cui-tertiary-bg: #2b2b3a;
+  --cui-secondary-bg: #2b2b3a;
+  --cui-dark-bg: #1e1e2d;
+  --cui-dark-bg-subtle: #2b2b3a;
   
   /* Border colors */
-  --cui-border-color: #3A3A3A;
-  --cui-border-color-translucent: rgba(58, 58, 58, 0.5);
-  --cui-dark-border-color: #3A3A3A;
+  --cui-border-color: #3a3a4a;
+  --cui-border-color-translucent: rgba(58, 58, 74, 0.5);
+  --cui-dark-border-color: #3a3a4a;
   
-  /* Sidebar colors - Champagne Elegance */
-  --cui-sidebar-bg: #F7E7CE;
-  --cui-sidebar-brand-bg: #F7E7CE;
-  --cui-sidebar-nav-link-color: #2C2C2C;
-  --cui-sidebar-nav-link-hover-bg: #E6D3B7;
-  --cui-sidebar-nav-link-hover-color: #2C2C2C;
-  --cui-sidebar-nav-link-active-bg: #2C2C2C;
-  --cui-sidebar-nav-link-active-color: #FAF9F6;
-  --cui-sidebar-nav-link-disabled-color: #2C2C2C;
-  --cui-sidebar-nav-group-bg: #E6D3B7;
-  --cui-sidebar-nav-group-indicator-color: #FAF9F6;
-  --cui-sidebar-nav-group-indicator-hover-color: #FAF9F6;
-  --cui-sidebar-nav-group-indicator-active-color: #FAF9F6;
-  --cui-sidebar-nav-group-toggle-show-color: #FAF9F6;
+  /* Sidebar colors */
+  --cui-sidebar-bg: #1e1e2d;
+  --cui-sidebar-brand-bg: #1e1e2d;
+  --cui-sidebar-nav-link-color: #b4b4c7;
+  --cui-sidebar-nav-link-hover-bg: #2b2b3a;
+  --cui-sidebar-nav-link-hover-color: #ffffff;
+  --cui-sidebar-nav-link-active-bg: #3a3a4a;
+  --cui-sidebar-nav-link-active-color: #ffffff;
+  --cui-sidebar-nav-link-disabled-color: #6c757d;
+  --cui-sidebar-nav-group-bg: #2b2b3a;
+  --cui-sidebar-nav-group-indicator-color: #b4b4c7;
+  --cui-sidebar-nav-group-indicator-hover-color: #ffffff;
+  --cui-sidebar-nav-group-indicator-active-color: #ffffff;
+  --cui-sidebar-nav-group-toggle-show-color: #ffffff;
   
-  /* Header colors - Champagne Elegance */
-  --cui-header-bg: #2C2C2C;
-  --cui-header-border-color: #3A3A3A;
-  --cui-header-color: #F7E7CE;
+  /* Header colors */
+  --cui-header-bg: #1e1e2d;
+  --cui-header-border-color: #3a3a4a;
+  --cui-header-color: #e1e1e6;
   --cui-header-toggler-border-color: transparent;
-  --cui-header-toggler-hover-bg: #3A3A3A;
+  --cui-header-toggler-hover-bg: #2b2b3a;
   
-  /* Card colors - Champagne Elegance */
-  --cui-card-bg: #F7E7CE;
-  --cui-card-border-color: #E6D3B7;
-  --cui-card-cap-bg: #F7E7CE;
-  --cui-card-cap-color: #2C2C2C;
+  /* Card colors */
+  --cui-card-bg: #2b2b3a;
+  --cui-card-border-color: #3a3a4a;
+  --cui-card-cap-bg: #2b2b3a;
+  --cui-card-cap-color: #e1e1e6;
   
-  /* Form colors - Champagne Elegance */
-  --cui-input-bg: #3A3A3A;
-  --cui-input-border-color: #3A3A3A;
-  --cui-input-color: #F7E7CE;
-  --cui-input-focus-bg: #3A3A3A;
-  --cui-input-focus-border-color: #F7E7CE;
-  --cui-input-focus-color: #F7E7CE;
-  --cui-input-disabled-bg: #2C2C2C;
-  --cui-input-disabled-border-color: #3A3A3A;
-  --cui-input-placeholder-color: #E6D3B7;
+  /* Form colors */
+  --cui-input-bg: #2b2b3a;
+  --cui-input-border-color: #3a3a4a;
+  --cui-input-color: #e1e1e6;
+  --cui-input-focus-bg: #2b2b3a;
+  --cui-input-focus-border-color: #5a9fd4;
+  --cui-input-focus-color: #e1e1e6;
+  --cui-input-disabled-bg: #1e1e2d;
+  --cui-input-disabled-border-color: #3a3a4a;
+  --cui-input-placeholder-color: #6c757d;
   
-  /* Button colors - Champagne Elegance */
-  --cui-btn-bg: #2C2C2C;
-  --cui-btn-border-color: #2C2C2C;
-  --cui-btn-color: #F7E7CE;
-  --cui-btn-hover-bg: #FAF9F6;
-  --cui-btn-hover-border-color: #FAF9F6;
-  --cui-btn-hover-color: #2C2C2C;
-  --cui-btn-active-bg: #FAF9F6;
-  --cui-btn-active-border-color: #FAF9F6;
-  --cui-btn-active-color: #2C2C2C;
-  --cui-btn-disabled-bg: #2C2C2C;
-  --cui-btn-disabled-border-color: #2C2C2C;
-  --cui-btn-disabled-color: #E6D3B7;
+  /* Button colors */
+  --cui-btn-bg: #2b2b3a;
+  --cui-btn-border-color: #3a3a4a;
+  --cui-btn-color: #e1e1e6;
+  --cui-btn-hover-bg: #3a3a4a;
+  --cui-btn-hover-border-color: #4a4a5a;
+  --cui-btn-hover-color: #ffffff;
+  --cui-btn-active-bg: #3a3a4a;
+  --cui-btn-active-border-color: #4a4a5a;
+  --cui-btn-active-color: #ffffff;
+  --cui-btn-disabled-bg: #1e1e2d;
+  --cui-btn-disabled-border-color: #3a3a4a;
+  --cui-btn-disabled-color: #6c757d;
   
-  /* Table colors - Champagne Elegance */
-  --cui-table-bg: #3A3A3A;
-  --cui-table-border-color: #3A3A3A;
-  --cui-table-color: #F7E7CE;
-  --cui-table-hover-bg: #3A3A3A;
-  --cui-table-hover-color: #FDF5E6;
-  --cui-table-striped-bg: #3A3A3A;
-  --cui-table-striped-color: #F7E7CE;
-  --cui-table-active-bg: #3A3A3A;
-  --cui-table-active-color: #FDF5E6;
+  /* Table colors */
+  --cui-table-bg: #2b2b3a;
+  --cui-table-border-color: #3a3a4a;
+  --cui-table-color: #e1e1e6;
+  --cui-table-hover-bg: #3a3a4a;
+  --cui-table-hover-color: #ffffff;
+  --cui-table-striped-bg: #2b2b3a;
+  --cui-table-striped-color: #e1e1e6;
+  --cui-table-active-bg: #3a3a4a;
+  --cui-table-active-color: #ffffff;
   
-  /* Modal colors - Champagne Elegance */
-  --cui-modal-bg: #3A3A3A;
-  --cui-modal-border-color: #3A3A3A;
-  --cui-modal-header-border-color: #3A3A3A;
-  --cui-modal-footer-border-color: #3A3A3A;
+  /* Modal colors */
+  --cui-modal-bg: #2b2b3a;
+  --cui-modal-border-color: #3a3a4a;
+  --cui-modal-header-border-color: #3a3a4a;
+  --cui-modal-footer-border-color: #3a3a4a;
   
-  /* Dropdown colors - Champagne Elegance */
-  --cui-dropdown-bg: #3A3A3A;
-  --cui-dropdown-border-color: #3A3A3A;
-  --cui-dropdown-divider-bg: #3A3A3A;
-  --cui-dropdown-link-color: #F7E7CE;
-  --cui-dropdown-link-hover-bg: #3A3A3A;
-  --cui-dropdown-link-hover-color: #FDF5E6;
-  --cui-dropdown-link-active-bg: #3A3A3A;
-  --cui-dropdown-link-active-color: #FDF5E6;
-  --cui-dropdown-link-disabled-color: #E6D3B7;
+  /* Dropdown colors */
+  --cui-dropdown-bg: #2b2b3a;
+  --cui-dropdown-border-color: #3a3a4a;
+  --cui-dropdown-divider-bg: #3a3a4a;
+  --cui-dropdown-link-color: #e1e1e6;
+  --cui-dropdown-link-hover-bg: #3a3a4a;
+  --cui-dropdown-link-hover-color: #ffffff;
+  --cui-dropdown-link-active-bg: #3a3a4a;
+  --cui-dropdown-link-active-color: #ffffff;
+  --cui-dropdown-link-disabled-color: #6c757d;
   
-  /* Nav colors - Champagne Elegance */
-  --cui-nav-link-color: #F7E7CE;
-  --cui-nav-link-hover-color: #FDF5E6;
-  --cui-nav-link-disabled-color: #E6D3B7;
-  --cui-nav-tabs-border-color: #3A3A3A;
-  --cui-nav-tabs-link-hover-border-color: #3A3A3A;
-  --cui-nav-tabs-link-active-bg: #3A3A3A;
-  --cui-nav-tabs-link-active-border-color: #3A3A3A;
-  --cui-nav-tabs-link-active-color: #FDF5E6;
+  /* Nav colors */
+  --cui-nav-link-color: #e1e1e6;
+  --cui-nav-link-hover-color: #ffffff;
+  --cui-nav-link-disabled-color: #6c757d;
+  --cui-nav-tabs-border-color: #3a3a4a;
+  --cui-nav-tabs-link-hover-border-color: #3a3a4a;
+  --cui-nav-tabs-link-active-bg: #2b2b3a;
+  --cui-nav-tabs-link-active-border-color: #3a3a4a;
+  --cui-nav-tabs-link-active-color: #ffffff;
   
-  /* Pagination colors - Champagne Elegance */
-  --cui-pagination-bg: #3A3A3A;
-  --cui-pagination-border-color: #3A3A3A;
-  --cui-pagination-color: #F7E7CE;
-  --cui-pagination-hover-bg: #3A3A3A;
-  --cui-pagination-hover-border-color: #3A3A3A;
-  --cui-pagination-hover-color: #FDF5E6;
-  --cui-pagination-active-bg: #F7E7CE;
-  --cui-pagination-active-border-color: #F7E7CE;
-  --cui-pagination-active-color: #2C2C2C;
-  --cui-pagination-disabled-bg: #2C2C2C;
-  --cui-pagination-disabled-border-color: #3A3A3A;
-  --cui-pagination-disabled-color: #E6D3B7;
+  /* Pagination colors */
+  --cui-pagination-bg: #2b2b3a;
+  --cui-pagination-border-color: #3a3a4a;
+  --cui-pagination-color: #e1e1e6;
+  --cui-pagination-hover-bg: #3a3a4a;
+  --cui-pagination-hover-border-color: #4a4a5a;
+  --cui-pagination-hover-color: #ffffff;
+  --cui-pagination-active-bg: #5a9fd4;
+  --cui-pagination-active-border-color: #5a9fd4;
+  --cui-pagination-active-color: #ffffff;
+  --cui-pagination-disabled-bg: #1e1e2d;
+  --cui-pagination-disabled-border-color: #3a3a4a;
+  --cui-pagination-disabled-color: #6c757d;
   
-  /* Alert colors - Champagne Elegance */
-  --cui-alert-bg: #3A3A3A;
-  --cui-alert-border-color: #3A3A3A;
-  --cui-alert-color: #F7E7CE;
+  /* Alert colors */
+  --cui-alert-bg: #2b2b3a;
+  --cui-alert-border-color: #3a3a4a;
+  --cui-alert-color: #e1e1e6;
   
-  /* Badge colors - Champagne Elegance */
-  --cui-badge-bg: #3A3A3A;
-  --cui-badge-color: #F7E7CE;
+  /* Badge colors */
+  --cui-badge-bg: #3a3a4a;
+  --cui-badge-color: #e1e1e6;
   
-  /* Progress colors - Champagne Elegance */
-  --cui-progress-bg: #3A3A3A;
-  --cui-progress-bar-bg: #F7E7CE;
-  --cui-progress-bar-color: #2C2C2C;
+  /* Progress colors */
+  --cui-progress-bg: #2b2b3a;
+  --cui-progress-bar-bg: #5a9fd4;
+  --cui-progress-bar-color: #ffffff;
   
-  /* List group colors - Champagne Elegance */
-  --cui-list-group-bg: #3A3A3A;
-  --cui-list-group-border-color: #3A3A3A;
-  --cui-list-group-color: #F7E7CE;
-  --cui-list-group-hover-bg: #3A3A3A;
-  --cui-list-group-action-hover-bg: #3A3A3A;
-  --cui-list-group-action-hover-color: #FDF5E6;
-  --cui-list-group-action-active-bg: #3A3A3A;
-  --cui-list-group-action-active-color: #FDF5E6;
+  /* List group colors */
+  --cui-list-group-bg: #2b2b3a;
+  --cui-list-group-border-color: #3a3a4a;
+  --cui-list-group-color: #e1e1e6;
+  --cui-list-group-hover-bg: #3a3a4a;
+  --cui-list-group-action-hover-bg: #3a3a4a;
+  --cui-list-group-action-hover-color: #ffffff;
+  --cui-list-group-action-active-bg: #3a3a4a;
+  --cui-list-group-action-active-color: #ffffff;
   
-  /* Tooltip colors - Champagne Elegance */
-  --cui-tooltip-bg: #3A3A3A;
-  --cui-tooltip-color: #F7E7CE;
+  /* Tooltip colors */
+  --cui-tooltip-bg: #2b2b3a;
+  --cui-tooltip-color: #e1e1e6;
   
-  /* Popover colors - Champagne Elegance */
-  --cui-popover-bg: #3A3A3A;
-  --cui-popover-border-color: #3A3A3A;
-  --cui-popover-header-bg: #3A3A3A;
-  --cui-popover-header-color: #F7E7CE;
-  --cui-popover-body-color: #F7E7CE;
+  /* Popover colors */
+  --cui-popover-bg: #2b2b3a;
+  --cui-popover-border-color: #3a3a4a;
+  --cui-popover-header-bg: #2b2b3a;
+  --cui-popover-header-color: #e1e1e6;
+  --cui-popover-body-color: #e1e1e6;
   
-  /* Toast colors - Champagne Elegance */
-  --cui-toast-bg: #3A3A3A;
-  --cui-toast-border-color: #3A3A3A;
-  --cui-toast-header-bg: #3A3A3A;
-  --cui-toast-header-color: #F7E7CE;
-  --cui-toast-header-border-color: #3A3A3A;
+  /* Toast colors */
+--cui-toast-bg: #2b2b3a;
+--cui-toast-border-color: #3a3a4a;
+--cui-toast-header-bg: #2b2b3a;
+--cui-toast-header-color: #e1e1e6;
+--cui-toast-header-border-color: #3a3a4a;
 
 /* Toast container positioning for light theme */
 .toast-container {
@@ -3538,375 +3527,81 @@ hr {
 
 /* Dark theme specific overrides for custom components */
 [data-coreui-theme="dark"] {
-  /* Custom sidebar styling - Champagne Elegance */
+  /* Custom sidebar styling */
   .sidebar-modern {
-    background: #F7E7CE;
-    border-right: 1px solid #E6D3B7;
+    background: linear-gradient(180deg, #1e1e2d 0%, #2b2b3a 100%);
+    border-right: 1px solid #3a3a4a;
   }
   
-  /* Dark theme brand text styling */
-  .brand-text {
-    color: #2C2C2C !important;
-  }
-  
-  .brand-title {
-    color: #2C2C2C !important;
-  }
-  
-  .brand-subtitle {
-    color: #3A3A3A !important;
-  }
-  
-  /* Dark theme nav-link styling */
   .nav-link {
-    color: #2C2C2C !important;
+    color: #b4b4c7 !important;
     border-radius: 8px;
-    padding: 12px 16px;
     margin: 2px 8px;
     transition: all 0.3s ease;
-    border: none;
-    box-shadow: none;
-    font-weight: 500;
-  }
-  
-  .nav-link i,
-  .nav-link svg {
-    color: #2C2C2C !important;
-  }
-  
-  .nav-link .nav-text {
-    color: #2C2C2C !important;
   }
   
   .nav-link:hover {
-    background-color: #E6D3B7 !important;
-    color: #2C2C2C !important;
+    background-color: #3a3a4a !important;
+    color: #ffffff !important;
     transform: translateX(5px);
-    border: none;
-    box-shadow: none;
   }
   
-  .nav-link:hover i,
-  .nav-link:hover svg {
-    color: #2C2C2C !important;
-  }
-  
-  .nav-link:hover .nav-text {
-    color: #2C2C2C !important;
-  }
-  
-  .nav-link.active,
-  .nav-link.show {
-    background-color: #2C2C2C !important;
-    color: #FAF9F6 !important;
-    border: none;
-    box-shadow: none;
+  .nav-link.active {
+    background-color: #9ca3af !important;
+    color: #ffffff !important;
+    box-shadow: 0 4px 12px rgba(156, 163, 175, 0.3);
     font-weight: 700 !important;
     text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5) !important;
   }
   
-  .nav-link.active i,
-  .nav-link.active svg,
-  .nav-link.show i,
-  .nav-link.show svg {
-    color: #FAF9F6 !important;
-  }
-  
-  .nav-link.active .nav-text,
-  .nav-link.show .nav-text {
-    color: #FAF9F6 !important;
-  }
-  
-  /* More specific selectors for nav-link active and show states */
-  [data-coreui-theme="dark"] .nav-link.active,
-  [data-coreui-theme="dark"] .nav-link.show {
-    color: #FAF9F6 !important;
-  }
-  
-  [data-coreui-theme="dark"] .nav-link.active i,
-  [data-coreui-theme="dark"] .nav-link.active svg,
-  [data-coreui-theme="dark"] .nav-link.show i,
-  [data-coreui-theme="dark"] .nav-link.show svg {
-    color: #FAF9F6 !important;
-  }
-  
-  [data-coreui-theme="dark"] .nav-link.active .nav-text,
-  [data-coreui-theme="dark"] .nav-link.show .nav-text {
-    color: #FAF9F6 !important;
-  }
-  
-  /* Dark theme nav-group styling */
-  .nav-group {
-    color: #FAF9F6 !important;
-  }
-  
-  .nav-group .nav-group-title {
-    color: #FAF9F6 !important;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    font-size: 0.75rem;
-  }
-  
-  .nav-group i,
-  .nav-group svg {
-    color: #FAF9F6 !important;
-  }
-  
-  .nav-group .nav-group-toggle {
-    color: #FAF9F6 !important;
-  }
-  
-  .nav-group .nav-group-toggle i,
-  .nav-group .nav-group-toggle svg {
-    color: #FAF9F6 !important;
-  }
-  
-  /* Sidebar specific elements from Sidebar.jsx */
-  .nav-group-header {
-    color: #FAF9F6 !important;
-  }
-  
-  .nav-group-header .nav-text {
-    color: #FAF9F6 !important;
-  }
-  
-  .nav-group-toggle {
-    color: #FAF9F6 !important;
-  }
-  
-  .nav-group-toggle .nav-text {
-    color: #FAF9F6 !important;
-  }
-  
-  .nav-group-toggle .nav-icon {
-    color: #FAF9F6 !important;
-  }
-  
-  .nav-group-toggle .nav-icon-svg {
-    color: #FAF9F6 !important;
-  }
-  
-  .nav-group-items {
-    color: #FAF9F6 !important;
-  }
-  
-  .nav-group-items .nav-text {
-    color: #FAF9F6 !important;
-  }
-  
-  .sub-nav-item {
-    color: #FAF9F6 !important;
-  }
-  
-  .sub-nav-link {
-    color: #FAF9F6 !important;
-  }
-  
-  .sub-nav-link .nav-text {
-    color: #FAF9F6 !important;
-  }
-  
-  /* Specific styling for nav-group.show > nav-group-header > nav-text */
-  .nav-group.show .nav-group-header .nav-text {
-    color: #FAF9F6 !important;
-  }
-  
-  .nav-group.show .nav-group-header {
-    color: #FAF9F6 !important;
-  }
-  
-  .nav-group.show .nav-group-toggle .nav-text {
-    color: #FAF9F6 !important;
-  }
-  
-  .nav-group.show .nav-group-toggle {
-    color: #FAF9F6 !important;
-  }
-  
-  /* Ultra-specific selectors for nav-group.show elements */
-  [data-coreui-theme="dark"] .nav-group.show .nav-group-header .nav-text {
-    color: #FAF9F6 !important;
-  }
-  
-  [data-coreui-theme="dark"] .nav-group.show .nav-group-header {
-    color: #FAF9F6 !important;
-  }
-  
-  [data-coreui-theme="dark"] .nav-group.show .nav-group-toggle .nav-text {
-    color: #FAF9F6 !important;
-  }
-  
-  [data-coreui-theme="dark"] .nav-group.show .nav-group-toggle {
-    color: #FAF9F6 !important;
-  }
-  
-  [data-coreui-theme="dark"] .nav-group.show .nav-group-toggle i,
-  [data-coreui-theme="dark"] .nav-group.show .nav-group-toggle svg {
-    color: #FAF9F6 !important;
-  }
-  
-  /* Additional specific selectors for nav-link styling */
-  .sidebar .nav-link,
-  .sidebar-modern .nav-link,
-  .sidebar-nav .nav-link {
-    color: #2C2C2C !important;
-  }
-  
-  .sidebar .nav-link i,
-  .sidebar .nav-link svg,
-  .sidebar-modern .nav-link i,
-  .sidebar-modern .nav-link svg,
-  .sidebar-nav .nav-link i,
-  .sidebar-nav .nav-link svg {
-    color: #2C2C2C !important;
-  }
-  
-  .sidebar .nav-link .nav-text,
-  .sidebar-modern .nav-link .nav-text,
-  .sidebar-nav .nav-link .nav-text {
-    color: #2C2C2C !important;
-  }
-  
-  .sidebar .nav-link:hover,
-  .sidebar-modern .nav-link:hover,
-  .sidebar-nav .nav-link:hover {
-    background-color: #E6D3B7 !important;
-    color: #2C2C2C !important;
-    border: none;
-    box-shadow: none;
-  }
-  
-  .sidebar .nav-link:hover i,
-  .sidebar .nav-link:hover svg,
-  .sidebar-modern .nav-link:hover i,
-  .sidebar-modern .nav-link:hover svg,
-  .sidebar-nav .nav-link:hover i,
-  .sidebar-nav .nav-link:hover svg {
-    color: #2C2C2C !important;
-  }
-  
-  .sidebar .nav-link:hover .nav-text,
-  .sidebar-modern .nav-link:hover .nav-text,
-  .sidebar-nav .nav-link:hover .nav-text {
-    color: #2C2C2C !important;
-  }
-  
-  .sidebar .nav-link.active,
-  .sidebar .nav-link.show,
-  .sidebar-modern .nav-link.active,
-  .sidebar-modern .nav-link.show,
-  .sidebar-nav .nav-link.active,
-  .sidebar-nav .nav-link.show {
-    background-color: #2C2C2C !important;
-    color: #FAF9F6 !important;
-    border: none;
-    box-shadow: none;
-  }
-  
-  .sidebar .nav-link.active i,
-  .sidebar .nav-link.active svg,
-  .sidebar .nav-link.show i,
-  .sidebar .nav-link.show svg,
-  .sidebar-modern .nav-link.active i,
-  .sidebar-modern .nav-link.active svg,
-  .sidebar-modern .nav-link.show i,
-  .sidebar-modern .nav-link.show svg,
-  .sidebar-nav .nav-link.active i,
-  .sidebar-nav .nav-link.active svg,
-  .sidebar-nav .nav-link.show i,
-  .sidebar-nav .nav-link.show svg {
-    color: #FAF9F6 !important;
-  }
-  
-  .sidebar .nav-link.active .nav-text,
-  .sidebar .nav-link.show .nav-text,
-  .sidebar-modern .nav-link.active .nav-text,
-  .sidebar-modern .nav-link.show .nav-text,
-  .sidebar-nav .nav-link.active .nav-text,
-  .sidebar-nav .nav-link.show .nav-text {
-    color: #FAF9F6 !important;
-  }
-  
-  /* Ultra-specific selectors for active nav-link text color */
-  [data-coreui-theme="dark"] .sidebar .nav-link.active,
-  [data-coreui-theme="dark"] .sidebar .nav-link.show,
-  [data-coreui-theme="dark"] .sidebar-modern .nav-link.active,
-  [data-coreui-theme="dark"] .sidebar-modern .nav-link.show,
-  [data-coreui-theme="dark"] .sidebar-nav .nav-link.active,
-  [data-coreui-theme="dark"] .sidebar-nav .nav-link.show,
-  [data-coreui-theme="dark"] .nav-link.active,
-  [data-coreui-theme="dark"] .nav-link.show {
-    color: #FAF9F6 !important;
-  }
-  
-  [data-coreui-theme="dark"] .sidebar .nav-link.active *,
-  [data-coreui-theme="dark"] .sidebar .nav-link.show *,
-  [data-coreui-theme="dark"] .sidebar-modern .nav-link.active *,
-  [data-coreui-theme="dark"] .sidebar-modern .nav-link.show *,
-  [data-coreui-theme="dark"] .sidebar-nav .nav-link.active *,
-  [data-coreui-theme="dark"] .sidebar-nav .nav-link.show *,
-  [data-coreui-theme="dark"] .nav-link.active *,
-  [data-coreui-theme="dark"] .nav-link.show * {
-    color: #FAF9F6 !important;
-  }
-  
-  /* Custom table styling - Champagne Elegance */
+  /* Custom table styling */
   .table-modern {
-    background-color: #3A3A3A;
+    background-color: #2b2b3a;
     border-radius: 12px;
     overflow: hidden;
-    box-shadow: 0 4px 20px rgba(44, 44, 44, 0.3);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
   }
   
   .table-modern thead th {
-    background-color: #2C2C2C;
-    color: #F7E7CE;
-    border-bottom: 2px solid #E6D3B7;
+    background-color: #2b2b3a;
+    color: #ffffff;
+    border-bottom: 2px solid #3a3a4a;
     font-weight: 600;
     padding: 16px 12px;
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
   }
   
   .table-modern tbody tr {
-    border-bottom: 1px solid #E6D3B7;
-    transition: all 0.3s ease;
+    border-bottom: 1px solid #3a3a4a;
+    transition: background-color 0.3s ease;
   }
   
   .table-modern tbody tr:hover {
-    background-color: #F7E7CE;
-    transform: translateY(-1px);
-    box-shadow: 0 2px 8px rgba(44, 44, 44, 0.2);
+    background-color: #3a3a4a;
   }
   
   .table-modern tbody tr:nth-child(even) {
-    background-color: #3A3A3A;
+    background-color: #2b2b3a;
   }
   
   .table-modern tbody tr:nth-child(odd) {
-    background-color: #2C2C2C;
+    background-color: #1e1e2d;
   }
   
   .table-modern tbody tr:nth-child(even):hover {
-    background-color: #F7E7CE;
+    background-color: #3a3a4a;
   }
   
   .table-modern tbody tr:nth-child(odd):hover {
-    background-color: #F7E7CE;
+    background-color: #3a3a4a;
   }
   
   .table-modern tbody td {
-    color: #F7E7CE;
+    color: #e1e1e6;
     padding: 12px;
     border: none;
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
   }
   
-  .table-modern tbody tr:hover td {
-    color: #2C2C2C;
-  }
-  
-  /* Status badges - Champagne Elegance */
+  /* Status badges */
   .status-badge {
     padding: 6px 12px;
     border-radius: 20px;
@@ -3914,55 +3609,41 @@ hr {
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.5px;
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-    border: 1px solid transparent;
-    transition: all 0.3s ease;
   }
   
   .status-badge.active {
-    background-color: #F7E7CE;
-    color: #2C2C2C;
-    border-color: #E6D3B7;
-    box-shadow: 0 2px 8px rgba(247, 231, 206, 0.3);
+    background-color: #198754;
+    color: #ffffff;
   }
   
   .status-badge.inactive {
-    background-color: #2C2C2C;
-    color: #F7E7CE;
-    border-color: #3A3A3A;
-    box-shadow: 0 2px 8px rgba(44, 44, 44, 0.3);
+    background-color: #dc3545;
+    color: #ffffff;
   }
   
   .status-badge.pending {
-    background-color: #E6D3B7;
-    color: #2C2C2C;
-    border-color: #F7E7CE;
-    box-shadow: 0 2px 8px rgba(230, 211, 183, 0.3);
+    background-color: #ffc107;
+    color: #000000;
   }
   
-  .status-badge:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(44, 44, 44, 0.2);
-  }
-  
-  /* Cards - Champagne Elegance */
+  /* Cards */
   .card {
-    background-color: #F7E7CE;
-    border: 1px solid #E6D3B7;
+    background-color: #2b2b3a;
+    border: 1px solid #3a3a4a;
     border-radius: 12px;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
   }
   
   .card-header {
-    background-color: #F7E7CE !important;
-    border-bottom: 1px solid #E6D3B7;
-    color: #2C2C2C !important;
-    --cui-card-cap-bg: #F7E7CE !important;
-    --cui-card-cap-color: #2C2C2C !important;
+    background-color: rgb(43, 43, 58) !important;
+    border-bottom: 1px solid #3a3a4a;
+    color: #ffffff !important;
+    --cui-card-cap-bg: rgb(43, 43, 58) !important;
+    --cui-card-cap-color: #ffffff !important;
   }
   
   .card-header * {
-    color: #2C2C2C !important;
+    color: #ffffff !important;
   }
   
   .card-header h1,
@@ -3974,709 +3655,114 @@ hr {
   .card-header p,
   .card-header span,
   .card-header div {
-    color: #2C2C2C !important;
+    color: #ffffff !important;
   }
   
   .card-body {
-    background-color: #F7E7CE;
-    color: #2C2C2C;
+    background-color: #2b2b3a;
+    color: #e1e1e6;
   }
   
   .card-footer {
-    background-color: #F7E7CE !important;
-    border-top: 1px solid #E6D3B7;
-    color: #2C2C2C !important;
-    --cui-card-cap-bg: #F7E7CE !important;
-    --cui-card-cap-color: #2C2C2C !important;
+    background-color: rgb(43, 43, 58) !important;
+    border-top: 1px solid #3a3a4a;
+    color: #e1e1e6 !important;
+    --cui-card-cap-bg: rgb(43, 43, 58) !important;
+    --cui-card-cap-color: #e1e1e6 !important;
   }
   
-  /* Forms - Champagne Elegance */
+  /* Forms */
   .form-control, .form-select {
-    background-color: #3A3A3A;
-    border: 2px solid #E6D3B7;
-    color: #F7E7CE;
-    border-radius: 8px;
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-    transition: all 0.3s ease;
+    background-color: #2b2b3a;
+    border: 1px solid #3a3a4a;
+    color: #e1e1e6;
   }
   
   .form-control:focus, .form-select:focus {
-    background-color: #3A3A3A;
-    border-color: #F7E7CE;
-    color: #F7E7CE;
-    box-shadow: 0 0 0 0.25rem rgba(247, 231, 206, 0.25);
-    transform: translateY(-1px);
-  }
-  
-  .form-control:hover, .form-select:hover {
-    border-color: #F7E7CE;
-    box-shadow: 0 2px 8px rgba(247, 231, 206, 0.1);
+    background-color: #2b2b3a;
+    border-color: #5a9fd4;
+    color: #e1e1e6;
+    box-shadow: 0 0 0 0.25rem rgba(90, 159, 212, 0.25);
   }
   
   .form-label {
-    color: #F7E7CE;
-    font-weight: 600;
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-    margin-bottom: 8px;
+    color: #e1e1e6;
   }
   
-  .form-text {
-    color: #E6D3B7;
-    font-size: 0.875rem;
-  }
-  
-  /* Buttons - Champagne Elegance */
+  /* Buttons */
   .btn {
     border-radius: 8px;
-    font-weight: 600;
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-    transition: all 0.3s ease;
-    letter-spacing: 0.5px;
-    text-transform: none;
-  }
-  
-  /* More specific button selectors for dark theme */
-  button.btn-primary,
-  .btn.btn-primary {
-    background: #2C2C2C !important;
-    color: #F7E7CE !important;
-    border-color: #2C2C2C !important;
-  }
-  
-  button.btn-primary:hover,
-  .btn.btn-primary:hover {
-    background: #FAF9F6 !important;
-    color: #2C2C2C !important;
-    border-color: #FAF9F6 !important;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(44, 44, 44, 0.3);
-  }
-  
-  button.btn-secondary,
-  .btn.btn-secondary {
-    background: #2C2C2C !important;
-    color: #F7E7CE !important;
-    border-color: #2C2C2C !important;
-  }
-  
-  button.btn-secondary:hover,
-  .btn.btn-secondary:hover {
-    background: #FAF9F6 !important;
-    color: #2C2C2C !important;
-    border-color: #FAF9F6 !important;
-    transform: translateY(-2px);
-  }
-  
-  .btn-primary {
-    background: #2C2C2C !important;
-    color: #F7E7CE !important;
-    border-color: #2C2C2C !important;
-  }
-  
-  .btn-primary:hover {
-    background: #FAF9F6 !important;
-    color: #2C2C2C !important;
-    border-color: #FAF9F6 !important;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(44, 44, 44, 0.3);
-  }
-  
-  .btn-secondary {
-    background: #2C2C2C !important;
-    color: #F7E7CE !important;
-    border-color: #2C2C2C !important;
-  }
-  
-  .btn-secondary:hover {
-    background: #FAF9F6 !important;
-    color: #2C2C2C !important;
-    border-color: #FAF9F6 !important;
-    transform: translateY(-2px);
-  }
-  
-  /* Pagination - Champagne Elegance */
-  .pagination-modern .page-link {
-    background-color: #3A3A3A;
-    border-color: #E6D3B7;
-    color: #F7E7CE;
-    border-radius: 8px;
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     font-weight: 500;
     transition: all 0.3s ease;
   }
   
-  .pagination-modern .page-link:hover {
-    background-color: #F7E7CE;
-    border-color: #2C2C2C;
-    color: #2C2C2C;
-    transform: translateY(-1px);
-    box-shadow: 0 2px 8px rgba(247, 231, 206, 0.3);
+  .btn-primary {
+    background-color: #5a9fd4;
+    border-color: #5a9fd4;
+    color: #ffffff;
   }
   
-  .pagination-modern .page-item.active .page-link {
-    background-color: #2C2C2C;
-    border-color: #F7E7CE;
-    color: #F7E7CE;
-    box-shadow: 0 4px 12px rgba(44, 44, 44, 0.3);
+  .btn-primary:hover {
+    background-color: #4a8fc4;
+    border-color: #4a8fc4;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(90, 159, 212, 0.3);
   }
   
-  /* Dropdown Menu - Champagne Elegance */
-  .dropdown-menu,
-  .dropdown-menu-end {
-    background-color: #3A3A3A !important;
-    border: 2px solid #E6D3B7 !important;
-    border-radius: 12px !important;
-    box-shadow: 0 8px 32px rgba(44, 44, 44, 0.4) !important;
-    padding: 8px 0 !important;
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif !important;
-  }
-
-  .dropdown-menu .dropdown-item,
-  .dropdown-menu-end .dropdown-item {
-    color: #F7E7CE !important;
-    background-color: transparent !important;
-    padding: 12px 20px !important;
-    border: none !important;
-    transition: all 0.3s ease !important;
-    font-weight: 500 !important;
-  }
-
-  .dropdown-menu .dropdown-item:hover,
-  .dropdown-menu-end .dropdown-item:hover {
-    background-color: #2C2C2C !important;
-    color: #FAF9F6 !important;
-    transform: translateX(5px) !important;
-  }
-
-  .dropdown-menu .dropdown-item:focus,
-  .dropdown-menu-end .dropdown-item:focus {
-    background-color: #2C2C2C !important;
-    color: #FAF9F6 !important;
-    outline: none !important;
-  }
-
-  .dropdown-menu .dropdown-item.active,
-  .dropdown-menu-end .dropdown-item.active {
-    background-color: #2C2C2C !important;
-    color: #FAF9F6 !important;
-  }
-
-  .dropdown-menu .dropdown-divider,
-  .dropdown-menu-end .dropdown-divider {
-    border-top: 1px solid #E6D3B7 !important;
-    margin: 8px 0 !important;
-  }
-
-  .dropdown-menu .dropdown-header,
-  .dropdown-menu-end .dropdown-header {
-    color: #E6D3B7 !important;
-    font-weight: 600 !important;
-    font-size: 0.875rem !important;
-    text-transform: uppercase !important;
-    letter-spacing: 0.5px !important;
-    padding: 8px 20px !important;
-  }
-
-  /* Modals - Champagne Elegance */
-  .modal-content {
-    background-color: #3A3A3A !important;
-    border: 2px solid #E6D3B7 !important;
-    border-radius: 12px !important;
-    box-shadow: 0 8px 32px rgba(44, 44, 44, 0.4) !important;
-  }
-
-  .modal-header {
-    background-color: #2C2C2C !important;
-    border-bottom: 2px solid #E6D3B7 !important;
-    color: #F7E7CE !important;
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif !important;
-    font-weight: 600 !important;
-    border-radius: 10px 10px 0 0 !important;
-  }
-
-  .modal-title {
-    color: #F7E7CE !important;
-    font-weight: 700 !important;
-  }
-
-  .modal-body {
-    background-color: #3A3A3A !important;
-    color: #F7E7CE !important;
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif !important;
-  }
-
-  .modal-footer {
-    background-color: #2C2C2C !important;
-    border-top: 2px solid #E6D3B7 !important;
-    border-radius: 0 0 10px 10px !important;
-  }
-
-  .modal-backdrop {
-    background-color: rgba(44, 44, 44, 0.6) !important;
-  }
-
-  .btn-close {
-    filter: invert(1) brightness(1.5) !important;
+  .btn-secondary {
+    background-color: #6c757d;
+    border-color: #6c757d;
+    color: #ffffff;
   }
   
-  /* Dark theme card header styling */
-  .card-header {
-    background-color: #2C2C2C !important;
-    border-bottom: 2px solid #E6D3B7 !important;
-    color: #F7E7CE !important;
-    font-weight: 600 !important;
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif !important;
+  .btn-secondary:hover {
+    background-color: #5a6268;
+    border-color: #5a6268;
   }
   
-  .card-title {
-    color: #F7E7CE !important;
-    font-weight: 700 !important;
-  }
-  
-  /* Dark theme pagination styling */
+  /* Pagination */
   .pagination-modern .page-link {
-    background-color: #3A3A3A !important;
-    border-color: #E6D3B7 !important;
-    color: #F7E7CE !important;
-    border-radius: 8px !important;
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif !important;
-    font-weight: 500 !important;
-    transition: all 0.3s ease !important;
+    background-color: #2b2b3a;
+    border-color: #3a3a4a;
+    color: #e1e1e6;
   }
   
   .pagination-modern .page-link:hover {
-    background-color: #F7E7CE !important;
-    border-color: #2C2C2C !important;
-    color: #2C2C2C !important;
-    transform: translateY(-1px) !important;
-    box-shadow: 0 2px 8px rgba(247, 231, 206, 0.3) !important;
+    background-color: #3a3a4a;
+    border-color: #4a4a5a;
+    color: #ffffff;
   }
   
   .pagination-modern .page-item.active .page-link {
-    background-color: #2C2C2C !important;
-    border-color: #F7E7CE !important;
-    color: #F7E7CE !important;
-    box-shadow: 0 4px 12px rgba(44, 44, 44, 0.3) !important;
+    background-color: #5a9fd4;
+    border-color: #5a9fd4;
+    color: #ffffff;
   }
   
-  /* Additional pagination elements */
-  .pagination-info {
-    color: #F7E7CE !important;
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif !important;
+  /* Modals */
+  .modal-content {
+    background-color: #2b2b3a;
+    border: 1px solid #3a3a4a;
+    border-radius: 12px;
   }
-  
-  .rows-per-page-label {
-    color: #F7E7CE !important;
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif !important;
-  }
-  
-  .rows-per-page-select {
-    background-color: #3A3A3A !important;
-    border: 2px solid #E6D3B7 !important;
-    color: #F7E7CE !important;
-    border-radius: 8px !important;
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif !important;
-  }
-  
-  .rows-per-page-select:focus {
-    background-color: #3A3A3A !important;
-    border-color: #F7E7CE !important;
-    color: #F7E7CE !important;
-    box-shadow: 0 0 0 0.25rem rgba(247, 231, 206, 0.25) !important;
-  }
-  
-  /* General pagination styling for all pagination elements */
-  .pagination .page-link {
-    background-color: #3A3A3A !important;
-    border-color: #E6D3B7 !important;
-    color: #F7E7CE !important;
-    border-radius: 8px !important;
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif !important;
-    font-weight: 500 !important;
-    transition: all 0.3s ease !important;
-  }
-  
-  .pagination .page-link:hover {
-    background-color: #F7E7CE !important;
-    border-color: #2C2C2C !important;
-    color: #2C2C2C !important;
-    transform: translateY(-1px) !important;
-    box-shadow: 0 2px 8px rgba(247, 231, 206, 0.3) !important;
-  }
-  
-  .pagination .page-item.active .page-link {
-    background-color: #2C2C2C !important;
-    border-color: #F7E7CE !important;
-    color: #F7E7CE !important;
-    box-shadow: 0 4px 12px rgba(44, 44, 44, 0.3) !important;
-  }
-}
-
-/* Dark theme specific dropdown and modal styling */
-[data-coreui-theme="dark"] .dropdown-menu,
-[data-coreui-theme="dark"] .dropdown-menu-end {
-  background-color: #3A3A3A !important;
-  border: 2px solid #E6D3B7 !important;
-  border-radius: 12px !important;
-  box-shadow: 0 8px 32px rgba(44, 44, 44, 0.4) !important;
-  padding: 8px 0 !important;
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif !important;
-}
-
-[data-coreui-theme="dark"] .dropdown-menu .dropdown-item,
-[data-coreui-theme="dark"] .dropdown-menu-end .dropdown-item {
-  color: #F7E7CE !important;
-  background-color: transparent !important;
-  padding: 12px 20px !important;
-  border: none !important;
-  transition: all 0.3s ease !important;
-  font-weight: 500 !important;
-}
-
-[data-coreui-theme="dark"] .dropdown-menu .dropdown-item:hover,
-[data-coreui-theme="dark"] .dropdown-menu-end .dropdown-item:hover {
-  background-color: #2C2C2C !important;
-  color: #FAF9F6 !important;
-  transform: translateX(5px) !important;
-}
-
-[data-coreui-theme="dark"] .dropdown-menu .dropdown-item:focus,
-[data-coreui-theme="dark"] .dropdown-menu-end .dropdown-item:focus {
-  background-color: #2C2C2C !important;
-  color: #FAF9F6 !important;
-  outline: none !important;
-}
-
-[data-coreui-theme="dark"] .dropdown-menu .dropdown-item.active,
-[data-coreui-theme="dark"] .dropdown-menu-end .dropdown-item.active {
-  background-color: #2C2C2C !important;
-  color: #FAF9F6 !important;
-}
-
-[data-coreui-theme="dark"] .dropdown-menu .dropdown-divider,
-[data-coreui-theme="dark"] .dropdown-menu-end .dropdown-divider {
-  border-top: 1px solid #E6D3B7 !important;
-  margin: 8px 0 !important;
-}
-
-[data-coreui-theme="dark"] .dropdown-menu .dropdown-header,
-[data-coreui-theme="dark"] .dropdown-menu-end .dropdown-header {
-  color: #E6D3B7 !important;
-  font-weight: 600 !important;
-  font-size: 0.875rem !important;
-  text-transform: uppercase !important;
-  letter-spacing: 0.5px !important;
-  padding: 8px 20px !important;
-}
-
-[data-coreui-theme="dark"] .modal-content {
-  background-color: #3A3A3A !important;
-  border: 2px solid #E6D3B7 !important;
-  border-radius: 12px !important;
-  box-shadow: 0 8px 32px rgba(44, 44, 44, 0.4) !important;
-}
-
-[data-coreui-theme="dark"] .modal-header {
-  background-color: #2C2C2C !important;
-  border-bottom: 2px solid #E6D3B7 !important;
-  color: #F7E7CE !important;
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif !important;
-  font-weight: 600 !important;
-  border-radius: 10px 10px 0 0 !important;
-}
-
-[data-coreui-theme="dark"] .modal-title {
-  color: #F7E7CE !important;
-  font-weight: 700 !important;
-}
-
-[data-coreui-theme="dark"] .modal-body {
-  background-color: #3A3A3A !important;
-  color: #F7E7CE !important;
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif !important;
-}
-
-[data-coreui-theme="dark"] .modal-footer {
-  background-color: #2C2C2C !important;
-  border-top: 2px solid #E6D3B7 !important;
-  border-radius: 0 0 10px 10px !important;
-}
-
-[data-coreui-theme="dark"] .modal-backdrop {
-  background-color: rgba(44, 44, 44, 0.6) !important;
-}
-
-[data-coreui-theme="dark"] .btn-close {
-  filter: invert(1) brightness(1.5) !important;
-}
-
-/* Dark theme specific brand text styling */
-[data-coreui-theme="dark"] .brand-text {
-  color: #2C2C2C !important;
-}
-
-[data-coreui-theme="dark"] .brand-title {
-  color: #2C2C2C !important;
-}
-
-[data-coreui-theme="dark"] .brand-subtitle {
-  color: #3A3A3A !important;
-}
-
-/* Dark theme specific card header styling */
-[data-coreui-theme="dark"] .card-header {
-  background-color: #2C2C2C !important;
-  border-bottom: 2px solid #E6D3B7 !important;
-  color: #F7E7CE !important;
-  font-weight: 600 !important;
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif !important;
-}
-
-[data-coreui-theme="dark"] .card-title {
-  color: #F7E7CE !important;
-  font-weight: 700 !important;
-}
-
-/* Dark theme specific pagination styling */
-[data-coreui-theme="dark"] .pagination-modern .page-link {
-  background-color: #3A3A3A !important;
-  border-color: #E6D3B7 !important;
-  color: #F7E7CE !important;
-  border-radius: 8px !important;
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif !important;
-  font-weight: 500 !important;
-  transition: all 0.3s ease !important;
-}
-
-[data-coreui-theme="dark"] .pagination-modern .page-link:hover {
-  background-color: #F7E7CE !important;
-  border-color: #2C2C2C !important;
-  color: #2C2C2C !important;
-  transform: translateY(-1px) !important;
-  box-shadow: 0 2px 8px rgba(247, 231, 206, 0.3) !important;
-}
-
-[data-coreui-theme="dark"] .pagination-modern .page-item.active .page-link {
-  background-color: #2C2C2C !important;
-  border-color: #F7E7CE !important;
-  color: #F7E7CE !important;
-  box-shadow: 0 4px 12px rgba(44, 44, 44, 0.3) !important;
-}
-
-  /* Dark theme specific pagination elements */
-  [data-coreui-theme="dark"] .pagination-info {
-    color: #F7E7CE !important;
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif !important;
-    font-weight: 500 !important;
-    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3) !important;
-  }
-  
-  [data-coreui-theme="dark"] .rows-per-page-label {
-    color: #F7E7CE !important;
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif !important;
-    font-weight: 500 !important;
-    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3) !important;
-  }
-
-[data-coreui-theme="dark"] .rows-per-page-select {
-  background-color: #3A3A3A !important;
-  border: 2px solid #E6D3B7 !important;
-  color: #F7E7CE !important;
-  border-radius: 8px !important;
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif !important;
-}
-
-[data-coreui-theme="dark"] .rows-per-page-select:focus {
-  background-color: #3A3A3A !important;
-  border-color: #F7E7CE !important;
-  color: #F7E7CE !important;
-  box-shadow: 0 0 0 0.25rem rgba(247, 231, 206, 0.25) !important;
-}
-
-/* Dark theme pagination comprehensive styling */
-[data-coreui-theme="dark"] .pagination-modern,
-[data-coreui-theme="dark"] .pagination {
-  background-color: transparent !important;
-}
-
-[data-coreui-theme="dark"] .pagination-modern .page-link,
-[data-coreui-theme="dark"] .pagination .page-link {
-  color: #F7E7CE !important;
-  background-color: #3A3A3A !important;
-  border: 2px solid #E6D3B7 !important;
-  font-weight: 600 !important;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5) !important;
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif !important;
-}
-
-[data-coreui-theme="dark"] .pagination-modern .page-link:hover,
-[data-coreui-theme="dark"] .pagination .page-link:hover {
-  color: #2C2C2C !important;
-  background-color: #F7E7CE !important;
-  border: 2px solid #2C2C2C !important;
-  text-shadow: none !important;
-  font-weight: 700 !important;
-}
-
-[data-coreui-theme="dark"] .pagination-modern .page-item.active .page-link,
-[data-coreui-theme="dark"] .pagination .page-item.active .page-link {
-  color: #F7E7CE !important;
-  background-color: #2C2C2C !important;
-  border: 2px solid #F7E7CE !important;
-  font-weight: 700 !important;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5) !important;
-}
-
-/* Additional pagination text elements */
-[data-coreui-theme="dark"] .pagination-modern span,
-[data-coreui-theme="dark"] .pagination span,
-[data-coreui-theme="dark"] .pagination-modern div,
-[data-coreui-theme="dark"] .pagination div {
-  color: #F7E7CE !important;
-  font-weight: 500 !important;
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif !important;
-}
-
-/* Ultra-specific pagination overrides for maximum readability */
-[data-coreui-theme="dark"] .page-link,
-[data-coreui-theme="dark"] .page-item .page-link,
-[data-coreui-theme="dark"] .pagination .page-link,
-[data-coreui-theme="dark"] .pagination-modern .page-link,
-[data-coreui-theme="dark"] .pagination-modern .page-item .page-link {
-  color: #F7E7CE !important;
-  background-color: #3A3A3A !important;
-  border: 2px solid #E6D3B7 !important;
-  font-weight: 700 !important;
-  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8) !important;
-  font-size: 14px !important;
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif !important;
-}
-
-[data-coreui-theme="dark"] .page-link:hover,
-[data-coreui-theme="dark"] .page-item .page-link:hover,
-[data-coreui-theme="dark"] .pagination .page-link:hover,
-[data-coreui-theme="dark"] .pagination-modern .page-link:hover,
-[data-coreui-theme="dark"] .pagination-modern .page-item .page-link:hover {
-  color: #2C2C2C !important;
-  background-color: #F7E7CE !important;
-  border: 2px solid #2C2C2C !important;
-  font-weight: 800 !important;
-  text-shadow: none !important;
-}
-
-[data-coreui-theme="dark"] .page-item.active .page-link,
-[data-coreui-theme="dark"] .pagination .page-item.active .page-link,
-[data-coreui-theme="dark"] .pagination-modern .page-item.active .page-link {
-  color: #F7E7CE !important;
-  background-color: #2C2C2C !important;
-  border: 2px solid #F7E7CE !important;
-  font-weight: 800 !important;
-  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8) !important;
-}
-
-/* Force all pagination text to be visible */
-[data-coreui-theme="dark"] .pagination *,
-[data-coreui-theme="dark"] .pagination-modern *,
-[data-coreui-theme="dark"] .page-link *,
-[data-coreui-theme="dark"] .page-item * {
-  color: #F7E7CE !important;
-  font-weight: 600 !important;
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif !important;
-}
-
-/* CRITICAL: Dark theme pagination readability fixes */
-[data-coreui-theme="dark"] .pagination-modern .page-link,
-[data-coreui-theme="dark"] .pagination .page-link,
-[data-coreui-theme="dark"] .page-link {
-  color: #F7E7CE !important;
-  background-color: #3A3A3A !important;
-  border: 2px solid #E6D3B7 !important;
-  font-weight: 700 !important;
-  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8) !important;
-  font-size: 14px !important;
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif !important;
-  text-decoration: none !important;
-  padding: 6px 10px !important;
-  border-radius: 4px !important;
-}
-
-[data-coreui-theme="dark"] .pagination-modern .page-link:hover,
-[data-coreui-theme="dark"] .pagination .page-link:hover,
-[data-coreui-theme="dark"] .page-link:hover {
-  color: #2C2C2C !important;
-  background-color: #F7E7CE !important;
-  border: 2px solid #2C2C2C !important;
-  font-weight: 800 !important;
-  text-shadow: none !important;
-}
-
-[data-coreui-theme="dark"] .pagination-modern .page-item.active .page-link,
-[data-coreui-theme="dark"] .pagination .page-item.active .page-link,
-[data-coreui-theme="dark"] .page-item.active .page-link {
-  color: #F7E7CE !important;
-  background-color: #2C2C2C !important;
-  border: 2px solid #F7E7CE !important;
-  font-weight: 800 !important;
-  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8) !important;
-}
-
-/* Pagination info and labels readability */
-[data-coreui-theme="dark"] .pagination-info,
-[data-coreui-theme="dark"] .rows-per-page-label,
-[data-coreui-theme="dark"] .pagination-modern .pagination-info,
-[data-coreui-theme="dark"] .pagination-modern .rows-per-page-label {
-  color: #F7E7CE !important;
-  font-weight: 600 !important;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5) !important;
-  font-size: 14px !important;
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif !important;
-}
-
-/* Dark theme specific general pagination styling */
-[data-coreui-theme="dark"] .pagination .page-link {
-  background-color: #3A3A3A !important;
-  border-color: #E6D3B7 !important;
-  color: #F7E7CE !important;
-  border-radius: 8px !important;
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif !important;
-  font-weight: 500 !important;
-  transition: all 0.3s ease !important;
-}
-
-[data-coreui-theme="dark"] .pagination .page-link:hover {
-  background-color: #F7E7CE !important;
-  border-color: #2C2C2C !important;
-  color: #2C2C2C !important;
-  transform: translateY(-1px) !important;
-  box-shadow: 0 2px 8px rgba(247, 231, 206, 0.3) !important;
-}
-
-[data-coreui-theme="dark"] .pagination .page-item.active .page-link {
-  background-color: #2C2C2C !important;
-  border-color: #F7E7CE !important;
-  color: #F7E7CE !important;
-  box-shadow: 0 4px 12px rgba(44, 44, 44, 0.3) !important;
-}
   
   /* Toast styling */
   .toast {
-    background-color: #3A3A3A;
-    border: 2px solid #E6D3B7;
-    color: #F7E7CE;
-    box-shadow: 0 8px 32px rgba(44, 44, 44, 0.3);
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    background-color: #1a1a2e;
+    border: 1px solid #5a9fd4;
+    color: #e1e1e6;
+    box-shadow: 0 8px 32px rgba(90, 159, 212, 0.2);
   }
   
   .toast-header {
-    background-color: #2C2C2C;
-    border-bottom: 2px solid #E6D3B7;
-    color: #F7E7CE;
-    font-weight: 600;
+    background-color: #5a9fd4;
+    border-bottom: 1px solid #5a9fd4;
+    color: #ffffff;
   }
   
   .toast-body {
-    background-color: #3A3A3A;
-    color: #F7E7CE;
+    background-color: #1a1a2e;
+    color: #e1e1e6;
   }
   
   .toast .btn-close {
@@ -4863,10 +3949,10 @@ hr {
     border-radius: 8px;
   }
   
-  /* About page specific styles - Champagne Elegance */
+  /* About page specific styles */
   .container-fluid {
-    background-color: #FAF9F6;
-    color: #2C2C2C;
+    background-color: #1e1e2d;
+    color: #e1e1e6;
   }
   
   .text-muted {
@@ -4940,112 +4026,112 @@ hr {
     background: #4a4a5a;
   }
   
-  /* Header styling - Champagne Elegance */
+  /* Header styling */
   .header-modern {
-    background-color: #2C2C2C;
+    background-color: #1e1e2d;
   }
   
   .page-title-text {
-    color: #F7E7CE;
+    color: #ffffff;
   }
   
   .page-breadcrumb {
-    color: #E6D3B7;
+    color: #b4b4c7;
   }
   
-  /* User profile dropdown - Champagne Elegance */
+  /* User profile dropdown */
   .user-profile {
-    color: #F7E7CE;
+    color: #e1e1e6;
   }
   
   .user-profile:hover {
-    background-color: #3A3A3A;
+    background-color: #3a3a4a;
   }
   
   .user-name {
-    color: #F7E7CE;
+    color: #ffffff;
   }
   
   .user-role {
-    color: #E6D3B7;
+    color: #b4b4c7;
   }
   
-  /* Action bar - Champagne Elegance */
+  /* Action bar */
   .action-bar {
-    background-color: #F7E7CE;
-    border: 1px solid #E6D3B7;
+    background-color: #2b2b3a;
+    border: 1px solid #3a3a4a;
   }
   
-  /* Search input - Champagne Elegance */
+  /* Search input */
   .search-input {
-    background-color: #F7E7CE;
-    border: 1px solid #E6D3B7;
-    color: #2C2C2C;
+    background-color: #2b2b3a;
+    border: 1px solid #3a3a4a;
+    color: #e1e1e6;
   }
   
   .search-input:focus {
-    background-color: #F7E7CE;
-    border-color: #2C2C2C;
-    color: #2C2C2C;
+    background-color: #2b2b3a;
+    border-color: #5a9fd4;
+    color: #e1e1e6;
   }
   
-  /* Table container - Champagne Elegance */
+  /* Table container */
   .table-container-scrollable {
-    background-color: #F7E7CE;
+    background-color: #2b2b3a;
   }
   
-  /* Pagination modern - Champagne Elegance */
+  /* Pagination modern */
   .pagination-modern {
-    background-color: #F7E7CE;
-    border-top: 1px solid #E6D3B7;
+    background-color: #2b2b3a;
+    border-top: 1px solid #3a3a4a;
   }
   
   .pagination-info {
-    color: #2C2C2C;
+    color: #b4b4c7;
   }
   
   .rows-per-page-label {
-    color: #2C2C2C;
+    color: #b4b4c7;
   }
   
   .rows-per-page-select {
-    background-color: #F7E7CE;
-    border: 1px solid #E6D3B7;
-    color: #2C2C2C;
+    background-color: #2b2b3a;
+    border: 1px solid #3a3a4a;
+    color: #e1e1e6;
   }
   
   .rows-per-page-select:hover {
-    border-color: #2C2C2C;
+    border-color: #5a9fd4;
   }
   
   .rows-per-page-select:focus {
-    border-color: #2C2C2C;
-    box-shadow: 0 0 0 3px rgba(44, 44, 44, 0.1);
+    border-color: #5a9fd4;
+    box-shadow: 0 0 0 3px rgba(90, 159, 212, 0.1);
   }
   
-  /* Pagination controls - Champagne Elegance */
+  /* Pagination controls */
   .pagination-link {
-    background-color: #F7E7CE;
-    border: 1px solid #E6D3B7;
-    color: #2C2C2C;
+    background-color: #2b2b3a;
+    border: 1px solid #3a3a4a;
+    color: #e1e1e6;
   }
   
   .pagination-link:hover {
-    background-color: #E6D3B7;
-    border-color: #2C2C2C;
-    color: #2C2C2C;
+    background-color: #3a3a4a;
+    border-color: #4a4a5a;
+    color: #ffffff;
   }
   
   .pagination-item.active .pagination-link {
-    background-color: #2C2C2C;
-    border-color: #2C2C2C;
-    color: #F7E7CE;
+    background-color: #5a9fd4;
+    border-color: #5a9fd4;
+    color: #ffffff;
   }
   
   .pagination-item.disabled .pagination-link {
-    background-color: #E6D3B7;
-    border-color: #E6D3B7;
-    color: #2C2C2C;
+    background-color: #1e1e2d;
+    border-color: #3a3a4a;
+    color: #6c757d;
   }
   
   /* Table action buttons */
@@ -5094,18 +4180,18 @@ hr {
     border-color: #5a9fd4;
   }
   
-  /* Main content area - Champagne Elegance */
+  /* Main content area */
   .main-content {
-    background-color: #FAF9F6;
+    background-color: #1e1e2d;
   }
   
   .content-area {
-    background-color: #FAF9F6;
+    background-color: #1e1e2d;
   }
   
-  /* Content container - Champagne Elegance */
+  /* Content container */
   .content-container {
-    background-color: #FAF9F6;
+    background-color: #1e1e2d;
   }
   
   /* Loading skeleton */
@@ -5118,212 +4204,68 @@ hr {
     outline: 2px solid #5a9fd4;
   }
   
-  /* Typography - Champagne Elegance */
+  /* Text colors */
   body {
-    color: #2C2C2C;
-    background-color: #FAF9F6;
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    font-weight: 400;
-    line-height: 1.6;
+    color: #e1e1e6;
+    background-color: #1e1e2d;
   }
   
   h1, h2, h3, h4, h5, h6 {
-    color: #2C2C2C;
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    font-weight: 700;
-    line-height: 1.3;
-    letter-spacing: -0.025em;
+    color: #ffffff;
   }
-  
-  h1 { font-size: 2.5rem; font-weight: 800; }
-  h2 { font-size: 2rem; font-weight: 700; }
-  h3 { font-size: 1.75rem; font-weight: 600; }
-  h4 { font-size: 1.5rem; font-weight: 600; }
-  h5 { font-size: 1.25rem; font-weight: 600; }
-  h6 { font-size: 1rem; font-weight: 600; }
   
   p, span, div {
-    color: #2C2C2C;
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    color: #e1e1e6;
   }
   
-  .text-muted {
-    color: #E6D3B7 !important;
-  }
-  
-  .text-primary {
-    color: #2C2C2C !important;
-  }
-  
-  .text-secondary {
-    color: #F7E7CE !important;
-  }
-  
-  /* Links - Champagne Elegance */
+  /* Links */
   a {
-    color: #2C2C2C;
-    text-decoration: none;
-    font-weight: 500;
-    transition: all 0.3s ease;
+    color: #5a9fd4;
   }
   
   a:hover {
-    color: #F7E7CE;
-    text-decoration: underline;
-    text-decoration-color: #E6D3B7;
+    color: #7bb3e6;
   }
   
-  a:focus {
-    color: #F7E7CE;
-    outline: 2px solid #E6D3B7;
-    outline-offset: 2px;
-    border-radius: 4px;
-  }
-  
-  /* Code and pre - Champagne Elegance */
+  /* Code and pre */
   code {
-    background-color: #3A3A3A;
-    color: #F7E7CE;
-    border: 1px solid #E6D3B7;
-    border-radius: 4px;
-    padding: 2px 6px;
-    font-family: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
+    background-color: #2b2b3a;
+    color: #e1e1e6;
+    border: 1px solid #3a3a4a;
   }
   
   pre {
-    background-color: #3A3A3A;
-    color: #F7E7CE;
-    border: 1px solid #E6D3B7;
-    border-radius: 8px;
-    padding: 16px;
-    font-family: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
+    background-color: #2b2b3a;
+    color: #e1e1e6;
+    border: 1px solid #3a3a4a;
   }
   
-  /* Blockquote - Champagne Elegance */
+  /* Blockquote */
   blockquote {
-    border-left-color: #E6D3B7;
-    color: #E6D3B7;
-    border-left-width: 4px;
-    padding-left: 16px;
-    font-style: italic;
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    border-left-color: #5a9fd4;
+    color: #b4b4c7;
   }
   
-  /* Selection - Champagne Elegance */
+  /* Selection */
   ::selection {
-    background-color: #E6D3B7;
-    color: #2C2C2C;
+    background-color: #5a9fd4;
+    color: #ffffff;
   }
   
   ::-moz-selection {
-    background-color: #E6D3B7;
-    color: #2C2C2C;
+    background-color: #5a9fd4;
+    color: #ffffff;
   }
   
-  /* Placeholder - Champagne Elegance */
+  /* Placeholder */
   ::placeholder {
-    color: #E6D3B7;
-    opacity: 0.8;
+    color: #6c757d;
   }
   
-  /* Disabled elements - Champagne Elegance */
+  /* Disabled elements */
   .form-control:disabled,
   .form-select:disabled {
-    background-color: #2C2C2C;
-    color: #E6D3B7;
-    border-color: #3A3A3A;
-    opacity: 0.6;
+    background-color: #1e1e2d;
+    color: #6c757d;
   }
-}
-
-  /* CRITICAL OVERRIDE - Force active and show nav-link text color */
-  [data-coreui-theme="dark"] .nav-link.active,
-  [data-coreui-theme="dark"] .nav-link.show,
-  [data-coreui-theme="dark"] .sidebar .nav-link.active,
-  [data-coreui-theme="dark"] .sidebar .nav-link.show,
-  [data-coreui-theme="dark"] .sidebar-modern .nav-link.active,
-  [data-coreui-theme="dark"] .sidebar-modern .nav-link.show,
-  [data-coreui-theme="dark"] .sidebar-nav .nav-link.active,
-  [data-coreui-theme="dark"] .sidebar-nav .nav-link.show {
-    color: #FAF9F6 !important;
-    background-color: #2C2C2C !important;
-    border: none !important;
-    box-shadow: none !important;
-  }
-  
-  [data-coreui-theme="dark"] .nav-link.active *,
-  [data-coreui-theme="dark"] .nav-link.show *,
-  [data-coreui-theme="dark"] .sidebar .nav-link.active *,
-  [data-coreui-theme="dark"] .sidebar .nav-link.show *,
-  [data-coreui-theme="dark"] .sidebar-modern .nav-link.active *,
-  [data-coreui-theme="dark"] .sidebar-modern .nav-link.show *,
-  [data-coreui-theme="dark"] .sidebar-nav .nav-link.active *,
-  [data-coreui-theme="dark"] .sidebar-nav .nav-link.show * {
-    color: #FAF9F6 !important;
-  }
-
-/* Additional specific .show class styling */
-[data-coreui-theme="dark"] .nav-link.show {
-  color: #FAF9F6 !important;
-  background-color: #2C2C2C !important;
-  border: none !important;
-  box-shadow: none !important;
-}
-
-[data-coreui-theme="dark"] .nav-link.show * {
-  color: #FAF9F6 !important;
-}
-
-[data-coreui-theme="dark"] .sidebar .nav-link.show {
-  color: #FAF9F6 !important;
-  background-color: #2C2C2C !important;
-  border: none !important;
-  box-shadow: none !important;
-}
-
-[data-coreui-theme="dark"] .sidebar .nav-link.show * {
-  color: #FAF9F6 !important;
-}
-
-[data-coreui-theme="dark"] .sidebar-modern .nav-link.show {
-  color: #FAF9F6 !important;
-  background-color: #2C2C2C !important;
-  border: none !important;
-  box-shadow: none !important;
-}
-
-[data-coreui-theme="dark"] .sidebar-modern .nav-link.show * {
-  color: #FAF9F6 !important;
-}
-
-[data-coreui-theme="dark"] .sidebar-nav .nav-link.show {
-  color: #FAF9F6 !important;
-  background-color: #2C2C2C !important;
-  border: none !important;
-  box-shadow: none !important;
-}
-
-[data-coreui-theme="dark"] .sidebar-nav .nav-link.show * {
-  color: #FAF9F6 !important;
-}
-
-/* Specific styling for .nav-text with parent .show class */
-[data-coreui-theme="dark"] .nav-link.show .nav-text,
-[data-coreui-theme="dark"] .sidebar .nav-link.show .nav-text,
-[data-coreui-theme="dark"] .sidebar-modern .nav-link.show .nav-text,
-[data-coreui-theme="dark"] .sidebar-nav .nav-link.show .nav-text {
-  color: #FAF9F6 !important;
-}
-
-/* Additional specific selectors for nav-text in show state */
-[data-coreui-theme="dark"] .show .nav-text {
-  color: #FAF9F6 !important;
-}
-
-[data-coreui-theme="dark"] .nav-link.show .nav-text * {
-  color: #FAF9F6 !important;
-}
-
-[data-coreui-theme="dark"] .show .nav-text * {
-  color: #FAF9F6 !important;
 }

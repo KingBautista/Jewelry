@@ -17,7 +17,7 @@ export default function PaymentTerms() {
   
   // Grouping states that are related
   const [dataStatus, setDataStatus] = useState({
-    totalRows: 0,
+    totalRows: 0, 
     totalTrash: 0,
     classAll: 'current',
     classTrash: null,
@@ -268,7 +268,7 @@ export default function PaymentTerms() {
         <div className="card-header d-flex justify-content-between align-items-center border-0">
           <h4>Payment Terms</h4>
         </div>
-        <div className="card-header pb-0 pt-0 border-0">
+        <div className="px-4" style={{ paddingTop: '0.50rem' }}>
           <div className="row"> 
             <div className="col-md-7 col-12">
                <div className="d-flex align-items-center gap-2">
