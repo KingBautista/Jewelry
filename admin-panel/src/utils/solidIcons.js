@@ -45,7 +45,19 @@ import {
   faList,
   faPrint,
   faCashRegister,
-  faFilter
+  faFilter,
+  faSyncAlt,
+  faDollarSign,
+  faChartLine,
+  faChartPie,
+  faExclamationCircle,
+  faCheckCircle,
+  faTimesCircle,
+  faCalculator,
+  faTag,
+  faPercent,
+  faCreditCard,
+  faHistory
 } from '@fortawesome/free-solid-svg-icons';
 
 export const solidIconMap = {
@@ -92,5 +104,18 @@ export const solidIconMap = {
   list: faList,
   print: faPrint,
   cashRegister: faCashRegister,
-  filter: faFilter
+  filter: faFilter,
+  refresh: faSyncAlt,
+  dollarSign: faDollarSign,
+  chartLine: faChartLine,
+  chartPie: faChartPie,
+  exclamationCircle: faExclamationCircle,
+  checkCircle: faCheckCircle,
+  timesCircle: faTimesCircle,
+  calculator: faCalculator,
+  tag: faTag,
+  percent: faPercent,
+  calendarAlt: faCalendarAlt,
+  creditCard: faCreditCard,
+  history: faHistory
 };

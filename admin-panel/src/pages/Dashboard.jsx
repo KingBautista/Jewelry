@@ -132,12 +132,12 @@ export default function Dashboard() {
 					datasets: [{
 						data: [dashboardData.paymentBreakdown.paid, dashboardData.paymentBreakdown.pending],
 						backgroundColor: [
-							'#198754', // Bootstrap success color
-							'#ffc107'  // Bootstrap warning color
+							'#10b981', // Emerald green for paid
+							'#f59e0b'  // Amber for pending
 						],
 						borderColor: [
-							'#146c43', // Darker success
-							'#e0a800'  // Darker warning
+							'#059669', // Darker emerald
+							'#d97706'  // Darker amber
 						],
 						borderWidth: 2,
 						hoverOffset: 4
@@ -154,10 +154,16 @@ export default function Dashboard() {
 								usePointStyle: true,
 								font: {
 									size: 10
-								}
+								},
+								color: '#2C2C2C'
 							}
 						},
 						tooltip: {
+							backgroundColor: '#F7E7CE',
+							titleColor: '#2C2C2C',
+							bodyColor: '#2C2C2C',
+							borderColor: '#E6D3B7',
+							borderWidth: 1,
 							callbacks: {
 								label: function(context) {
 									const label = context.label || '';
@@ -232,10 +238,10 @@ export default function Dashboard() {
 				<div className="col-12">
 					<div className="card">
 						<div className="card-body text-center">
-							<FontAwesomeIcon icon={solidIconMap.calendar} className="mb-3 text-primary" size="3x" />
-							<h3 className="card-title">Financial Dashboard</h3>
-							<p className="card-text text-muted">Quick view of financial health and customer activity</p>
-							<h5 className="text-info">{getCurrentDate()}</h5>
+							<FontAwesomeIcon icon={solidIconMap.calendar} className="mb-3" style={{ color: '#2C2C2C' }} size="3x" />
+							<h3 className="card-title" style={{ color: '#2C2C2C' }}>Financial Dashboard</h3>
+							<p className="card-text" style={{ color: '#2C2C2C' }}>Quick view of financial health and customer activity</p>
+							<h5 style={{ color: '#2C2C2C' }}>{getCurrentDate()}</h5>
 							<button className="btn btn-outline-primary btn-sm mt-2" onClick={fetchDashboardData}>
 								<FontAwesomeIcon icon={solidIconMap.refresh} className="me-1" />
 								Refresh Data
@@ -250,9 +256,9 @@ export default function Dashboard() {
 				<div className="col-md-4">
 					<div className="card text-center h-100 border-success">
 						<div className="card-body">
-							<FontAwesomeIcon icon={solidIconMap.chart} className="mb-2 text-success" size="2x" />
-							<h6 className="card-title">Current Month Revenue</h6>
-							<p className="card-text fs-4 fw-bold text-success">{formatCurrency(dashboardData.revenue.currentMonth)}</p>
+							<FontAwesomeIcon icon={solidIconMap.dollarSign} className="mb-2" style={{ color: '#10b981' }} size="2x" />
+							<h6 className="card-title" style={{ color: '#2C2C2C' }}>Current Month Revenue</h6>
+							<p className="card-text fs-4 fw-bold" style={{ color: '#10b981' }}>{formatCurrency(dashboardData.revenue.currentMonth)}</p>
 							{dashboardData.revenue.growthPercentage !== 0 && (
 								<small className={`badge ${dashboardData.revenue.growthPercentage > 0 ? 'text-bg-success' : 'text-bg-danger'}`}>
 									{dashboardData.revenue.growthPercentage > 0 ? '+' : ''}{dashboardData.revenue.growthPercentage}% vs last month
@@ -264,18 +270,18 @@ export default function Dashboard() {
 				<div className="col-md-4">
 					<div className="card text-center h-100 border-info">
 						<div className="card-body">
-							<FontAwesomeIcon icon={solidIconMap.chart} className="mb-2 text-info" size="2x" />
-							<h6 className="card-title">Previous Month Revenue</h6>
-							<p className="card-text fs-4 fw-bold text-info">{formatCurrency(dashboardData.revenue.previousMonth)}</p>
+							<FontAwesomeIcon icon={solidIconMap.chartLine} className="mb-2" style={{ color: '#3b82f6' }} size="2x" />
+							<h6 className="card-title" style={{ color: '#2C2C2C' }}>Previous Month Revenue</h6>
+							<p className="card-text fs-4 fw-bold" style={{ color: '#3b82f6' }}>{formatCurrency(dashboardData.revenue.previousMonth)}</p>
 						</div>
 					</div>
 				</div>
 				<div className="col-md-4">
 					<div className="card text-center h-100 border-primary">
 						<div className="card-body">
-							<FontAwesomeIcon icon={solidIconMap.chart} className="mb-2 text-primary" size="2x" />
-							<h6 className="card-title">Yearly Total Revenue</h6>
-							<p className="card-text fs-4 fw-bold text-primary">{formatCurrency(dashboardData.revenue.yearlyTotal)}</p>
+							<FontAwesomeIcon icon={solidIconMap.chartPie} className="mb-2" style={{ color: '#8b5cf6' }} size="2x" />
+							<h6 className="card-title" style={{ color: '#2C2C2C' }}>Yearly Total Revenue</h6>
+							<p className="card-text fs-4 fw-bold" style={{ color: '#8b5cf6' }}>{formatCurrency(dashboardData.revenue.yearlyTotal)}</p>
 						</div>
 					</div>
 				</div>
@@ -286,17 +292,17 @@ export default function Dashboard() {
 				<div className="col-md-6">
 					<div className="card text-center border-warning">
 						<div className="card-body">
-							<FontAwesomeIcon icon={solidIconMap.exclamationTriangle} className="mb-2 text-warning" size="2x" />
-							<h6 className="card-title">Outstanding Balances</h6>
-							<p className="card-text fs-3 fw-bold text-warning">{formatCurrency(dashboardData.outstandingBalances)}</p>
-							<small className="text-muted">Total unpaid amounts across all customers</small>
+							<FontAwesomeIcon icon={solidIconMap.exclamationCircle} className="mb-2" style={{ color: '#f59e0b' }} size="2x" />
+							<h6 className="card-title" style={{ color: '#2C2C2C' }}>Outstanding Balances</h6>
+							<p className="card-text fs-3 fw-bold" style={{ color: '#f59e0b' }}>{formatCurrency(dashboardData.outstandingBalances)}</p>
+							<small style={{ color: '#2C2C2C' }}>Total unpaid amounts across all customers</small>
 						</div>
 					</div>
 				</div>
 				<div className="col-md-6">
 					<div className="card">
 						<div className="card-header">
-							<h6 className="mb-0">
+							<h6 className="mb-0" style={{ color: '#2C2C2C' }}>
 								<FontAwesomeIcon icon={solidIconMap.file} className="me-2" />
 								Invoice Statistics
 							</h6>
@@ -305,19 +311,19 @@ export default function Dashboard() {
 							<div className="row text-center">
 								<div className="col-4">
 									<div className="border-end">
-										<h5 className="text-primary">{dashboardData.invoiceStats.totalIssued}</h5>
-										<small className="text-muted">Total Issued</small>
+										<h5 style={{ color: '#3b82f6' }}>{dashboardData.invoiceStats.totalIssued}</h5>
+										<small style={{ color: '#2C2C2C' }}>Total Issued</small>
 									</div>
 								</div>
 								<div className="col-4">
 									<div className="border-end">
-										<h5 className="text-primary">{dashboardData.invoiceStats.totalSent}</h5>
-										<small className="text-muted">Total Sent</small>
+										<h5 style={{ color: '#3b82f6' }}>{dashboardData.invoiceStats.totalSent}</h5>
+										<small style={{ color: '#2C2C2C' }}>Total Sent</small>
 									</div>
 								</div>
 								<div className="col-4">
-									<h5 className="text-danger">{dashboardData.invoiceStats.totalCancelled}</h5>
-									<small className="text-muted">Total Cancelled</small>
+									<h5 style={{ color: '#ef4444' }}>{dashboardData.invoiceStats.totalCancelled}</h5>
+									<small style={{ color: '#2C2C2C' }}>Total Cancelled</small>
 								</div>
 							</div>
 						</div>
@@ -330,8 +336,8 @@ export default function Dashboard() {
 				<div className="col-md-6">
 					<div className="card">
 						<div className="card-header">
-							<h6 className="mb-0">
-								<FontAwesomeIcon icon={solidIconMap.chart} className="me-2" />
+							<h6 className="mb-0" style={{ color: '#2C2C2C' }}>
+								<FontAwesomeIcon icon={solidIconMap.chartPie} className="me-2" />
 								Payment Breakdown
 							</h6>
 						</div>
@@ -340,19 +346,19 @@ export default function Dashboard() {
 								<div className="col-6">
 									<div className="p-2">
 										<div className="d-flex align-items-center justify-content-center mb-1">
-											<div className="bg-success rounded-circle me-2" style={{ width: '16px', height: '16px' }}></div>
-											<h6 className="text-success mb-0">{formatCurrency(dashboardData.paymentBreakdown.paid)}</h6>
+											<div className="rounded-circle me-2" style={{ width: '16px', height: '16px', backgroundColor: '#10b981' }}></div>
+											<h6 className="mb-0" style={{ color: '#10b981' }}>{formatCurrency(dashboardData.paymentBreakdown.paid)}</h6>
 										</div>
-										<small className="text-muted">Paid ({calculatePercentage(dashboardData.paymentBreakdown.paid, dashboardData.paymentBreakdown.paid + dashboardData.paymentBreakdown.pending)}%)</small>
+										<small style={{ color: '#2C2C2C' }}>Paid ({calculatePercentage(dashboardData.paymentBreakdown.paid, dashboardData.paymentBreakdown.paid + dashboardData.paymentBreakdown.pending)}%)</small>
 									</div>
 								</div>
 								<div className="col-6">
 									<div className="p-2">
 										<div className="d-flex align-items-center justify-content-center mb-1">
-											<div className="bg-warning rounded-circle me-2" style={{ width: '16px', height: '16px' }}></div>
-											<h6 className="text-warning mb-0">{formatCurrency(dashboardData.paymentBreakdown.pending)}</h6>
+											<div className="rounded-circle me-2" style={{ width: '16px', height: '16px', backgroundColor: '#f59e0b' }}></div>
+											<h6 className="mb-0" style={{ color: '#f59e0b' }}>{formatCurrency(dashboardData.paymentBreakdown.pending)}</h6>
 										</div>
-										<small className="text-muted">Pending ({calculatePercentage(dashboardData.paymentBreakdown.pending, dashboardData.paymentBreakdown.paid + dashboardData.paymentBreakdown.pending)}%)</small>
+										<small style={{ color: '#2C2C2C' }}>Pending ({calculatePercentage(dashboardData.paymentBreakdown.pending, dashboardData.paymentBreakdown.paid + dashboardData.paymentBreakdown.pending)}%)</small>
 									</div>
 								</div>
 							</div>
@@ -365,38 +371,38 @@ export default function Dashboard() {
 				<div className="col-md-6">
 					<div className="card">
 						<div className="card-header">
-							<h6 className="mb-0">
+							<h6 className="mb-0" style={{ color: '#2C2C2C' }}>
 								<FontAwesomeIcon icon={solidIconMap.users} className="me-2" />
 								Top Customers
 							</h6>
 						</div>
 						<div className="card-body" style={{ padding: '0.25rem' }}>
 							<div className="dashboard-table-responsive">
-								<table className="table table-sm table-borderless mb-0" style={{ marginBottom: '0', marginTop: '0' }}>
+								<table className="table table-sm table-modern mb-0" style={{ marginBottom: '0', marginTop: '0' }}>
 									<thead>
 										<tr style={{ margin: '0' }}>
-											<th style={{ fontSize: '0.8rem', padding: '0.25rem', borderBottom: '1px solid #dee2e6', margin: '0' }}>Customer</th>
-											<th style={{ fontSize: '0.8rem', padding: '0.25rem', borderBottom: '1px solid #dee2e6', margin: '0' }}>Items</th>
-											<th style={{ fontSize: '0.8rem', padding: '0.25rem', borderBottom: '1px solid #dee2e6', margin: '0' }}>Total Amount</th>
+											<th style={{ fontSize: '0.8rem', padding: '0.25rem', margin: '0', color: '#F7E7CE' }}>Customer</th>
+											<th style={{ fontSize: '0.8rem', padding: '0.25rem', margin: '0', color: '#F7E7CE' }}>Items</th>
+											<th style={{ fontSize: '0.8rem', padding: '0.25rem', margin: '0', color: '#F7E7CE' }}>Total Amount</th>
 										</tr>
 									</thead>
 									<tbody style={{ margin: '0' }}>
 										{dashboardData.topCustomers.length > 0 ? (
 											dashboardData.topCustomers.map((customer, index) => (
 												<tr key={index} style={{ margin: '0' }}>
-													<td style={{ padding: '0.25rem', margin: '0' }}>
+													<td style={{ padding: '0.25rem', margin: '0', color: '#F7E7CE' }}>
 														<span className={`badge text-bg-${index === 0 ? 'warning' : index === 1 ? 'secondary' : index === 2 ? 'info' : 'light'}`}>
 															#{index + 1}
 														</span>
 														{' '}{customer.username}
 													</td>
-													<td style={{ padding: '0.25rem', margin: '0' }}>{customer.items}</td>
-													<td className="fw-bold" style={{ padding: '0.25rem', margin: '0' }}>{formatCurrency(customer.totalAmount)}</td>
+													<td style={{ padding: '0.25rem', margin: '0', color: '#F7E7CE' }}>{customer.items}</td>
+													<td className="fw-bold" style={{ padding: '0.25rem', margin: '0', color: '#F7E7CE' }}>{formatCurrency(customer.totalAmount)}</td>
 												</tr>
 											))
 										) : (
 											<tr>
-												<td colSpan="3" className="text-center text-muted py-3">No customer data available</td>
+												<td colSpan="3" className="text-center py-3" style={{ color: '#F7E7CE' }}>No customer data available</td>
 											</tr>
 										)}
 									</tbody>
@@ -412,39 +418,39 @@ export default function Dashboard() {
 				<div className="col-12">
 					<div className="card">
 						<div className="card-header">
-							<h6 className="mb-0">
+							<h6 className="mb-0" style={{ color: '#2C2C2C' }}>
 								<FontAwesomeIcon icon={solidIconMap.users} className="me-2" />
 								Customer Summary
 							</h6>
 						</div>
 						<div className="card-body" style={{ padding: '0.25rem' }}>
 							<div className="dashboard-table-responsive">
-								<table className="table table-sm table-striped table-hover mb-0" style={{ marginBottom: '0', marginTop: '0' }}>
-									<thead className="table-dark">
+								<table className="table table-sm table-modern table-striped table-hover mb-0" style={{ marginBottom: '0', marginTop: '0' }}>
+									<thead>
 										<tr style={{ margin: '0' }}>
-											<th style={{ fontSize: '0.8rem', padding: '0.25rem', margin: '0' }}>Username</th>
-											<th style={{ fontSize: '0.8rem', padding: '0.25rem', margin: '0' }}>Items</th>
-											<th style={{ fontSize: '0.8rem', padding: '0.25rem', margin: '0' }}>Paid</th>
-											<th style={{ fontSize: '0.8rem', padding: '0.25rem', margin: '0' }}>Pending</th>
-											<th style={{ fontSize: '0.8rem', padding: '0.25rem', margin: '0' }}>Total</th>
+											<th style={{ fontSize: '0.8rem', padding: '0.25rem', margin: '0', color: '#F7E7CE' }}>Username</th>
+											<th style={{ fontSize: '0.8rem', padding: '0.25rem', margin: '0', color: '#F7E7CE' }}>Items</th>
+											<th style={{ fontSize: '0.8rem', padding: '0.25rem', margin: '0', color: '#F7E7CE' }}>Paid</th>
+											<th style={{ fontSize: '0.8rem', padding: '0.25rem', margin: '0', color: '#F7E7CE' }}>Pending</th>
+											<th style={{ fontSize: '0.8rem', padding: '0.25rem', margin: '0', color: '#F7E7CE' }}>Total</th>
 										</tr>
 									</thead>
 									<tbody style={{ margin: '0' }}>
 										{dashboardData.customerSummary.length > 0 ? (
 											dashboardData.customerSummary.map((customer, index) => (
 												<tr key={index} style={{ margin: '0' }}>
-													<td className="fw-bold" style={{ padding: '0.25rem', margin: '0' }}>{customer.username}</td>
+													<td className="fw-bold" style={{ padding: '0.25rem', margin: '0', color: '#F7E7CE' }}>{customer.username}</td>
 													<td style={{ padding: '0.25rem', margin: '0' }}>
 														<span className="badge bg-info">{customer.items}</span>
 													</td>
-													<td className="text-success fw-bold" style={{ padding: '0.25rem', margin: '0' }}>{formatCurrency(customer.paid)}</td>
-													<td className="text-warning fw-bold" style={{ padding: '0.25rem', margin: '0' }}>{formatCurrency(customer.pending)}</td>
-													<td className="fw-bold" style={{ padding: '0.25rem', margin: '0' }}>{formatCurrency(customer.total)}</td>
+													<td className="fw-bold" style={{ padding: '0.25rem', margin: '0', color: '#10b981' }}>{formatCurrency(customer.paid)}</td>
+													<td className="fw-bold" style={{ padding: '0.25rem', margin: '0', color: '#f59e0b' }}>{formatCurrency(customer.pending)}</td>
+													<td className="fw-bold" style={{ padding: '0.25rem', margin: '0', color: '#F7E7CE' }}>{formatCurrency(customer.total)}</td>
 												</tr>
 											))
 										) : (
 											<tr>
-												<td colSpan="5" className="text-center text-muted py-3">No customer data available</td>
+												<td colSpan="5" className="text-center py-3" style={{ color: '#F7E7CE' }}>No customer data available</td>
 											</tr>
 										)}
 									</tbody>
@@ -460,21 +466,21 @@ export default function Dashboard() {
 				<div className="col-12">
 					<div className="card">
 						<div className="card-header">
-							<h6 className="mb-0">
+							<h6 className="mb-0" style={{ color: '#2C2C2C' }}>
 								<FontAwesomeIcon icon={solidIconMap.list} className="me-2" />
 								Payment Status Breakdown
 							</h6>
 						</div>
 						<div className="card-body" style={{ padding: '0.25rem' }}>
 							<div className="dashboard-table-responsive">
-								<table className="table table-sm table-striped table-hover mb-0" style={{ marginBottom: '0', marginTop: '0' }}>
-									<thead className="table-dark">
+								<table className="table table-sm table-modern table-striped table-hover mb-0" style={{ marginBottom: '0', marginTop: '0' }}>
+									<thead>
 										<tr style={{ margin: '0' }}>
-											<th style={{ fontSize: '0.8rem', padding: '0.25rem', margin: '0' }}>Status</th>
-											<th style={{ fontSize: '0.8rem', padding: '0.25rem', margin: '0' }}>Count</th>
-											<th style={{ fontSize: '0.8rem', padding: '0.25rem', margin: '0' }}>Total Amount</th>
-											<th style={{ fontSize: '0.8rem', padding: '0.25rem', margin: '0' }}>Paid</th>
-											<th style={{ fontSize: '0.8rem', padding: '0.25rem', margin: '0' }}>Remaining</th>
+											<th style={{ fontSize: '0.8rem', padding: '0.25rem', margin: '0', color: '#F7E7CE' }}>Status</th>
+											<th style={{ fontSize: '0.8rem', padding: '0.25rem', margin: '0', color: '#F7E7CE' }}>Count</th>
+											<th style={{ fontSize: '0.8rem', padding: '0.25rem', margin: '0', color: '#F7E7CE' }}>Total Amount</th>
+											<th style={{ fontSize: '0.8rem', padding: '0.25rem', margin: '0', color: '#F7E7CE' }}>Paid</th>
+											<th style={{ fontSize: '0.8rem', padding: '0.25rem', margin: '0', color: '#F7E7CE' }}>Remaining</th>
 										</tr>
 									</thead>
 									<tbody style={{ margin: '0' }}>
@@ -486,15 +492,15 @@ export default function Dashboard() {
 															{status.replace('_', ' ').toUpperCase()}
 														</span>
 													</td>
-													<td style={{ padding: '0.25rem', margin: '0' }}>{data.count}</td>
-													<td className="fw-bold" style={{ padding: '0.25rem', margin: '0' }}>{formatCurrency(data.total_amount)}</td>
-													<td className="text-success fw-bold" style={{ padding: '0.25rem', margin: '0' }}>{formatCurrency(data.total_paid)}</td>
-													<td className="text-warning fw-bold" style={{ padding: '0.25rem', margin: '0' }}>{formatCurrency(data.remaining_balance)}</td>
+													<td style={{ padding: '0.25rem', margin: '0', color: '#F7E7CE' }}>{data.count}</td>
+													<td className="fw-bold" style={{ padding: '0.25rem', margin: '0', color: '#F7E7CE' }}>{formatCurrency(data.total_amount)}</td>
+													<td className="fw-bold" style={{ padding: '0.25rem', margin: '0', color: '#10b981' }}>{formatCurrency(data.total_paid)}</td>
+													<td className="fw-bold" style={{ padding: '0.25rem', margin: '0', color: '#f59e0b' }}>{formatCurrency(data.remaining_balance)}</td>
 												</tr>
 											))
 										) : (
 											<tr>
-												<td colSpan="5" className="text-center text-muted py-3">No payment data available</td>
+												<td colSpan="5" className="text-center py-3" style={{ color: '#F7E7CE' }}>No payment data available</td>
 											</tr>
 										)}
 									</tbody>

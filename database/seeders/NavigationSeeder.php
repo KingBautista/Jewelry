@@ -17,7 +17,7 @@ class NavigationSeeder extends Seeder
             'user_management' => Navigation::create([
                 'name' => 'User Management',
                 'slug' => 'user-management',
-                'icon' => 'fi-br-user',
+                'icon' => 'users',
                 'parent_id' => null,
                 'active' => 1,
                 'show_in_menu' => 1
@@ -25,7 +25,7 @@ class NavigationSeeder extends Seeder
             'invoice_management' => Navigation::create([
                 'name' => 'Invoice Management',
                 'slug' => 'invoice-management',
-                'icon' => 'fi-br-document',
+                'icon' => 'file',
                 'parent_id' => null,
                 'active' => 1,
                 'show_in_menu' => 1
@@ -33,7 +33,7 @@ class NavigationSeeder extends Seeder
             'payment_management' => Navigation::create([
                 'name' => 'Payment Management',
                 'slug' => 'payment-management',
-                'icon' => 'fi-br-credit-card',
+                'icon' => 'dollarSign',
                 'parent_id' => null,
                 'active' => 1,
                 'show_in_menu' => 1
@@ -41,7 +41,7 @@ class NavigationSeeder extends Seeder
             'customer_management' => Navigation::create([
                 'name' => 'Customer Management',
                 'slug' => 'customer-management',
-                'icon' => 'fi-br-woman-head',
+                'icon' => 'user',
                 'parent_id' => null,
                 'active' => 1,
                 'show_in_menu' => 1
@@ -49,7 +49,7 @@ class NavigationSeeder extends Seeder
             'financial_management' => Navigation::create([
                 'name' => 'Financial Management',
                 'slug' => 'financial-management',
-                'icon' => 'fi-br-dollar',
+                'icon' => 'chartLine',
                 'parent_id' => null,
                 'active' => 1,
                 'show_in_menu' => 1
@@ -57,7 +57,7 @@ class NavigationSeeder extends Seeder
             'system_settings' => Navigation::create([
                 'name' => 'System Settings',
                 'slug' => 'system-settings',
-                'icon' => 'fi-br-settings',
+                'icon' => 'cog',
                 'parent_id' => null,
                 'active' => 1,
                 'show_in_menu' => 1
@@ -70,7 +70,7 @@ class NavigationSeeder extends Seeder
             [
                 'name' => 'All Users',
                 'slug' => 'user-management/users',
-                'icon' => 'fi-br-user',
+                'icon' => 'users',
                 'parent_id' => $parents['user_management']->id,
                 'active' => 1,
                 'show_in_menu' => 1
@@ -78,7 +78,7 @@ class NavigationSeeder extends Seeder
             [
                 'name' => 'Permission Settings',
                 'slug' => 'user-management/roles',
-                'icon' => 'fi-br-lock',
+                'icon' => 'lock',
                 'parent_id' => $parents['user_management']->id,
                 'active' => 1,
                 'show_in_menu' => 1
@@ -88,7 +88,7 @@ class NavigationSeeder extends Seeder
             [
                 'name' => 'All Invoices',
                 'slug' => 'invoice-management/invoices',
-                'icon' => 'fi-br-file',
+                'icon' => 'file',
                 'parent_id' => $parents['invoice_management']->id,
                 'active' => 1,
                 'show_in_menu' => 1
@@ -98,7 +98,7 @@ class NavigationSeeder extends Seeder
             [
                 'name' => 'All Payments',
                 'slug' => 'payment-management/payments',
-                'icon' => 'fi-br-dollar',
+                'icon' => 'dollarSign',
                 'parent_id' => $parents['payment_management']->id,
                 'active' => 1,
                 'show_in_menu' => 1
@@ -108,7 +108,7 @@ class NavigationSeeder extends Seeder
             [
                 'name' => 'All Customers',
                 'slug' => 'customer-management/customers',
-                'icon' => 'fi-br-user',
+                'icon' => 'user',
                 'parent_id' => $parents['customer_management']->id,
                 'active' => 1,
                 'show_in_menu' => 1
@@ -118,7 +118,7 @@ class NavigationSeeder extends Seeder
             [
                 'name' => 'Taxes',
                 'slug' => 'financial-management/taxes',
-                'icon' => 'fi-br-calculator',
+                'icon' => 'calculator',
                 'parent_id' => $parents['financial_management']->id,
                 'active' => 1,
                 'show_in_menu' => 1
@@ -126,7 +126,7 @@ class NavigationSeeder extends Seeder
             [
                 'name' => 'Fees',
                 'slug' => 'financial-management/fees',
-                'icon' => 'fi-br-tag',
+                'icon' => 'tag',
                 'parent_id' => $parents['financial_management']->id,
                 'active' => 1,
                 'show_in_menu' => 1
@@ -134,7 +134,7 @@ class NavigationSeeder extends Seeder
             [
                 'name' => 'Discounts',
                 'slug' => 'financial-management/discounts',
-                'icon' => 'fi-br-percentage',
+                'icon' => 'percent',
                 'parent_id' => $parents['financial_management']->id,
                 'active' => 1,
                 'show_in_menu' => 1
@@ -142,7 +142,7 @@ class NavigationSeeder extends Seeder
             [
                 'name' => 'Payment Terms',
                 'slug' => 'financial-management/payment-terms',
-                'icon' => 'fi-br-calendar',
+                'icon' => 'calendarAlt',
                 'parent_id' => $parents['financial_management']->id,
                 'active' => 1,
                 'show_in_menu' => 1
@@ -150,7 +150,7 @@ class NavigationSeeder extends Seeder
             [
                 'name' => 'Payment Methods',
                 'slug' => 'financial-management/payment-methods',
-                'icon' => 'fi-br-credit-card',
+                'icon' => 'creditCard',
                 'parent_id' => $parents['financial_management']->id,
                 'active' => 1,
                 'show_in_menu' => 1
@@ -160,7 +160,7 @@ class NavigationSeeder extends Seeder
             [
                 'name' => 'Navigation Settings',
                 'slug' => 'system-settings/navigation',
-                'icon' => 'fi-br-list',
+                'icon' => 'list',
                 'parent_id' => $parents['system_settings']->id,
                 'active' => 1,
                 'show_in_menu' => 1
@@ -168,7 +168,7 @@ class NavigationSeeder extends Seeder
             [
                 'name' => 'Audit Trail',
                 'slug' => 'system-settings/audit-trail',
-                'icon' => 'fi-br-history',
+                'icon' => 'history',
                 'parent_id' => $parents['system_settings']->id,
                 'active' => 1,
                 'show_in_menu' => 1

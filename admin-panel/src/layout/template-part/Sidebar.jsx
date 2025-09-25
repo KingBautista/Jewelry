@@ -1,6 +1,8 @@
 import { Link, useLocation } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { useStateContext } from "../../contexts/AuthProvider";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { solidIconMap } from '../../utils/solidIcons';
 
 export default function Sidebar() {
   const { userRoutes } = useStateContext();
@@ -44,9 +46,7 @@ export default function Sidebar() {
       <div className="nav-group-header">
         <Link to="/dashboard" className={`nav-link ${isPathActive('/dashboard') ? "active" : ""}`}>
           <div className="nav-icon">
-            <svg className="nav-icon-svg">
-              <use xlinkHref="/assets/new-icons/icons-bold/fi-br-apps.svg" />
-            </svg>
+            <FontAwesomeIcon icon={solidIconMap.home} />
           </div>
           <span className="nav-text">Dashboard</span>
         </Link>
@@ -56,7 +56,7 @@ export default function Sidebar() {
     ...userRoutes.map((navItem, idx) => {
       if (navItem.side_nav === "true") {
         const hasChildren = Array.isArray(navItem.children) && navItem.children.length > 0;
-        const navIcon = "/assets/new-icons/icons-bold/" + navItem.icon + ".svg";
+        const navIcon = solidIconMap[navItem.icon] || solidIconMap.cog;
 
         if (hasChildren) {
           const childLinks = navItem.children.map((childItem, cidx) => {
@@ -80,9 +80,7 @@ export default function Sidebar() {
                   className="nav-link nav-group-toggle"
                   onClick={() => toggleSubMenu(navItem.name)}>
                   <div className="nav-icon">
-                    <svg className="nav-icon-svg">
-                      <use xlinkHref={navIcon} />
-                    </svg>
+                    <FontAwesomeIcon icon={navIcon} />
                   </div>
                   <span className="nav-text">{navItem.name}</span>
                 </button>
@@ -100,9 +98,7 @@ export default function Sidebar() {
           <li className="nav-item" key={idx}>
             <Link to={navItem.path} className={`nav-link ${isActive ? "active" : ""}`}>
               <div className="nav-icon">
-                <svg className="nav-icon-svg">
-                  <use xlinkHref={navIcon} />
-                </svg>
+                <FontAwesomeIcon icon={navIcon} />
               </div>
               <span className="nav-text">{navItem.name}</span>
             </Link>
@@ -116,9 +112,7 @@ export default function Sidebar() {
       <div className="nav-group-header">
         <Link to="/information" className={`nav-link ${isPathActive('/information') ? "active" : ""}`}>
           <div className="nav-icon">
-            <svg className="nav-icon-svg">
-              <use xlinkHref="/assets/new-icons/icons-bold/fi-br-info.svg" />
-            </svg>
+            <FontAwesomeIcon icon={solidIconMap.info} />
           </div>
           <span className="nav-text">About</span>
         </Link>
