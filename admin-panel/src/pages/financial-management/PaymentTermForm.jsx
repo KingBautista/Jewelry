@@ -229,6 +229,7 @@ export default function PaymentTermForm() {
             }
             labelClass="col-sm-12 col-md-3"
             inputClass="col-sm-12 col-md-9"
+            labelStyle={{ color: 'black' }}
           />
           
           {/* Code Field */}
@@ -247,19 +248,20 @@ export default function PaymentTermForm() {
             }
             labelClass="col-sm-12 col-md-3"
             inputClass="col-sm-12 col-md-9"
+            labelStyle={{ color: 'black' }}
           />
           
           {/* Payment Breakdown Section */}
           <div className="row mb-3">
             <div className="col-sm-12 col-md-3">
-              <label className="form-label">Payment Breakdown</label>
-              <small className="form-text text-muted d-block">Define the payment structure</small>
+              <label className="form-label" style={{ color: 'black' }}>Payment Breakdown</label>
+              <small className="form-text d-block" style={{ color: '#6c757d', opacity: 0.8 }}>Define the payment structure</small>
             </div>
             <div className="col-sm-12 col-md-9">
               <div className="border rounded p-3">
                 <div className="row">
                   <div className="col-md-6 mb-3">
-                    <label className="form-label">Down Payment (%)</label>
+                    <label className="form-label" style={{ color: 'black' }}>Down Payment (%)</label>
                     <div className="input-group">
                       <input
                         className="form-control"
@@ -282,10 +284,10 @@ export default function PaymentTermForm() {
                       />
                       <span className="input-group-text">%</span>
                     </div>
-                    <small className="form-text text-muted">Initial payment amount</small>
+                    <small className="form-text" style={{ color: '#6c757d', opacity: 0.8 }}>Initial payment amount</small>
                   </div>
                   <div className="col-md-6 mb-3">
-                    <label className="form-label">Remaining (%)</label>
+                    <label className="form-label" style={{ color: 'black' }}>Remaining (%)</label>
                     <div className="input-group">
                       <input
                         className="form-control bg-body-secondary"
@@ -302,12 +304,12 @@ export default function PaymentTermForm() {
                       />
                       <span className="input-group-text">%</span>
                     </div>
-                    <small className="form-text text-muted">Auto-calculated from down payment</small>
+                    <small className="form-text" style={{ color: '#6c757d', opacity: 0.8 }}>Auto-calculated from down payment</small>
                   </div>
                 </div>
                 <div className="row">
                   <div className="col-12">
-                    <div className="alert alert-info mb-0">
+                    <div className="alert alert-dark mb-0" style={{ backgroundColor: '#343a40', color: 'white' }}>
                       <strong>Breakdown Summary:</strong> 
                       Down Payment: {paymentTerm.down_payment_percentage || 0}% | 
                       Remaining: {paymentTerm.remaining_percentage || 0}% | 
@@ -337,6 +339,7 @@ export default function PaymentTermForm() {
             }
             labelClass="col-sm-12 col-md-3"
             inputClass="col-sm-12 col-md-9"
+            labelStyle={{ color: 'black' }}
           />
           
           {/* Description Field */}
@@ -353,20 +356,21 @@ export default function PaymentTermForm() {
             }
             labelClass="col-sm-12 col-md-3"
             inputClass="col-sm-12 col-md-9"
+            labelStyle={{ color: 'black' }}
           />
 
           {/* Payment Schedules */}
           <div className="row mb-3">
             <div className="col-sm-12 col-md-3">
-              <label className="form-label">Payment Schedule</label>
-              <small className="form-text text-muted d-block">Define monthly payment breakdown</small>
+              <label className="form-label" style={{ color: 'black' }}>Payment Schedule</label>
+              <small className="form-text d-block" style={{ color: '#6c757d', opacity: 0.8 }}>Define monthly payment breakdown</small>
             </div>
             <div className="col-sm-12 col-md-9">
               <div className="border rounded p-3">
                 <div className="d-flex justify-content-between align-items-center mb-3">
                   <div>
                     <h6 className="mb-0">Monthly Payment Breakdown</h6>
-                    <small className="text-muted">Term: {paymentTerm.term_months || 0} months | Remaining: {paymentTerm.remaining_percentage || 0}%</small>
+                    <small style={{ color: '#6c757d', opacity: 0.8 }}>Term: {paymentTerm.term_months || 0} months | Remaining: {paymentTerm.remaining_percentage || 0}%</small>
                   </div>
                   <div>
                     <button 
@@ -390,8 +394,8 @@ export default function PaymentTermForm() {
                 
                 {schedules.length === 0 ? (
                   <div className="text-center py-4">
-                    <p className="text-muted mb-3">No payment schedules defined.</p>
-                    <p className="text-muted">Click "Add Month" to create monthly payment breakdowns or "Auto Generate" to create equal monthly payments.</p>
+                    <p className="mb-3" style={{ color: '#6c757d', opacity: 0.8 }}>No payment schedules defined.</p>
+                    <p style={{ color: '#6c757d', opacity: 0.8 }}>Click "Add Month" to create monthly payment breakdowns or "Auto Generate" to create equal monthly payments.</p>
                   </div>
                 ) : (
                   <>
@@ -411,7 +415,7 @@ export default function PaymentTermForm() {
                               <td>
                                 <div className="d-flex align-items-center">
                                   <span className="badge bg-primary me-2">{schedule.month_number}</span>
-                                  <span className="text-muted">Month {schedule.month_number}</span>
+                                  <span style={{ color: '#6c757d', opacity: 0.8 }}>Month {schedule.month_number}</span>
                                 </div>
                               </td>
                               <td>
@@ -455,18 +459,18 @@ export default function PaymentTermForm() {
                     </div>
                     
                     {/* Schedule Summary */}
-                    <div className="mt-2 p-3 bg-body-secondary rounded">
+                    <div className="mt-2 p-3 bg-body-secondary rounded" style={{ backgroundColor: '#343a40', color: 'white' }}>
                       <div className="row">
                         <div className="col-md-6">
-                          <strong>Schedule Summary:</strong>
-                          <ul className="list-unstyled mt-2 mb-0">
+                          <strong style={{ color: 'white' }}>Schedule Summary:</strong>
+                          <ul className="list-unstyled mt-2 mb-0" style={{ color: 'white' }}>
                             <li>Total Months: {schedules.length}</li>
                             <li>Total Percentage: <span className={Math.abs(calculateRemainingPercentage() - (parseFloat(paymentTerm.remaining_percentage) || 0)) > 0.01 ? 'text-danger' : 'text-success'}>{calculateRemainingPercentage().toFixed(2)}%</span></li>
                             <li>Remaining Target: {paymentTerm.remaining_percentage || 0}%</li>
                           </ul>
                         </div>
                         <div className="col-md-6">
-                          <strong>Validation:</strong>
+                          <strong style={{ color: 'white' }}>Validation:</strong>
                           <div className="mt-2">
                             {Math.abs(calculateRemainingPercentage() - (parseFloat(paymentTerm.remaining_percentage) || 0)) <= 0.01 ? (
                               <span className="text-success">
@@ -502,6 +506,7 @@ export default function PaymentTermForm() {
             }
             labelClass="col-sm-12 col-md-3"
             inputClass="col-sm-12 col-md-9"
+            labelStyle={{ color: 'black' }}
           />
         </div>
         <div className="card-footer d-flex justify-content-between">
