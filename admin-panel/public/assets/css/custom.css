@@ -6081,3 +6081,7 @@ hr {
   background: #e0f2fe !important;
   color: #0f172a !important;
 }
+
+[data-coreui-theme="dark"] .toast-message {
+  color: #F7E7CE !important;
+}

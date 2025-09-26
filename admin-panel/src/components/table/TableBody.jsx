@@ -101,17 +101,20 @@ const TableBody = forwardRef(({ options, rows, permissions, onAction, onCheckedA
               .map((action, index) => {
                 if (action.onClick) {
                   return (
-                    <Link
+                    <button
                       key={index}
-                      to="#"
+                      type="button"
+                      className={action.className || "btn btn-sm btn-outline-secondary"}
                       onClick={(e) => {
                         e.preventDefault();
                         e.stopPropagation();
                         action.onClick(row);
                       }}
+                      style={{ marginRight: '5px', marginBottom: '2px' }}
                     >
+                      {action.icon && <span style={{ marginRight: '5px' }}>{action.icon}</span>}
                       {action.name}
-                    </Link>
+                    </button>
                   );
                 }
                 return (
@@ -119,7 +122,10 @@ const TableBody = forwardRef(({ options, rows, permissions, onAction, onCheckedA
                     key={index}
                     to={`${action.link}/${id}`}
                     onClick={(e) => e.stopPropagation()}
+                    className={action.className || "btn btn-sm btn-outline-secondary"}
+                    style={{ marginRight: '5px', marginBottom: '2px', display: 'inline-block', textDecoration: 'none' }}
                   >
+                    {action.icon && <span style={{ marginRight: '5px' }}>{action.icon}</span>}
                     {action.name}
                   </Link>
                 );

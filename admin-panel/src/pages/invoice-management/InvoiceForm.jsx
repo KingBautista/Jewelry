@@ -211,6 +211,80 @@ export default function InvoiceForm() {
     }
   };
 
+  // Handle download PDF
+  const handleDownloadPdf = async () => {
+    if (!invoice.id) return;
+    
+    try {
+      setIsLoading(true);
+      toastAction.current.showToast('Generating PDF...', 'info');
+      
+      // Get the token for authentication
+      const token = localStorage.getItem('ACCESS_TOKEN');
+      
+      // Make the request with proper headers
+      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/invoice-management/invoices/${invoice.id}/pdf`, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Accept': 'application/pdf',
+        },
+      });
+      
+      if (!response.ok) {
+        throw new Error('Failed to generate PDF');
+      }
+      
+      // Create blob from response
+      const blob = await response.blob();
+      
+      // Create download link
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `invoice-${invoice.invoice_number || invoice.id}.pdf`;
+      document.body.appendChild(link);
+      link.click();
+      
+      // Cleanup
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+      
+      toastAction.current.showToast('PDF downloaded successfully!', 'success');
+      setIsLoading(false);
+    } catch (error) {
+      console.error('PDF download failed:', error);
+      toastAction.current.showToast('Failed to download PDF. Please try again.', 'error');
+      setIsLoading(false);
+    }
+  };
+
+  // Handle send email
+  const handleSendEmail = () => {
+    if (!invoice.id) return;
+    
+    if (window.confirm('Are you sure you want to send this invoice via email?\n\nThe invoice PDF will be attached to the email.')) {
+      setIsLoading(true);
+      toastAction.current.showToast('Sending email...', 'info');
+      
+      axiosClient.post(`/invoice-management/invoices/${invoice.id}/send-email`)
+        .then((response) => {
+          toastAction.current.showToast('Invoice has been sent via email successfully!', 'success');
+          setIsLoading(false);
+          console.log('Email sent successfully:', response.data);
+        })
+        .catch((errors) => {
+          console.error('Email sending failed:', errors);
+          setIsLoading(false);
+          if (errors.response?.data?.message) {
+            toastAction.current.showToast(`Email failed: ${errors.response.data.message}`, 'error');
+          } else {
+            toastAction.current.showToast('Failed to send email. Please try again.', 'error');
+          }
+        });
+    }
+  };
+
   // Handle file selection
   const handleFileSelect = (event) => {
     const files = Array.from(event.target.files);
@@ -617,6 +691,28 @@ export default function InvoiceForm() {
             </button>
           </div>
           <div>
+            {invoice.id && (
+              <>
+                <button 
+                  type="button" 
+                  className="btn btn-primary me-2" 
+                  onClick={handleDownloadPdf}
+                  disabled={isLoading}
+                >
+                  <FontAwesomeIcon icon={solidIconMap.file} className="me-2" />
+                  Download PDF
+                </button>
+                <button 
+                  type="button" 
+                  className="btn btn-success me-2" 
+                  onClick={handleSendEmail}
+                  disabled={isLoading}
+                >
+                  <FontAwesomeIcon icon={solidIconMap.envelope} className="me-2" />
+                  Send Email
+                </button>
+              </>
+            )}
             {invoice.id && invoice.status !== 'cancelled' && (
               <button 
                 type="button" 

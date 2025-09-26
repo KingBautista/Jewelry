@@ -36,7 +36,7 @@ export default function Invoices() {
           'unpaid': 'bg-danger',
           'partially_paid': 'bg-warning',
           'fully_paid': 'bg-success',
-          'overdue': 'bg-dark'
+          'overdue': 'bg-secondary'
         },
         badgeLabels: {
           'unpaid': 'Unpaid',
@@ -205,6 +205,7 @@ export default function Invoices() {
       totalTrash: archived,
     }));
   };
+
 
   return (
     <>

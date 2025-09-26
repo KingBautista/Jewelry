@@ -13,14 +13,14 @@ const ToastMessage = forwardRef((props, ref) => {
 
     // Create the toast element using CoreUI
     const toastElement = document.createElement('div');
-    toastElement.classList.add('toast', 'fade', 'show', `bg-${type}`, 'text-white');
+    toastElement.classList.add('toast', 'fade', 'show', `bg-${type}`);
     toastElement.setAttribute('role', 'alert');
     toastElement.setAttribute('aria-live', 'assertive');
     toastElement.setAttribute('aria-atomic', 'true');
     toastElement.innerHTML = `
       <div class="toast-body d-flex p-3">
-        <span>${message}</span>
-        <button type="button" class="btn-close btn-close-white me-n2 m-auto" data-coreui-dismiss="toast" aria-label="Close"></button>
+        <span class="toast-message">${message}</span>
+        <button type="button" class="btn-close me-n2 m-auto" data-coreui-dismiss="toast" aria-label="Close"></button>
       </div>
     `;
 
@@ -66,10 +66,10 @@ const ToastMessage = forwardRef((props, ref) => {
   return (
     <div ref={toastContainerRef} className="toast-container position-fixed top-0 end-0 p-3">
       {toasts.map((toast) => (
-        <div key={toast.id} className="toast text-bg-danger" role="alert" aria-live="assertive" aria-atomic="true">
+        <div key={toast.id} className={`toast bg-${toast.type}`} role="alert" aria-live="assertive" aria-atomic="true">
           <div className="toast-body d-flex p-3">
-            <span>{toast.message}</span>
-            <button type="button" className="btn-close btn-close-white me-n2 m-auto" data-coreui-dismiss="toast" aria-label="Close"></button>
+            <span className="toast-message">{toast.message}</span>
+            <button type="button" className="btn-close me-n2 m-auto" data-coreui-dismiss="toast" aria-label="Close"></button>
           </div>
         </div>
       ))}

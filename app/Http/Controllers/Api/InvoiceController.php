@@ -8,6 +8,7 @@ use App\Http\Requests\UpdateInvoiceRequest;
 use App\Services\InvoiceService;
 use App\Services\MessageService;
 use App\Models\Invoice;
+use Illuminate\Support\Facades\Mail;
 
 class InvoiceController extends BaseController
 {
@@ -123,33 +124,55 @@ class InvoiceController extends BaseController
         try {
             $invoice = Invoice::with(['customer', 'paymentTerm', 'tax', 'fee', 'discount'])->findOrFail($id);
             
-            // For now, return a JSON response with invoice data
-            // In a real implementation, you would generate a PDF here
-            return response([
-                'message' => 'PDF generation not implemented yet',
-                'invoice' => $invoice
-            ], 200);
+            // Generate PDF using DomPDF
+            $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('invoices.pdf', compact('invoice'));
+            $pdf->setPaper('A4', 'portrait');
+            
+            // Return PDF as download
+            return $pdf->download("invoice-{$invoice->invoice_number}.pdf");
         } catch (\Exception $e) {
+            \Log::error('PDF Generation Error: ' . $e->getMessage());
             return $this->messageService->responseError();
         }
     }
 
     public function sendEmail(Int $id)
     {
-        try {
-            $invoice = Invoice::with(['customer'])->findOrFail($id);
+        // try {
+            $invoice = Invoice::with(['customer', 'paymentTerm', 'tax', 'fee', 'discount'])->findOrFail($id);
             
-            // For now, just log the action
-            // In a real implementation, you would send an email here
-            \Log::info("Invoice {$invoice->invoice_number} sent to customer {$invoice->customer->user_email}");
+            // Generate PDF for email attachment
+            $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('invoices.pdf', compact('invoice'));
+            $pdf->setPaper('A4', 'portrait');
+            $pdfContent = $pdf->output();
+            
+            // Get customer email or use test email
+            // $customerEmail = $invoice->customer ? $invoice->customer->user_email : 'bautistael23@gmail.com';
+            $customerEmail = 'bautistael23@gmail.com';
+            $customerName = $invoice->customer_name;
+            
+            // Send email with PDF attachment
+            \Mail::send('emails.invoice', [
+                'invoice' => $invoice,
+                'customerName' => $customerName
+            ], function ($message) use ($invoice, $customerEmail, $customerName, $pdfContent) {
+                $message->to($customerEmail, $customerName)
+                        ->subject("Invoice {$invoice->invoice_number} - Jewelry Business")
+                        ->attachData($pdfContent, "invoice-{$invoice->invoice_number}.pdf", [
+                            'mime' => 'application/pdf',
+                        ]);
+            });
             
             // Update status to sent
             $invoice->update(['status' => 'sent']);
             
+            \Log::info("Invoice {$invoice->invoice_number} sent to {$customerEmail}");
+            
             return response(['message' => 'Invoice has been sent via email.'], 200);
-        } catch (\Exception $e) {
-            return $this->messageService->responseError();
-        }
+        // } catch (\Exception $e) {
+        //     \Log::error('Email Sending Error: ' . $e->getMessage());
+        //     return $this->messageService->responseError();
+        // }
     }
 
     public function getInvoiceStats()

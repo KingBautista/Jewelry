@@ -124,15 +124,6 @@ export default function Profile() {
                     <FontAwesomeIcon icon={solidIconMap.user} className="me-2" />
                     Profile Settings
                   </h4>
-                  <button 
-                    type="submit" 
-                    className="btn btn-light btn-sm"
-                    disabled={isLoading}
-                  >
-                    <FontAwesomeIcon icon={solidIconMap.save} className="me-2" />
-                    {isLoading ? 'Saving...' : 'Save Changes'}
-                    {isLoading && <span className="spinner-border spinner-border-sm ms-2" role="status"></span>}
-                  </button>
                 </div>
               </div>
 
@@ -293,11 +284,8 @@ export default function Profile() {
               </div>
 
               {/* Footer */}
-              <div className="card-footer border-0 profile-footer">
+              <div className="card-footer border-0">
                 <div className="d-flex justify-content-between align-items-center">
-                  <small className="text-muted">
-                    Last updated: {user.updated_at ? new Date(user.updated_at).toLocaleDateString() : 'Never'}
-                  </small>
                   <button 
                     type="submit" 
                     className="btn btn-secondary profile-submit-btn"
