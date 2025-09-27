@@ -213,4 +213,15 @@ class InvoiceController extends BaseController
             return response()->json(['error' => 'Failed to search invoices'], 500);
         }
     }
+
+    public function preview(Int $id)
+    {
+        try {
+            $invoice = Invoice::with(['customer', 'paymentTerm', 'tax', 'fee', 'discount'])->findOrFail($id);
+            return view('invoices.preview', compact('invoice'));
+        } catch (\Exception $e) {
+            \Log::error('Invoice Preview Error: ' . $e->getMessage());
+            return response('Invoice not found', 404);
+        }
+    }
 }

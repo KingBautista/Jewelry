@@ -27,3 +27,36 @@ Route::get('/check-shell-exec', function () {
     }
 });
 
+// Invoice preview route
+Route::get('/invoice-preview/{id}', [App\Http\Controllers\Api\InvoiceController::class, 'preview'])->name('invoice.preview');
+
+// Test route to show available invoices
+Route::get('/test-invoices', function () {
+    try {
+        $invoices = \App\Models\Invoice::select('id', 'invoice_number', 'customer_name', 'total_amount', 'created_at')
+            ->orderBy('created_at', 'desc')
+            ->limit(10)
+            ->get();
+        
+        if ($invoices->isEmpty()) {
+            return response('No invoices found. Please create an invoice first through the API or admin panel.', 404);
+        }
+        
+        $html = '<h1>Available Invoices for Preview</h1>';
+        $html .= '<ul>';
+        foreach ($invoices as $invoice) {
+            $html .= '<li>';
+            $html .= '<strong>Invoice #' . $invoice->invoice_number . '</strong> - ';
+            $html .= 'Customer: ' . $invoice->customer_name . ' - ';
+            $html .= 'Amount: ₱' . number_format($invoice->total_amount, 2) . ' - ';
+            $html .= '<a href="/invoice-preview/' . $invoice->id . '" target="_blank">Preview Invoice</a>';
+            $html .= '</li>';
+        }
+        $html .= '</ul>';
+        
+        return $html;
+    } catch (\Exception $e) {
+        return response('Database connection error: ' . $e->getMessage(), 500);
+    }
+});
+
