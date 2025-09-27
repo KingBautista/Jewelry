@@ -8,130 +8,256 @@
         body {
             font-family: 'Arial', sans-serif;
             margin: 0;
-            padding: 20px;
+            padding: 0;
             color: #333;
-            background: #f8f9fa;
-        }
-        
-        .email-container {
-            max-width: 600px;
-            margin: 0 auto;
             background: #fff;
-            border-radius: 8px;
-            overflow: hidden;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            font-size: 12px;
+            line-height: 1.4;
         }
         
-        .header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        .header-table {
+            width: 100%;
+            background: #000;
             color: white;
-            padding: 30px;
-            text-align: center;
-        }
-        
-        .header h1 {
-            margin: 0;
-            font-size: 24px;
-            font-weight: bold;
-        }
-        
-        .content {
-            padding: 30px;
-        }
-        
-        .greeting {
-            font-size: 16px;
+            border-collapse: collapse;
             margin-bottom: 20px;
-            color: #333;
         }
         
-        .invoice-summary {
-            background: #f8f9fa;
-            padding: 20px;
-            border-radius: 5px;
-            margin: 20px 0;
-            border-left: 4px solid #667eea;
+        .header-table td {
+            padding: 4px 0;
+            vertical-align: bottom;
         }
         
-        .invoice-summary h3 {
-            margin: 0 0 15px 0;
-            color: #333;
+        .header-table td:first-child {
+            padding-left: 10px;
         }
         
-        .summary-row {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 8px;
-            padding: 5px 0;
+        .logo-cell {
+            width: 100px;
         }
         
-        .summary-label {
+        .logo {
+            width: 60px;
+            height: 60px;
+            background: #000;
+            color: white;
+            border: 2px solid white;
+            text-align: left;
             font-weight: bold;
+            font-size: 14px;
+            padding: 5px;
+            position: relative;
+        }
+        
+        .logo-text {
+            font-size: 18px;
+            line-height: 1;
+            position: absolute;
+            bottom: 5px;
+            left: 5px;
+        }
+        
+        .logo-subtitle {
+            font-size: 8px;
+            margin-top: 5px;
+            text-align: center;
+            color: white;
+        }
+        
+        .logo-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .company-info {
+            font-size: 12px;
+            color: white;
+        }
+        
+        .invoice-title {
+            font-size: 48px;
+            font-weight: bold;
+            color: white;
+            text-align: right;
+            padding-right: 15px;
+        }
+        
+        .customer-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 10px;
+        }
+        
+        .customer-table td {
+            padding: 8px 0;
+            border: none;
+        }
+        
+        .detail-label {
+            font-weight: bold;
+            width: 100px;
             color: #666;
         }
         
-        .summary-value {
+        .detail-value {
             color: #333;
         }
         
-        .total-row {
-            border-top: 2px solid #667eea;
-            padding-top: 10px;
-            margin-top: 10px;
-            font-weight: bold;
-            font-size: 16px;
+        .items-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 10px 0;
         }
         
-        .status-badge {
-            display: inline-block;
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 12px;
+        .items-table th {
+            background: #000;
+            color: white;
+            padding: 12px 8px;
+            text-align: left;
             font-weight: bold;
+            font-size: 11px;
             text-transform: uppercase;
         }
         
-        .status-draft { background: #6c757d; color: white; }
-        .status-sent { background: #17a2b8; color: white; }
-        .status-paid { background: #28a745; color: white; }
-        .status-overdue { background: #dc3545; color: white; }
-        .status-cancelled { background: #6c757d; color: white; }
-        
-        .payment-status-unpaid { background: #dc3545; color: white; }
-        .payment-status-partially_paid { background: #ffc107; color: black; }
-        .payment-status-fully_paid { background: #28a745; color: white; }
-        .payment-status-overdue { background: #6c757d; color: white; }
-        
-        .cta-section {
-            text-align: center;
-            margin: 30px 0;
+        .items-table td {
+            padding: 12px 8px;
+            border-bottom: 1px solid #ddd;
+            font-size: 11px;
         }
         
-        .cta-button {
-            display: inline-block;
-            background: #667eea;
-            color: white;
-            padding: 12px 30px;
-            text-decoration: none;
-            border-radius: 5px;
+        .items-table .description {
+            text-align: left;
+        }
+        
+        .items-table .unit-price {
+            text-align: center;
+        }
+        
+        .items-table .qty {
+            text-align: center;
+        }
+        
+        .items-table .total {
+            text-align: right;
+        }
+        
+        .subtotal-row {
+            background: #f8f8f8;
             font-weight: bold;
-            margin: 0 10px;
         }
         
-        .cta-button:hover {
-            background: #5a6fd8;
-        }
-        
-        .footer {
-            background: #333;
-            color: white;
-            padding: 20px;
-            text-align: center;
+        .subtotal-row td {
+            text-align: right;
+            padding: 8px;
             font-size: 12px;
         }
         
-        .footer p {
-            margin: 5px 0;
+        .payment-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        
+        .payment-table td {
+            vertical-align: top;
+            padding: 0 10px;
+        }
+        
+        .payment-details-cell {
+            width: 40%;
+        }
+        
+        .terms-cell {
+            width: 60%;
+        }
+        
+        .section-title {
+            font-weight: bold;
+            margin-bottom: 15px;
+            font-size: 12px;
+            color: #000;
+            text-transform: uppercase;
+        }
+        
+        .payment-method-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 15px;
+        }
+        
+        .payment-method-table td {
+            padding: 5px 0;
+            border: none;
+            vertical-align: middle;
+        }
+        
+        .payment-logo-cell {
+            width: 40px;
+            text-align: center;
+        }
+        
+        .payment-logo {
+            width: 30px;
+            height: 30px;
+            background: #f0f0f0;
+            border-radius: 3px;
+            display: inline-block;
+            text-align: center;
+            line-height: 30px;
+            font-size: 10px;
+            font-weight: bold;
+            color: #333;
+        }
+        
+        .payment-content-cell {
+            padding-left: 10px;
+        }
+        
+        .payment-method-title {
+            font-weight: bold;
+            margin-bottom: 5px;
+            font-size: 11px;
+        }
+        
+        .payment-method-details {
+            font-size: 10px;
+            line-height: 1.3;
+        }
+        
+        .terms-list {
+            font-size: 10px;
+            line-height: 1.4;
+        }
+        
+        .terms-list ol {
+            margin: 0;
+            padding-left: 15px;
+        }
+        
+        .terms-list li {
+            margin-bottom: 8px;
+        }
+        
+        .footer-table {
+            width: 100%;
+            background: #000;
+            color: white;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        
+        .footer-table td {
+            padding: 15px;
+            text-align: center;
+            font-size: 10px;
+        }
+        
+        .email-greeting {
+            margin: 20px 0;
+            font-size: 14px;
+            color: #333;
         }
         
         .attachment-notice {
@@ -141,6 +267,7 @@
             padding: 15px;
             margin: 20px 0;
             color: #004085;
+            font-size: 12px;
         }
         
         .attachment-notice strong {
@@ -149,106 +276,143 @@
     </style>
 </head>
 <body>
-    <div class="email-container">
-        <!-- Header -->
-        <div class="header">
-            <h1>Invoice {{ $invoice->invoice_number }}</h1>
-            <p>Jewelry Business Management System</p>
-        </div>
-        
-        <!-- Content -->
-        <div class="content">
-            <div class="greeting">
-                <p>Dear {{ $customerName }},</p>
-                <p>Thank you for your business! Please find attached your invoice for the jewelry purchase.</p>
-            </div>
-            
-            <!-- Invoice Summary -->
-            <div class="invoice-summary">
-                <h3>Invoice Summary</h3>
-                <div class="summary-row">
-                    <span class="summary-label">Invoice Number:</span>
-                    <span class="summary-value">{{ $invoice->invoice_number }}</span>
-                </div>
-                <div class="summary-row">
-                    <span class="summary-label">Product:</span>
-                    <span class="summary-value">{{ $invoice->product_name }}</span>
-                </div>
-                <div class="summary-row">
-                    <span class="summary-label">Issue Date:</span>
-                    <span class="summary-value">{{ $invoice->issue_date ? $invoice->issue_date->format('M d, Y') : 'N/A' }}</span>
-                </div>
-                @if($invoice->due_date)
-                <div class="summary-row">
-                    <span class="summary-label">Due Date:</span>
-                    <span class="summary-value">{{ $invoice->due_date->format('M d, Y') }}</span>
-                </div>
-                @endif
-                <div class="summary-row">
-                    <span class="summary-label">Status:</span>
-                    <span class="summary-value">
-                        <span class="status-badge status-{{ $invoice->status }}">{{ $invoice->status_text }}</span>
-                    </span>
-                </div>
-                <div class="summary-row">
-                    <span class="summary-label">Payment Status:</span>
-                    <span class="summary-value">
-                        <span class="status-badge payment-status-{{ $invoice->payment_status }}">{{ $invoice->payment_status_text }}</span>
-                    </span>
-                </div>
-                <div class="summary-row total-row">
-                    <span class="summary-label">Total Amount:</span>
-                    <span class="summary-value">{{ $invoice->formatted_total_amount }}</span>
-                </div>
-            </div>
-            
-            <!-- Attachment Notice -->
-            <div class="attachment-notice">
-                <strong>📎 PDF Invoice Attached</strong><br>
-                A detailed PDF version of your invoice is attached to this email for your records.
-            </div>
-            
-            <!-- Payment Information -->
-            @if($invoice->payment_status !== 'unpaid')
-            <div class="invoice-summary">
-                <h3>Payment Information</h3>
-                <div class="summary-row">
-                    <span class="summary-label">Total Paid:</span>
-                    <span class="summary-value">{{ $invoice->formatted_total_paid_amount }}</span>
-                </div>
-                <div class="summary-row">
-                    <span class="summary-label">Remaining Balance:</span>
-                    <span class="summary-value">{{ $invoice->formatted_remaining_balance }}</span>
-                </div>
-                @if($invoice->next_payment_due_date)
-                <div class="summary-row">
-                    <span class="summary-label">Next Payment Due:</span>
-                    <span class="summary-value">{{ $invoice->next_payment_due_date->format('M d, Y') }}</span>
-                </div>
-                @endif
-            </div>
-            @endif
-            
-            <!-- Call to Action -->
-            <div class="cta-section">
-                <p>If you have any questions about this invoice, please don't hesitate to contact us.</p>
-                <p>Thank you for choosing our jewelry services!</p>
-            </div>
-            
-            @if($invoice->notes)
-            <div class="invoice-summary">
-                <h3>Additional Notes</h3>
-                <p>{{ $invoice->notes }}</p>
-            </div>
-            @endif
-        </div>
-        
-        <!-- Footer -->
-        <div class="footer">
-            <p><strong>Jewelry Business Management System</strong></p>
-            <p>This is an automated invoice. Please keep this email for your records.</p>
-            <p>Generated on {{ now()->format('M d, Y \a\t H:i A') }}</p>
-        </div>
+    <!-- Email Greeting -->
+    <div class="email-greeting">
+        <p>Dear {{ $customerName }},</p>
+        <p>Thank you for your business! Please find your invoice details below and the PDF attachment for your records.</p>
     </div>
+    
+    <!-- Header -->
+    <table class="header-table">
+        <tr>
+            <td class="logo-cell">
+                <table>
+                    <tr>
+                        <td>
+                            <div class="logo">
+                                <div class="logo-text">IL<br>LUSSO</div>
+                            </div>
+                            <div class="logo-subtitle">EST 2020</div>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+            <td style="width: 60%;"></td>
+            <td style="text-align: right;">
+                <div class="invoice-title">INVOICE</div>
+            </td>
+        </tr>
+    </table>
+    
+    <!-- Customer Information -->
+    <table class="customer-table">
+        <tr>
+            <td class="detail-label">Customer:</td>
+            <td class="detail-value">{{ $invoice->customer_name }}</td>
+        </tr>
+        <tr>
+            <td class="detail-label">Date:</td>
+            <td class="detail-value">{{ $invoice->issue_date ? $invoice->issue_date->format('M d, Y') : 'N/A' }}</td>
+        </tr>
+    </table>
+    
+    <!-- Items Table -->
+    <table class="items-table">
+        <thead>
+            <tr>
+                <th class="description">DESCRIPTION</th>
+                <th class="unit-price">UNIT PRICE</th>
+                <th class="qty">QTY</th>
+                <th class="total">TOTAL</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td class="description">{{ $invoice->product_name ?: 'Product/Service' }}</td>
+                <td class="unit-price">P{{ number_format($invoice->price, 2, '.', ',') }}</td>
+                <td class="qty">1</td>
+                <td class="total">P{{ number_format($invoice->price, 2, '.', ',') }}</td>
+            </tr>
+            @if($invoice->description)
+            <tr>
+                <td class="description" style="font-style: italic; color: #666;">{{ $invoice->description }}</td>
+                <td class="unit-price">-</td>
+                <td class="qty">-</td>
+                <td class="total">-</td>
+            </tr>
+            @endif
+        </tbody>
+        <tfoot>
+            <tr class="subtotal-row">
+                <td colspan="3" style="text-align: right; font-size: 12px;">TOTAL AMOUNT</td>
+                <td class="total" style="font-size: 14px;">P{{ number_format($invoice->total_amount, 2, '.', ',') }}</td>
+            </tr>
+        </tfoot>
+    </table>
+    
+    <!-- Payment Details and Terms -->
+    <table class="payment-table">
+        <tr>
+            <td class="payment-details-cell">
+                <div class="section-title">Payment Details</div>
+                
+                <table class="payment-method-table">
+                    <tr>
+                        <td class="payment-logo-cell">
+                            <div class="payment-logo">BPI</div>
+                        </td>
+                        <td class="payment-content-cell">
+                            <div class="payment-method-title">BPI Savings Account</div>
+                            <div class="payment-method-details">
+                                Sarah Nicole Santiago<br>
+                                09829191315
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+                
+                <table class="payment-method-table">
+                    <tr>
+                        <td class="payment-logo-cell">
+                            <div class="payment-logo">GC</div>
+                        </td>
+                        <td class="payment-content-cell">
+                            <div class="payment-method-title">GCash</div>
+                            <div class="payment-method-details">
+                                Sarah Nicole Santiago<br>
+                                09174788238
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+            <td class="terms-cell">
+                <div class="section-title">Terms & Conditions</div>
+                <div class="terms-list">
+                    <ol>
+                        <li><strong>All Sales Are Final</strong> - Orders are considered final and non-cancellable once confirmed. No returns, exchanges, or cancellations will be accepted.</li>
+                        <li><strong>Insured Shipping</strong> - All items are shipped fully insured via the client's preferred courier, unless otherwise arranged. Risk of loss transfers upon delivery to the courier.</li>
+                        <li><strong>Authenticity Guaranteed</strong> - All products are guaranteed authentic. Items will be accompanied by the appropriate certifications, documentation, and/or provenance, where applicable.</li>
+                        <li><strong>Payment Terms</strong> - Full payment is required prior to shipment. Accepted payment methods include the BPI and GCash Accounts indicated on the left. Prices are exclusive of shipping and applicable taxes unless stated otherwise.</li>
+                        <li><strong>Delivery Timelines</strong> - Estimated delivery timelines are provided for reference and may vary depending on courier service and destination. We are not liable for delays caused by third-party logistics providers.</li>
+                        <li><strong>Condition Disclosure</strong> - All items are carefully inspected and described as accurately as possible. For pre-owned items, minor signs of wear may be present and are considered part of the item's condition.</li>
+                    </ol>
+                </div>
+            </td>
+        </tr>
+    </table>
+    
+    <!-- Attachment Notice -->
+    <div class="attachment-notice">
+        <strong>📎 PDF Invoice Attached</strong><br>
+        A detailed PDF version of your invoice is attached to this email for your records.
+    </div>
+    
+    <!-- Footer -->
+    <table class="footer-table">
+        <tr>
+            <td>Thank you for your business! | IL LUSSO Jewelry | Established 2020</td>
+        </tr>
+    </table>
 </body>
 </html>

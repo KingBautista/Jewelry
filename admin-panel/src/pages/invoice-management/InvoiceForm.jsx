@@ -17,10 +17,14 @@ export default function InvoiceForm() {
     id: null,
     invoice_number: '',
     customer_id: '',
-    product_name: '',
-    description: '',
-    price: '',
-    product_images: [],
+    products: [
+      {
+        product_name: '',
+        description: '',
+        price: '',
+        product_images: []
+      }
+    ],
     payment_term_id: '',
     tax_id: '',
     fee_id: '',
@@ -34,7 +38,18 @@ export default function InvoiceForm() {
   });
   const [isLoading, setIsLoading] = useState(false);
   const [isActive, setIsActive] = useState(true);
-  const [selectedFiles, setSelectedFiles] = useState([]);
+  const [selectedFiles, setSelectedFiles] = useState([[]]); // Array of arrays for each product
+  
+  // Modal state
+  const [showProductModal, setShowProductModal] = useState(false);
+  const [editingProductIndex, setEditingProductIndex] = useState(null);
+  const [currentProduct, setCurrentProduct] = useState({
+    product_name: '',
+    description: '',
+    price: '',
+    product_images: []
+  });
+  const [currentProductFiles, setCurrentProductFiles] = useState([]);
   
   // Dropdown data
   const [customers, setCustomers] = useState([]);
@@ -42,6 +57,92 @@ export default function InvoiceForm() {
   const [taxes, setTaxes] = useState([]);
   const [fees, setFees] = useState([]);
   const [discounts, setDiscounts] = useState([]);
+
+  // Helper functions for managing products
+  const openAddProductModal = () => {
+    setCurrentProduct({
+      product_name: '',
+      description: '',
+      price: '',
+      product_images: []
+    });
+    setCurrentProductFiles([]);
+    setEditingProductIndex(null);
+    setShowProductModal(true);
+  };
+
+  const openEditProductModal = (index) => {
+    const product = invoice.products[index];
+    setCurrentProduct({ ...product });
+    setCurrentProductFiles(selectedFiles[index] || []);
+    setEditingProductIndex(index);
+    setShowProductModal(true);
+  };
+
+  const saveProduct = () => {
+    if (!currentProduct.product_name || !currentProduct.price) {
+      toastAction.current.showToast('Please fill in product name and price', 'warning');
+      return;
+    }
+
+    const amount = parseFloat(currentProduct.price);
+    if (isNaN(amount) || amount < 0) {
+      toastAction.current.showToast('Price must be a positive number', 'warning');
+      return;
+    }
+
+    const updatedProducts = [...invoice.products];
+    const updatedFiles = [...selectedFiles];
+
+    if (editingProductIndex !== null) {
+      // Editing existing product
+      updatedProducts[editingProductIndex] = { ...currentProduct };
+      updatedFiles[editingProductIndex] = [...currentProductFiles];
+    } else {
+      // Adding new product
+      updatedProducts.push({ ...currentProduct });
+      updatedFiles.push([...currentProductFiles]);
+    }
+
+    setInvoice({ ...invoice, products: updatedProducts });
+    setSelectedFiles(updatedFiles);
+    setShowProductModal(false);
+    setCurrentProduct({
+      product_name: '',
+      description: '',
+      price: '',
+      product_images: []
+    });
+    setCurrentProductFiles([]);
+    setEditingProductIndex(null);
+  };
+
+  const removeProduct = (index) => {
+    if (invoice.products.length > 1) {
+      if (window.confirm('Are you sure you want to remove this product?')) {
+        const updatedProducts = invoice.products.filter((_, i) => i !== index);
+        const updatedFiles = selectedFiles.filter((_, i) => i !== index);
+        setInvoice({ ...invoice, products: updatedProducts });
+        setSelectedFiles(updatedFiles);
+      }
+    }
+  };
+
+  const updateCurrentProduct = (field, value) => {
+    setCurrentProduct({ ...currentProduct, [field]: value });
+  };
+
+  const updateCurrentProductImages = (images) => {
+    setCurrentProduct({ ...currentProduct, product_images: images });
+  };
+
+  // Calculate total amount
+  const calculateTotal = () => {
+    return invoice.products.reduce((total, product) => {
+      const price = parseFloat(product.price) || 0;
+      return total + price;
+    }, 0);
+  };
 
   // Load dropdown data
   useEffect(() => {
@@ -94,6 +195,36 @@ export default function InvoiceForm() {
             }
           }
           
+          // Handle products - if it's a single product, convert to array
+          if (invoiceData.products && Array.isArray(invoiceData.products)) {
+            // Already in correct format
+          } else if (invoiceData.product_name) {
+            // Convert single product to array format
+            invoiceData.products = [{
+              product_name: invoiceData.product_name,
+              description: invoiceData.description || '',
+              price: invoiceData.price || '',
+              product_images: invoiceData.product_images || []
+            }];
+            // Remove old single product fields
+            delete invoiceData.product_name;
+            delete invoiceData.description;
+            delete invoiceData.price;
+            delete invoiceData.product_images;
+          } else {
+            // Default to single empty product
+            invoiceData.products = [{
+              product_name: '',
+              description: '',
+              price: '',
+              product_images: []
+            }];
+          }
+          
+          // Initialize selectedFiles array to match products
+          const filesArray = invoiceData.products.map(() => []);
+          setSelectedFiles(filesArray);
+          
           setInvoice(invoiceData);
           setIsLoading(false);
           setIsActive(invoiceData.active);
@@ -110,16 +241,24 @@ export default function InvoiceForm() {
     ev.preventDefault();
     
     // Validate required fields
-    if (!invoice.customer_id || !invoice.product_name || !invoice.price) {
-      toastAction.current.showToast('Please fill in all required fields', 'warning');
+    if (!invoice.customer_id) {
+      toastAction.current.showToast('Please select a customer', 'warning');
       return;
     }
 
-    // Validate amount
-    const amount = parseFloat(invoice.price);
-    if (isNaN(amount) || amount < 0) {
-      toastAction.current.showToast('Price must be a positive number', 'warning');
-      return;
+    // Validate products
+    for (let i = 0; i < invoice.products.length; i++) {
+      const product = invoice.products[i];
+      if (!product.product_name || !product.price) {
+        toastAction.current.showToast(`Please fill in product name and price for product ${i + 1}`, 'warning');
+        return;
+      }
+
+      const amount = parseFloat(product.price);
+      if (isNaN(amount) || amount < 0) {
+        toastAction.current.showToast(`Price must be a positive number for product ${i + 1}`, 'warning');
+        return;
+      }
     }
 
     setIsLoading(true);
@@ -130,9 +269,6 @@ export default function InvoiceForm() {
     // Add all invoice data with proper formatting - only append if value exists
     if (invoice.invoice_number) formData.append('invoice_number', invoice.invoice_number);
     if (invoice.customer_id) formData.append('customer_id', invoice.customer_id);
-    if (invoice.product_name) formData.append('product_name', invoice.product_name);
-    if (invoice.description) formData.append('description', invoice.description);
-    if (invoice.price) formData.append('price', invoice.price);
     if (invoice.payment_term_id) formData.append('payment_term_id', invoice.payment_term_id);
     if (invoice.tax_id) formData.append('tax_id', invoice.tax_id);
     if (invoice.fee_id) formData.append('fee_id', invoice.fee_id);
@@ -149,9 +285,18 @@ export default function InvoiceForm() {
       formData.append('invoice_id', invoice.id);
     }
     
-    // Add selected files
-    selectedFiles.forEach((file, index) => {
-      formData.append(`product_images[${index}]`, file);
+    // Add products data
+    invoice.products.forEach((product, productIndex) => {
+      formData.append(`products[${productIndex}][product_name]`, product.product_name);
+      formData.append(`products[${productIndex}][description]`, product.description || '');
+      formData.append(`products[${productIndex}][price]`, product.price);
+      
+      // Add product images for this product
+      if (selectedFiles[productIndex] && selectedFiles[productIndex].length > 0) {
+        selectedFiles[productIndex].forEach((file, fileIndex) => {
+          formData.append(`products[${productIndex}][product_images][${fileIndex}]`, file);
+        });
+      }
     });
 
     // Let axios handle the Content-Type header automatically
@@ -285,31 +430,28 @@ export default function InvoiceForm() {
     }
   };
 
-  // Handle file selection
-  const handleFileSelect = (event) => {
+  // Handle file selection for current product in modal
+  const handleCurrentProductFileSelect = (event) => {
     const files = Array.from(event.target.files);
-    setSelectedFiles(files);
+    setCurrentProductFiles(files);
     
     // Create preview URLs for display
     const previewUrls = files.map(file => URL.createObjectURL(file));
-    setInvoice({ 
-      ...invoice, 
-      product_images: previewUrls // Replace with new preview URLs, don't append to existing
-    });
+    updateCurrentProductImages(previewUrls);
   };
 
-  // Handle remove individual image
-  const handleRemoveImage = (indexToRemove) => {
-    const updatedImages = invoice.product_images.filter((_, index) => index !== indexToRemove);
-    const updatedFiles = selectedFiles.filter((_, index) => index !== indexToRemove);
-    setInvoice({ ...invoice, product_images: updatedImages });
-    setSelectedFiles(updatedFiles);
+  // Handle remove individual image for current product in modal
+  const handleRemoveCurrentProductImage = (imageIndexToRemove) => {
+    const updatedImages = currentProduct.product_images.filter((_, index) => index !== imageIndexToRemove);
+    const updatedFiles = currentProductFiles.filter((_, index) => index !== imageIndexToRemove);
+    updateCurrentProductImages(updatedImages);
+    setCurrentProductFiles(updatedFiles);
   };
 
-  // Handle remove all images
-  const handleRemoveAllImages = () => {
-    setInvoice({ ...invoice, product_images: [] });
-    setSelectedFiles([]);
+  // Handle remove all images for current product in modal
+  const handleRemoveAllCurrentProductImages = () => {
+    updateCurrentProductImages([]);
+    setCurrentProductFiles([]);
   };
 
   return (
@@ -362,136 +504,119 @@ export default function InvoiceForm() {
             inputClass="col-sm-12 col-md-9"
           />
 
-          {/* Product Name Field */}
-          <Field
-            label="Product Name"
-            required={true}
-            inputComponent={
-              <input
-                className="form-control"
-                type="text"
-                value={invoice.product_name || ''}
-                onChange={ev => setInvoice({ ...invoice, product_name: DOMPurify.sanitize(ev.target.value) })}
-                required
-                placeholder="e.g., Diamond Ring, Gold Necklace"
-              />
-            }
-            labelClass="col-sm-12 col-md-3"
-            inputClass="col-sm-12 col-md-9"
-          />
-
-          {/* Description Field */}
-          <Field
-            label="Description"
-            inputComponent={
-              <textarea
-                className="form-control"
-                rows="3"
-                value={invoice.description || ''}
-                onChange={ev => setInvoice({ ...invoice, description: DOMPurify.sanitize(ev.target.value) })}
-                placeholder="Product description and details"
-              />
-            }
-            labelClass="col-sm-12 col-md-3"
-            inputClass="col-sm-12 col-md-9"
-          />
-
-          {/* Price Field */}
-          <Field
-            label="Price"
-            required={true}
-            inputComponent={
-              <div className="input-group">
-                <span className="input-group-text">₱</span>
-                <input
-                  className="form-control"
-                  type="number"
-                  step="0.01"
-                  min="0"
-                  value={invoice.price || ''}
-                  onChange={ev => setInvoice({ ...invoice, price: ev.target.value })}
-                  required
-                  placeholder="0.00"
-                />
+          {/* Products Summary Section */}
+          <div className="row mb-4">
+            <div className="col-3">Products ({invoice.products.length})</div>
+            <div className="col-9">
+              <div className="d-flex justify-content-end align-items-center mb-3">
+                <button 
+                  type="button" 
+                  className="btn btn-primary btn-sm"
+                  onClick={openAddProductModal}
+                >
+                  <FontAwesomeIcon icon={solidIconMap.plus} className="me-1" />
+                  Add Product
+                </button>
               </div>
-            }
-            labelClass="col-sm-12 col-md-3"
-            inputClass="col-sm-12 col-md-9"
-          />
-
-          {/* Product Images Field */}
-          <Field
-            label="Product Images"
-            inputComponent={
-              <div>
-                {invoice.product_images && invoice.product_images.length > 0 && (
-                  <div className="mb-3">
-                    <div className="d-flex flex-wrap gap-2 mb-2">
-                      {invoice.product_images.map((imageUrl, index) => (
-                        <div key={index} className="position-relative d-inline-block">
-                          <img 
-                            src={imageUrl} 
-                            alt={`Product ${index + 1}`} 
-                            style={{ maxWidth: '150px', maxHeight: '150px', objectFit: 'cover' }}
-                            className="img-thumbnail"
-                            onLoad={() => {
-                              console.log('Image loaded successfully:', imageUrl);
-                            }}
-                            onError={(e) => {
-                              console.error('Image failed to load:', imageUrl);
-                              console.error('Error details:', e);
-                              // Show a placeholder instead of hiding
-                              e.target.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTUwIiBoZWlnaHQ9IjE1MCIgdmlld0JveD0iMCAwIDE1MCAxNTAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIxNTAiIGhlaWdodD0iMTUwIiBmaWxsPSIjRjNGNEY2Ii8+CjxwYXRoIGQ9Ik03NSA0MEM4NS41IDQwIDk0IDQ4LjUgOTQgNTlDOTQgNjkuNSA4NS41IDc4IDc1IDc4QzY0LjUgNzggNTYgNjkuNSA1NiA1OUM1NiA0OC41IDY0LjUgNDAgNzUgNDBaIiBmaWxsPSIjOUNBM0FGIi8+CjxwYXRoIGQ9Ik03NSA4MEM4NS41IDgwIDk0IDg4LjUgOTQgOTlDOTQgMTA5LjUgODUuNSAxMTggNzUgMTE4QzY0LjUgMTE4IDU2IDEwOS41IDU2IDk5QzU2IDg4LjUgNjQuNSA4MCA3NSA4MFoiIGZpbGw9IiM5Q0EzQUYiLz4KPC9zdmc+';
-                              e.target.alt = 'Image failed to load';
-                            }}
-                          />
-                          <button 
-                            type="button" 
-                            className="btn btn-sm btn-danger position-absolute top-0 end-0"
-                            style={{ transform: 'translate(50%, -50%)' }}
-                            onClick={() => handleRemoveImage(index)}
-                            title="Remove this image"
-                          >
-                            <FontAwesomeIcon icon={solidIconMap.times} />
-                          </button>
-                        </div>
-                      ))}
-                    </div>
-                    <button 
-                      type="button" 
-                      className="btn btn-sm btn-outline-danger"
-                      onClick={handleRemoveAllImages}
-                    >
-                      <FontAwesomeIcon icon={solidIconMap.trash} className="me-1" />
-                      Remove All Images
-                    </button>
-                  </div>
-                )}
-                <div className="mb-3">
-                  <input
-                    type="file"
-                    className="form-control"
-                    multiple
-                    accept="image/*"
-                    onChange={handleFileSelect}
-                    id="product-images"
-                  />
-                  <label htmlFor="product-images" className="form-label">
-                    <small className="text-muted">
-                      Select multiple images (JPG, PNG, GIF, WebP). Each image should be less than 2MB.
-                      {selectedFiles.length > 0 && (
-                        <span className="text-info d-block mt-1">
-                          {selectedFiles.length} new file(s) selected. These will replace existing images.
-                        </span>
-                      )}
-                    </small>
-                  </label>
-                </div>
-              </div>
-            }
-            labelClass="col-sm-12 col-md-3"
-            inputClass="col-sm-12 col-md-9"
-          />
+              <table className="table table-striped">
+                  <thead>
+                    <tr>
+                      <th className="text-start">Product Name</th>
+                      <th className="text-start">Description</th>
+                      <th className="text-start">Price</th>
+                      <th className="text-start">Images</th>
+                      <th className="text-start">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {invoice.products.map((product, productIndex) => (
+                      <tr key={productIndex}>
+                        <td className="text-start">
+                          <strong>{product.product_name || 'Unnamed Product'}</strong>
+                        </td>
+                        <td className="text-start">
+                          <small className="text-muted">
+                            {product.description ? 
+                              (product.description.length > 50 ? 
+                                `${product.description.substring(0, 50)}...` : 
+                                product.description
+                              ) : 
+                              'No description'
+                            }
+                          </small>
+                        </td>
+                        <td className="text-start">
+                          <strong>₱{parseFloat(product.price || 0).toFixed(2)}</strong>
+                        </td>
+                        <td className="text-start">
+                          <div className="d-flex flex-wrap gap-1">
+                            {product.product_images && product.product_images.length > 0 ? (
+                              <>
+                                {product.product_images.slice(0, 3).map((imageUrl, index) => (
+                                  <img 
+                                    key={index}
+                                    src={imageUrl} 
+                                    alt={`Product ${productIndex + 1}`}
+                                    style={{ 
+                                      width: '30px', 
+                                      height: '30px', 
+                                      objectFit: 'cover',
+                                      borderRadius: '4px'
+                                    }}
+                                    className="border"
+                                  />
+                                ))}
+                                {product.product_images.length > 3 && (
+                                  <span className="badge bg-secondary">
+                                    +{product.product_images.length - 3}
+                                  </span>
+                                )}
+                              </>
+                            ) : (
+                              <span className="text-muted small">No images</span>
+                            )}
+                          </div>
+                        </td>
+                        <td className="text-start">
+                          <div className="btn-group btn-group-sm">
+                            <button 
+                              type="button" 
+                              className="btn btn-outline-primary"
+                              onClick={() => openEditProductModal(productIndex)}
+                              title="Edit Product"
+                            >
+                              <FontAwesomeIcon icon={solidIconMap.edit} />
+                            </button>
+                            {invoice.products.length > 1 && (
+                              <button 
+                                type="button" 
+                                className="btn btn-outline-danger"
+                                onClick={() => removeProduct(productIndex)}
+                                title="Remove Product"
+                              >
+                                <FontAwesomeIcon icon={solidIconMap.trash} />
+                              </button>
+                            )}
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                  <tfoot>
+                    <tr>
+                      <td colSpan="4" className="text-end">
+                        <strong>Total Amount:</strong>
+                      </td>
+                      <td className="text-start">
+                        <strong className="fs-5">
+                          ₱{calculateTotal().toFixed(2)}
+                        </strong>
+                      </td>
+                    </tr>
+                  </tfoot>
+                </table>
+            </div>
+          </div>
 
           {/* Payment Term Field */}
           <Field
@@ -739,6 +864,179 @@ export default function InvoiceForm() {
         </div>
       </form>
     </div>
+    
+    {/* Product Modal */}
+    {showProductModal && (
+      <div className="modal show d-block" style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}>
+        <div className="modal-dialog modal-lg">
+          <div className="modal-content">
+            <div className="modal-header">
+              <h5 className="modal-title">
+                {editingProductIndex !== null ? 'Edit Product' : 'Add New Product'}
+              </h5>
+              <button 
+                type="button" 
+                className="btn-close" 
+                onClick={() => setShowProductModal(false)}
+              ></button>
+            </div>
+            <div className="modal-body p-0 m-0">
+              <div className="card-body">
+              {/* Product Name Field */}
+              <Field
+                label="Product Name"
+                required={true}
+                inputComponent={
+                  <input
+                    className="form-control"
+                    type="text"
+                    value={currentProduct.product_name || ''}
+                    onChange={ev => updateCurrentProduct('product_name', DOMPurify.sanitize(ev.target.value))}
+                    required
+                    placeholder="e.g., Diamond Ring, Gold Necklace"
+                  />
+                }
+                labelClass="col-sm-12 col-md-3"
+                inputClass="col-sm-12 col-md-9"
+              />
+
+              {/* Description Field */}
+              <Field
+                label="Description"
+                inputComponent={
+                  <textarea
+                    className="form-control"
+                    rows="3"
+                    value={currentProduct.description || ''}
+                    onChange={ev => updateCurrentProduct('description', DOMPurify.sanitize(ev.target.value))}
+                    placeholder="Product description and details"
+                  />
+                }
+                labelClass="col-sm-12 col-md-3"
+                inputClass="col-sm-12 col-md-9"
+              />
+
+              {/* Price Field */}
+              <Field
+                label="Price"
+                required={true}
+                inputComponent={
+                  <div className="input-group">
+                    <span className="input-group-text">₱</span>
+                    <input
+                      className="form-control"
+                      type="number"
+                      step="0.01"
+                      min="0"
+                      value={currentProduct.price || ''}
+                      onChange={ev => updateCurrentProduct('price', ev.target.value)}
+                      required
+                      placeholder="0.00"
+                    />
+                  </div>
+                }
+                labelClass="col-sm-12 col-md-3"
+                inputClass="col-sm-12 col-md-9"
+              />
+
+              {/* Product Images Field */}
+              <Field
+                label="Product Images"
+                inputComponent={
+                  <div>
+                    {currentProduct.product_images && currentProduct.product_images.length > 0 && (
+                      <div className="mb-3">
+                        <div className="d-flex flex-wrap gap-2 mb-2">
+                          {currentProduct.product_images.map((imageUrl, index) => (
+                            <div key={index} className="position-relative d-inline-block">
+                              <img 
+                                src={imageUrl} 
+                                alt={`Product Image ${index + 1}`} 
+                                style={{ maxWidth: '150px', maxHeight: '150px', objectFit: 'cover' }}
+                                className="img-thumbnail"
+                                onLoad={() => {
+                                  console.log('Image loaded successfully:', imageUrl);
+                                }}
+                                onError={(e) => {
+                                  console.error('Image failed to load:', imageUrl);
+                                  console.error('Error details:', e);
+                                  // Show a placeholder instead of hiding
+                                  e.target.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTUwIiBoZWlnaHQ9IjE1MCIgdmlld0JveD0iMCAwIDE1MCAxNTAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIxNTAiIGhlaWdodD0iMTUwIiBmaWxsPSIjRjNGNEY2Ii8+CjxwYXRoIGQ9Ik03NSA0MEM4NS41IDQwIDk0IDQ4LjUgOTQgNTlDOTQgNjkuNSA4NS41IDc4IDc1IDc4QzY0LjUgNzggNTYgNjkuNSA1NiA1OUM1NiA0OC41IDY0LjUgNDAgNzUgNDBaIiBmaWxsPSIjOUNBM0FGIi8+CjxwYXRoIGQ9Ik03NSA4MEM4NS41IDgwIDk0IDg4LjUgOTQgOTlDOTQgMTA5LjUgODUuNSAxMTggNzUgMTE4QzY0LjUgMTE4IDU2IDEwOS41IDU2IDk5QzU2IDg4LjUgNjQuNSA4MCA3NSA4MFoiIGZpbGw9IiM5Q0EzQUYiLz4KPC9zdmc+';
+                                  e.target.alt = 'Image failed to load';
+                                }}
+                              />
+                              <button 
+                                type="button" 
+                                className="btn btn-sm btn-danger position-absolute top-0 end-0"
+                                style={{ transform: 'translate(50%, -50%)' }}
+                                onClick={() => handleRemoveCurrentProductImage(index)}
+                                title="Remove this image"
+                              >
+                                <FontAwesomeIcon icon={solidIconMap.times} />
+                              </button>
+                            </div>
+                          ))}
+                        </div>
+                        <button 
+                          type="button" 
+                          className="btn btn-sm btn-outline-danger"
+                          onClick={handleRemoveAllCurrentProductImages}
+                        >
+                          <FontAwesomeIcon icon={solidIconMap.trash} className="me-1" />
+                          Remove All Images
+                        </button>
+                      </div>
+                    )}
+                    <div className="mb-3">
+                      <input
+                        type="file"
+                        className="form-control"
+                        multiple
+                        accept="image/*"
+                        onChange={handleCurrentProductFileSelect}
+                        id="current-product-images"
+                      />
+                      <label htmlFor="current-product-images" className="form-label">
+                        <small className="text-muted">
+                          Select multiple images (JPG, PNG, GIF, WebP). Each image should be less than 2MB.
+                          {currentProductFiles.length > 0 && (
+                            <span className="text-info d-block mt-1">
+                              {currentProductFiles.length} new file(s) selected. These will replace existing images.
+                            </span>
+                          )}
+                        </small>
+                      </label>
+                    </div>
+                  </div>
+                }
+                labelClass="col-sm-12 col-md-3"
+                inputClass="col-sm-12 col-md-9"
+              />
+              </div>
+            </div>
+             <div className="modal-footer p-0 m-0">
+               <div className="card-footer w-100 m-0 d-flex justify-content-end gap-2"> 
+                 <button 
+                   type="button" 
+                   className="btn btn-secondary" 
+                   onClick={() => setShowProductModal(false)}
+                 >
+                   Cancel
+                 </button>
+                 <button 
+                   type="button" 
+                   className="btn btn-primary" 
+                   onClick={saveProduct}
+                 >
+                   {editingProductIndex !== null ? 'Update Product' : 'Add Product'}
+                 </button>
+               </div>
+             </div>
+          </div>
+        </div>
+      </div>
+    )}
+    
     <ToastMessage ref={toastAction} />
     </>
   );
