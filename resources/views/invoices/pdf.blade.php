@@ -29,7 +29,7 @@
         }
         
         .header-table td:first-child {
-            padding-left: 20px;
+            padding-left: 10px;
         }
         
         .logo-cell {
@@ -178,7 +178,7 @@
         .payment-method-table td {
             padding: 5px 0;
             border: none;
-            vertical-align: top;
+            vertical-align: middle;
         }
         
         .payment-logo-cell {
@@ -325,7 +325,20 @@
                 <table class="payment-method-table">
                     <tr>
                         <td class="payment-logo-cell">
-                            <div class="payment-logo">BPI</div>
+                            <div class="payment-logo">
+                                @php
+                                $bpiImagePath = public_path('assets/img/bpi-logo.png');
+                                $bpiBase64 = '';
+                                if (file_exists($bpiImagePath)) {
+                                    $bpiBase64 = 'data:image/png;base64,' . base64_encode(file_get_contents($bpiImagePath));
+                                }
+                                @endphp
+                                @if($bpiBase64)
+                                <img src="{{ $bpiBase64 }}" alt="BPI" style="width: 100%; height: 100%; object-fit: contain;">
+                                @else
+                                <div style="width: 100%; height: 100%; background: #f0f0f0; text-align: center; line-height: 30px; font-size: 10px; font-weight: bold; color: #333; border: 1px solid #ddd;">BPI</div>
+                                @endif
+                            </div>
                         </td>
                         <td class="payment-content-cell">
                             <div class="payment-method-title">BPI Savings Account</div>
@@ -340,7 +353,20 @@
                 <table class="payment-method-table">
                     <tr>
                         <td class="payment-logo-cell">
-                            <div class="payment-logo">GC</div>
+                            <div class="payment-logo">
+                                @php
+                                $gcashImagePath = public_path('assets/img/gcash-logo.png');
+                                $gcashBase64 = '';
+                                if (file_exists($gcashImagePath)) {
+                                    $gcashBase64 = 'data:image/png;base64,' . base64_encode(file_get_contents($gcashImagePath));
+                                }
+                                @endphp
+                                @if($gcashBase64)
+                                <img src="{{ $gcashBase64 }}" alt="GCash" style="width: 100%; height: 100%; object-fit: contain;">
+                                @else
+                                <div style="width: 100%; height: 100%; background: #f0f0f0; text-align: center; line-height: 30px; font-size: 10px; font-weight: bold; color: #333; border: 1px solid #ddd;">GC</div>
+                                @endif
+                            </div>
                         </td>
                         <td class="payment-content-cell">
                             <div class="payment-method-title">GCash</div>
