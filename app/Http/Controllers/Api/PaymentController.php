@@ -55,7 +55,7 @@ class PaymentController extends BaseController
     public function show($id)
     {
         try {
-            $payment = Payment::with(['invoice', 'customer', 'paymentMethod', 'confirmedBy'])
+            $payment = Payment::with(['invoice.paymentSchedules', 'customer', 'paymentMethod', 'confirmedBy'])
                 ->findOrFail($id);
             
             // Load all payment schedules for this invoice
@@ -322,6 +322,41 @@ class PaymentController extends BaseController
             return $this->service->exportPayments($format);
         } catch (\Exception $e) {
             return response()->json(['error' => 'Failed to export payments'], 500);
+        }
+    }
+
+    public function sendUpdateInvoice(Int $id)
+    {
+        try {
+            $payment = Payment::with(['invoice.customer', 'invoice.items', 'invoice.paymentSchedules'])
+                ->findOrFail($id);
+            
+            if (!$payment->invoice) {
+                return response(['message' => 'No invoice found for this payment.'], 400);
+            }
+            
+            // Get payment history for this invoice
+            $paymentHistory = Payment::where('invoice_id', $payment->invoice_id)
+                ->where('status', 'confirmed')
+                ->orderBy('payment_date', 'asc')
+                ->get();
+            
+            // Get paid payment schedules
+            $paidSchedules = $payment->invoice->paymentSchedules()
+                ->where('status', 'paid')
+                ->orderBy('payment_order', 'asc')
+                ->get();
+            
+            // Calculate totals
+            $totalPaid = $paymentHistory->sum('amount_paid');
+            $remainingBalance = $payment->invoice->total_amount - $totalPaid;
+            
+            // Send email with updated invoice
+            $this->service->sendUpdateInvoiceEmail($payment->invoice, $paymentHistory, $paidSchedules, $totalPaid, $remainingBalance);
+            
+            return response(['message' => 'Updated invoice has been sent to the customer.'], 200);
+        } catch (\Exception $e) {
+            return $this->messageService->responseError();
         }
     }
 }

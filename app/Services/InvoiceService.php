@@ -105,14 +105,23 @@ class InvoiceService extends BaseService
     public function getInvoicesForDropdown()
     {
         return Invoice::active()
-            ->select('id', 'invoice_number', 'product_name', 'total_amount')
+            ->with(['items'])
+            ->select('id', 'invoice_number', 'total_amount')
             ->get()
             ->map(function($invoice) {
+                // Get the first product name from items, or use a default
+                $firstItem = $invoice->items->first();
+                $productName = $firstItem?->product_name ?? 'Product/Service';
+                
+                if ($invoice->items->count() > 1) {
+                    $productName = $productName . ' (+' . ($invoice->items->count() - 1) . ' more)';
+                }
+                
                 return [
                     'id' => $invoice->id,
                     'invoice_number' => $invoice->invoice_number,
-                    'product_name' => $invoice->product_name,
-                    'total_amount' => $invoice->formatted_total_amount,
+                    'product_name' => $productName,
+                    'total_amount' => '₱' . number_format($invoice->total_amount, 2),
                 ];
             })
             ->sortBy('invoice_number')
@@ -132,11 +141,19 @@ class InvoiceService extends BaseService
             ->limit(20)
             ->get()
             ->map(function($invoice) {
+                // Get the first product name from items, or use a default
+                $firstItem = $invoice->items->first();
+                $productName = $firstItem?->product_name ?? 'Product/Service';
+                
+                if ($invoice->items->count() > 1) {
+                    $productName = $productName . ' (+' . ($invoice->items->count() - 1) . ' more)';
+                }
+                
                 return [
                     'id' => $invoice->id,
                     'invoice_number' => $invoice->invoice_number,
-                    'product_name' => $invoice->product_name,
-                    'total_amount' => $invoice->formatted_total_amount,
+                    'product_name' => $productName,
+                    'total_amount' => '₱' . number_format($invoice->total_amount, 2),
                     'customer' => $invoice->customer ? [
                         'id' => $invoice->customer->id,
                         'name' => $invoice->customer->full_name,

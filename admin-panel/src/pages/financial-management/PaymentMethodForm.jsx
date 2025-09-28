@@ -241,7 +241,7 @@ export default function PaymentMethodForm() {
           <div className="row mb-3">
             <div className="col-sm-12 col-md-3">
               <label className="form-label">QR Code Image</label>
-              <small className="form-text text-muted d-block">Optional QR code for easy payments</small>
+              <small className="form-text text-dark d-block">Optional QR code for easy payments</small>
             </div>
             <div className="col-sm-12 col-md-9">
               <div className="border rounded p-3">
@@ -252,7 +252,7 @@ export default function PaymentMethodForm() {
                     accept="image/*"
                     onChange={handleFileUpload}
                   />
-                  <small className="form-text text-muted">
+                  <small className="form-text text-dark">
                     Supported formats: JPG, PNG, GIF. Max size: 5MB
                   </small>
                 </div>

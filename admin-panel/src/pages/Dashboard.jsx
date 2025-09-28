@@ -218,7 +218,7 @@ export default function Dashboard() {
 							<div className="card-body text-center">
 								<FontAwesomeIcon icon={solidIconMap.exclamationTriangle} className="mb-3 text-danger" size="3x" />
 								<h5 className="text-danger">Error Loading Dashboard</h5>
-								<p className="text-muted">{dashboardData.error}</p>
+								<p className="text-dark">{dashboardData.error}</p>
 								<button className="btn btn-primary" onClick={fetchDashboardData}>
 									<FontAwesomeIcon icon={solidIconMap.refresh} className="me-2" />
 									Retry

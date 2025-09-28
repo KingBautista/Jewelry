@@ -28,7 +28,7 @@ export default function ThumbnailDisplay({
 
   if (!images || images.length === 0) {
     return (
-      <div className={`text-muted text-center p-3 ${className}`}>
+      <div className={`text-dark text-center p-3 ${className}`}>
         <small>No images available</small>
       </div>
     );
@@ -61,7 +61,7 @@ export default function ThumbnailDisplay({
             className="w-100 h-100 d-flex align-items-center justify-content-center bg-light"
             style={{ display: 'none' }}
           >
-            <i className="fas fa-image text-muted"></i>
+            <i className="fas fa-image text-dark"></i>
           </div>
         </div>
       ))}
@@ -72,8 +72,8 @@ export default function ThumbnailDisplay({
           onClick={() => setShowAll(true)}
         >
           <div className="text-center">
-            <div className="text-muted">+{images.length - maxDisplay}</div>
-            <small className="text-muted">more</small>
+            <div className="text-dark">+{images.length - maxDisplay}</div>
+            <small className="text-dark">more</small>
           </div>
         </div>
       )}

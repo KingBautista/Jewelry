@@ -315,8 +315,10 @@ class Invoice extends Model
     {
         return $query->where(function ($q) use ($search) {
             $q->where('invoice_number', 'LIKE', "%{$search}%")
-              ->orWhere('product_name', 'LIKE', "%{$search}%")
-              ->orWhere('description', 'LIKE', "%{$search}%")
+              ->orWhereHas('items', function ($itemQuery) use ($search) {
+                  $itemQuery->where('product_name', 'LIKE', "%{$search}%")
+                           ->orWhere('description', 'LIKE', "%{$search}%");
+              })
               ->orWhereHas('customer', function ($customerQuery) use ($search) {
                   $customerQuery->where('user_email', 'LIKE', "%{$search}%")
                                ->orWhereHas('getUserMetas', function ($metaQuery) use ($search) {

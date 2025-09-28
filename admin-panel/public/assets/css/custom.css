@@ -1651,7 +1651,7 @@ hr {
 
 /* Dark Theme Adjustments - Champagne Elegance */
 [data-theme="dark"] .sidebar-modern {
-  background: #F7E7CE !important;
+  background: #2C2C2C !important;
   border-right-color: #E6D3B7 !important;
 }
 
@@ -2830,7 +2830,7 @@ hr {
 .content-area {
   flex: 1;
   padding: 0 0 1.5rem 0;
-  background: #FAF9F6;
+  background: #FFFBF5;
   overflow-y: auto;
   overflow-x: hidden;
 }
@@ -4799,7 +4799,7 @@ hr {
   }
   
   .text-dark {
-    color: #ffffff !important;
+    color: #000000 !important;
   }
   
   hr {
@@ -5024,16 +5024,16 @@ hr {
   
   /* Main content area - Champagne Elegance */
   .main-content {
-    background-color: #2C2C2C;
+    background-color: #FFFBF5;
   }
   
   .content-area {
-    background-color: #2C2C2C;
+    background-color: #FFFBF5;
   }
   
   /* Content container - Champagne Elegance */
   .content-container {
-    background-color: #2C2C2C;
+    background-color: #FFFBF5;
   }
   
   /* Dashboard specific dark theme styling */

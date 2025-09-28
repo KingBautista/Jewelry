@@ -48,6 +48,7 @@ class PaymentResource extends JsonResource
                     'product_name' => $this->invoice->product_name,
                     'total_amount' => $this->invoice->total_amount,
                     'formatted_total_amount' => $this->invoice->formatted_total_amount,
+                    'payment_schedules' => $this->invoice->paymentSchedules ?? [],
                 ];
             }),
             'customer' => $this->whenLoaded('customer', function () {
@@ -73,6 +74,16 @@ class PaymentResource extends JsonResource
                     'name' => $this->confirmedBy->full_name,
                     'email' => $this->confirmedBy->user_email,
                 ];
+            }),
+            
+            // Include payment schedules when available
+            'payment_schedules' => $this->when(isset($this->payment_schedules), function () {
+                return $this->payment_schedules;
+            }),
+            
+            // Include paid schedules when available
+            'paid_schedules' => $this->when(isset($this->paid_schedules), function () {
+                return $this->paid_schedules;
             }),
         ];
     }

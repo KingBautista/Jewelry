@@ -63,9 +63,21 @@ export default function PaymentForm() {
             setInvoiceSearchResults(data);
             setIsInvoiceSearching(false);
           })
-          .catch(() => {
+          .catch((error) => {
+            console.error('Error searching invoices:', error);
             setIsInvoiceSearching(false);
             setInvoiceSearchResults([]);
+            
+            // Show error message for search
+            if (error.response?.status === 401) {
+              toastAction.current.showError('Authentication required. Please log in again.');
+            } else if (error.response?.status === 403) {
+              toastAction.current.showError('Access denied. You do not have permission to search invoices.');
+            } else if (error.response?.status >= 500) {
+              toastAction.current.showError('Server error while searching invoices. Please try again later.');
+            } else {
+              toastAction.current.showError('Failed to search invoices. Please try again.');
+            }
           });
       } else {
         setInvoiceSearchResults([]);
@@ -102,7 +114,7 @@ export default function PaymentForm() {
       expected_amount: invoice.payment_schedules?.find(s => s.status === 'pending')?.expected_amount || invoice.total_amount
     }));
     setSelectedInvoice(invoice);
-    setInvoiceSearchTerm(`${invoice.invoice_number} - ${invoice.product_name} (${invoice.total_amount})`);
+    setInvoiceSearchTerm(`${invoice.invoice_number} - ${invoice.product_name || 'Product/Service'} (${invoice.total_amount || '₱0.00'})`);
     setInvoiceSearchResults([]);
     // Reset selected schedules when new invoice is selected
     setSelectedSchedules([]);
@@ -206,6 +218,17 @@ export default function PaymentForm() {
         setPaymentMethods(paymentMethodsRes.data || []);
       } catch (error) {
         console.error('Error loading dropdown data:', error);
+        
+        // Show specific error message for invoices
+        if (error.response?.status === 401) {
+          toastAction.current.showError('Authentication required. Please log in again.');
+        } else if (error.response?.status === 403) {
+          toastAction.current.showError('Access denied. You do not have permission to access this resource.');
+        } else if (error.response?.status >= 500) {
+          toastAction.current.showError('Server error. Please try again later.');
+        } else {
+          toastAction.current.showError('Failed to load dropdown data. Please refresh the page.');
+        }
       }
     };
 
@@ -245,11 +268,11 @@ export default function PaymentForm() {
               // Add payment schedules to the invoice data if they exist on the payment
               const invoiceWithSchedules = {
                 ...paymentData.invoice,
-                payment_schedules: paymentData.payment_schedules || []
+                payment_schedules: paymentData.payment_schedules || paymentData.invoice.payment_schedules || []
               };
               
               setSelectedInvoice(invoiceWithSchedules);
-              setInvoiceSearchTerm(`${paymentData.invoice.invoice_number} - ${paymentData.invoice.product_name} (${paymentData.invoice.total_amount})`);
+              setInvoiceSearchTerm(`${paymentData.invoice.invoice_number} - ${paymentData.invoice.product_name || 'Product/Service'} (${paymentData.invoice.total_amount || '₱0.00'})`);
               
               // Load paid schedules for this payment
               if (paymentData.paid_schedules) {
@@ -272,7 +295,7 @@ export default function PaymentForm() {
                         const invoice = invoiceData.find(inv => inv.id === paymentData.invoice_id);
                         if (invoice) {
                           setSelectedInvoice(invoice);
-                          setInvoiceSearchTerm(`${invoice.invoice_number} - ${invoice.product_name} (${invoice.total_amount})`);
+                          setInvoiceSearchTerm(`${invoice.invoice_number} - ${invoice.product_name || 'Product/Service'} (${invoice.total_amount || '₱0.00'})`);
                         }
                       }
                     })
@@ -285,7 +308,7 @@ export default function PaymentForm() {
                               const invoice = invoiceData.find(inv => inv.invoice_number === paymentData.invoice.invoice_number);
                               if (invoice) {
                                 setSelectedInvoice(invoice);
-                                setInvoiceSearchTerm(`${invoice.invoice_number} - ${invoice.product_name} (${invoice.total_amount})`);
+                                setInvoiceSearchTerm(`${invoice.invoice_number} - ${invoice.product_name || 'Product/Service'} (${invoice.total_amount || '₱0.00'})`);
                               }
                             }
                           })
@@ -452,6 +475,24 @@ export default function PaymentForm() {
     }
   };
 
+  // Handle send update invoice
+  const handleSendUpdateInvoice = () => {
+    if (!payment.id || !selectedInvoice) return;
+    
+    if (window.confirm('Are you sure you want to send an updated invoice email to the customer?')) {
+      setIsLoading(true);
+      axiosClient.post(`/payment-management/payments/${payment.id}/send-update-invoice`)
+        .then(() => {
+          toastAction.current.showToast('Updated invoice has been sent to the customer.', 'success');
+          setIsLoading(false);
+        })
+        .catch((errors) => {
+          toastAction.current.showError(errors.response);
+          setIsLoading(false);
+        });
+    }
+  };
+
   return (
     <>
     <div className="card">
@@ -464,7 +505,7 @@ export default function PaymentForm() {
             {isReadOnly && <span className="badge text-bg-success">READ ONLY</span>}
           </div>
           {!payment.id && <p className="tip-message">Create a new payment record for your jewelry business.</p>}
-          {isReadOnly && <p className="tip-message text-muted">This payment has been confirmed and cannot be edited.</p>}
+          {isReadOnly && <p className="tip-message text-dark">This payment has been confirmed and cannot be edited.</p>}
         </div>
         <div className="card-body">
           {/* Invoice Search Field */}
@@ -484,7 +525,7 @@ export default function PaymentForm() {
                   disabled={isReadOnly}
                 />
                 <div className="form-text">
-                  <small className="text-muted">
+                  <small className="text-dark">
                     <FontAwesomeIcon icon={solidIconMap.info} className="me-1" />
                     Type at least 3 characters to search invoices by number, product name, or customer name
                   </small>
@@ -522,7 +563,7 @@ export default function PaymentForm() {
                         onMouseLeave={(e) => {
                           e.target.style.backgroundColor = 'transparent';
                         }}>
-                        {invoice.invoice_number} - {invoice.product_name} ({invoice.total_amount})
+                        {invoice.invoice_number} - {invoice.product_name || 'Product/Service'} ({invoice.total_amount || '₱0.00'})
                       </div>
                     ))}
                   </div>
@@ -535,40 +576,42 @@ export default function PaymentForm() {
 
           {/* Invoice Information Display */}
           {selectedInvoice && (
-            <div className="card mb-3">
-              <div className="card-header">
-                <h6 className="mb-0">Invoice Information</h6>
-              </div>
-              <div className="card-body">
-                <div className="row">
-                  <div className="col-md-6">
-                    <div className="mb-2">
-                      <strong>Invoice Number:</strong> {selectedInvoice.invoice_number}
-                    </div>
-                    <div className="mb-2">
-                      <strong>Product:</strong> {selectedInvoice.product_name}
-                    </div>
-                    <div className="mb-2">
-                      <strong>Total Amount:</strong> {selectedInvoice.total_amount}
-                    </div>
-                    <div className="mb-2">
-                      <strong>Payment Status:</strong> 
-                      <span className={`badge ms-2 ${
-                        selectedInvoice.payment_status === 'fully_paid' ? 'text-bg-success' :
-                        selectedInvoice.payment_status === 'partially_paid' ? 'text-bg-warning' :
-                        selectedInvoice.payment_status === 'overdue' ? 'text-bg-danger' :
-                        'text-bg-secondary'
-                      }`}>
-                        {selectedInvoice.payment_status?.replace('_', ' ').toUpperCase()}
-                      </span>
-                    </div>
-                  </div>
-                  <div className="col-md-6">
-                    <div className="mb-2">
-                      <strong>Total Paid:</strong> {selectedInvoice.total_paid_amount}
-                    </div>
-                    <div className="mb-2">
-                      <strong>Remaining Balance:</strong> {selectedInvoice.remaining_balance}
+            <div className="row mb-4">
+              <div className="col-3">Invoice Information</div>
+              <div className="col-9">
+                <div className="card">
+                  <div className="card-body">
+                    <div className="row">
+                      <div className="col-md-6">
+                        <div className="mb-2">
+                          <strong>Invoice Number:</strong> {selectedInvoice.invoice_number}
+                        </div>
+                        <div className="mb-2">
+                          <strong>Product:</strong> {selectedInvoice.product_name || 'Product/Service'}
+                        </div>
+                        <div className="mb-2">
+                          <strong>Total Amount:</strong> {selectedInvoice.total_amount}
+                        </div>
+                        <div className="mb-2">
+                          <strong>Payment Status:</strong> 
+                          <span className={`badge ms-2 ${
+                            selectedInvoice.payment_status === 'fully_paid' ? 'text-bg-success' :
+                            selectedInvoice.payment_status === 'partially_paid' ? 'text-bg-warning' :
+                            selectedInvoice.payment_status === 'overdue' ? 'text-bg-danger' :
+                            'text-bg-secondary'
+                          }`}>
+                            {selectedInvoice.payment_status?.replace('_', ' ').toUpperCase()}
+                          </span>
+                        </div>
+                      </div>
+                      <div className="col-md-6">
+                        <div className="mb-2">
+                          <strong>Total Paid:</strong> {selectedInvoice.total_paid_amount}
+                        </div>
+                        <div className="mb-2">
+                          <strong>Remaining Balance:</strong> {selectedInvoice.remaining_balance}
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -578,26 +621,28 @@ export default function PaymentForm() {
 
           {/* Customer Information Display */}
           {selectedInvoice?.customer && (
-            <div className="card mb-3">
-              <div className="card-header">
-                <h6 className="mb-0">Customer Information</h6>
-              </div>
-              <div className="card-body">
-                <div className="row">
-                  <div className="col-md-6">
-                    <div className="mb-2">
-                      <strong>Name:</strong> {selectedInvoice.customer.full_name || selectedInvoice.customer.name}
-                    </div>
-                    <div className="mb-2">
-                      <strong>Email:</strong> {selectedInvoice.customer.user_email || selectedInvoice.customer.email}
-                    </div>
-                  </div>
-                  <div className="col-md-6">
-                    <div className="mb-2">
-                      <strong>Phone:</strong> {selectedInvoice.customer.formatted_phone || selectedInvoice.customer.phone}
-                    </div>
-                    <div className="mb-2">
-                      <strong>Address:</strong> {selectedInvoice.customer.formatted_address || selectedInvoice.customer.address}
+            <div className="row mb-4">
+              <div className="col-3">Customer Information</div>
+              <div className="col-9">
+                <div className="card">
+                  <div className="card-body">
+                    <div className="row">
+                      <div className="col-md-6">
+                        <div className="mb-2">
+                          <strong>Name:</strong> {selectedInvoice.customer.full_name || selectedInvoice.customer.name}
+                        </div>
+                        <div className="mb-2">
+                          <strong>Email:</strong> {selectedInvoice.customer.user_email || selectedInvoice.customer.email}
+                        </div>
+                      </div>
+                      <div className="col-md-6">
+                        <div className="mb-2">
+                          <strong>Phone:</strong> {selectedInvoice.customer.formatted_phone || selectedInvoice.customer.phone}
+                        </div>
+                        <div className="mb-2">
+                          <strong>Address:</strong> {selectedInvoice.customer.formatted_address || selectedInvoice.customer.address}
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -607,26 +652,28 @@ export default function PaymentForm() {
 
           {/* Payment Term Information Display */}
           {selectedInvoice?.payment_term && (
-            <div className="card mb-3">
-              <div className="card-header">
-                <h6 className="mb-0">Payment Term Information</h6>
-              </div>
-              <div className="card-body">
-                <div className="row">
-                  <div className="col-md-6">
-                    <div className="mb-2">
-                      <strong>Payment Term:</strong> {selectedInvoice.payment_term.name}
-                    </div>
-                    <div className="mb-2">
-                      <strong>Code:</strong> {selectedInvoice.payment_term.code}
-                    </div>
-                  </div>
-                  <div className="col-md-6">
-                    <div className="mb-2">
-                      <strong>Down Payment:</strong> {selectedInvoice.payment_term.down_payment_percentage}%
-                    </div>
-                    <div className="mb-2">
-                      <strong>Term Duration:</strong> {selectedInvoice.payment_term.term_months} months
+            <div className="row mb-4">
+              <div className="col-3">Payment Term Information</div>
+              <div className="col-9">
+                <div className="card">
+                  <div className="card-body">
+                    <div className="row">
+                      <div className="col-md-6">
+                        <div className="mb-2">
+                          <strong>Payment Term:</strong> {selectedInvoice.payment_term.name}
+                        </div>
+                        <div className="mb-2">
+                          <strong>Code:</strong> {selectedInvoice.payment_term.code}
+                        </div>
+                      </div>
+                      <div className="col-md-6">
+                        <div className="mb-2">
+                          <strong>Down Payment:</strong> {selectedInvoice.payment_term.down_payment_percentage}%
+                        </div>
+                        <div className="mb-2">
+                          <strong>Term Duration:</strong> {selectedInvoice.payment_term.term_months} months
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -636,25 +683,14 @@ export default function PaymentForm() {
 
           {/* Payment Schedule Display */}
           {selectedInvoice?.payment_schedules && selectedInvoice.payment_schedules.length > 0 && (
-            <div className="card mb-3">
-              <div className="card-header d-flex justify-content-between align-items-center">
-                <div>
-                  <h6 className="mb-0">Payment Schedule</h6>
-                  <small className="text-muted">
-                    <FontAwesomeIcon icon={solidIconMap.info} className="me-1" />
-                    Paid schedules are automatically checked and disabled
-                  </small>
-                </div>
-                {selectedSchedules.length > 0 && (
-                  <div className="text-end">
-                    <small className="text-muted">Selected: {selectedSchedules.length} schedule(s)</small>
-                    <div className="fw-bold text-primary">
-                      Total: ₱{selectedSchedules.reduce((sum, s) => sum + parseFloat(s.expected_amount), 0).toFixed(2)}
-                    </div>
-                  </div>
-                )}
+            <div className="row mb-4">
+              <div className="col-3">Payment Schedule <br/>                
+                <small className="text-dark">
+                  <FontAwesomeIcon icon={solidIconMap.info} className="me-1" />
+                  Paid schedules are automatically checked and disabled
+                </small>
               </div>
-              <div className="card-body">
+              <div className="col-9">
                 <div className="table-responsive" style={{ height: 'auto', maxHeight: 'none', overflow: 'visible' }}>
                   <table className="table table-sm table-hover" style={{ whiteSpace: 'nowrap' }}>
                     <thead className="table-light">
@@ -691,17 +727,15 @@ export default function PaymentForm() {
                               <input
                                 className="form-check-input"
                                 type="checkbox"
-                                checked={selectedSchedules.some(selected => selected.id === schedule.id) || schedule.status === 'paid'}
+                                checked={selectedSchedules.some(selected => selected.id === schedule.id)}
                                 disabled={schedule.status === 'paid' || isReadOnly}
                                 onChange={(e) => handleScheduleSelect(schedule, e.target.checked)}
                               />
                             </div>
                           </td>
                           <td>
-                            <div className="d-flex align-items-center">
-                              <span className="badge text-bg-primary me-2">{schedule.payment_order}</span>
-                              <span>{schedule.payment_type}</span>
-                            </div>
+                            <span className="badge text-bg-primary me-2">{schedule.payment_order}</span>&nbsp;
+                            {schedule.payment_type}
                           </td>
                           <td>{new Date(schedule.due_date).toLocaleDateString()}</td>
                           <td>₱{parseFloat(schedule.expected_amount).toFixed(2)}</td>
@@ -910,7 +944,7 @@ export default function PaymentForm() {
                     disabled={isReadOnly}
                   />
                   <label htmlFor="receipt-images" className="form-label">
-                    <small className="text-muted">
+                    <small className="text-dark">
                       Select receipt image(s) (JPG, PNG, GIF, WebP). Each image should be less than 2MB.
                       {selectedReceiptFiles.length > 0 && (
                         <span className="text-info d-block mt-1">
@@ -1044,6 +1078,17 @@ export default function PaymentForm() {
               >
                 <FontAwesomeIcon icon={solidIconMap.check} className="me-2" />
                 Confirm
+              </button>
+            )}
+            {payment.id && selectedInvoice && (
+              <button 
+                type="button" 
+                className="btn btn-info me-2" 
+                onClick={handleSendUpdateInvoice}
+                disabled={isLoading}
+              >
+                <FontAwesomeIcon icon={solidIconMap.envelope} className="me-2" />
+                Send Update Invoice
               </button>
             )}
             {payment.id && !isReadOnly && (

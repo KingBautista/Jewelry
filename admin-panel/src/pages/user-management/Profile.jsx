@@ -151,7 +151,7 @@ export default function Profile() {
                               onChange={ev => setUser({ ...user, user_login: DOMPurify.sanitize(ev.target.value) })}
                               disabled
                             />
-                            <small className="text-muted">Usernames cannot be changed.</small>
+                            <small className="text-dark">Usernames cannot be changed.</small>
                           </div>
                           
                           {/* Email Field */}
@@ -164,7 +164,7 @@ export default function Profile() {
                               onChange={ev => setUser({ ...user, user_email: DOMPurify.sanitize(ev.target.value) })}
                               required
                             />
-                            <small className="text-muted">If you change this, an email will be sent to confirm it.</small>
+                            <small className="text-dark">If you change this, an email will be sent to confirm it.</small>
                           </div>
 
                           {/* First Name Field */}
@@ -238,7 +238,7 @@ export default function Profile() {
                             onChange={ev => setUser({...user, biography: ev.target.value})}
                             placeholder="Share a little biographical information to fill out your profile..."
                           />
-                          <small className="text-muted">This may be shown publicly.</small>
+                          <small className="text-dark">This may be shown publicly.</small>
                         </div>
                       </div>
                     </div>
@@ -259,7 +259,7 @@ export default function Profile() {
                           labelClass="col-12 col-md-3"
                           inputClass="col-12 col-md-9"
                         />
-                        <small className="text-muted">Leave blank to keep your current password.</small>
+                        <small className="text-dark">Leave blank to keep your current password.</small>
                       </div>
                     </div>
                   </div>
@@ -276,7 +276,7 @@ export default function Profile() {
                       </div>
                       <div className="card-body">
                         <AddMedia onChange={setAttachment} value={user.attachment_metadata} />
-                        <small className="text-muted">Upload a profile picture to personalize your account.</small>
+                        <small className="text-dark">Upload a profile picture to personalize your account.</small>
                       </div>
                     </div>
                   </div>

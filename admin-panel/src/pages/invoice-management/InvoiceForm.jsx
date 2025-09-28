@@ -689,7 +689,7 @@ export default function InvoiceForm() {
                           <strong>{product.product_name || 'Unnamed Product'}</strong>
                         </td>
                         <td className="text-start">
-                          <small className="text-muted">
+                          <small className="text-dark">
                             {product.description ? 
                               (product.description.length > 50 ? 
                                 `${product.description.substring(0, 50)}...` : 
@@ -727,7 +727,7 @@ export default function InvoiceForm() {
                                 )}
                               </>
                             ) : (
-                              <span className="text-muted small">No images</span>
+                              <span className="text-dark small">No images</span>
                             )}
                           </div>
                         </td>
@@ -768,36 +768,36 @@ export default function InvoiceForm() {
                     {invoice.tax_id && (
                       <tr>
                         <td colSpan="4" className="text-end">
-                          <small className="text-muted">
+                          <small className="text-dark">
                             Tax ({taxes.find(tax => tax.id == invoice.tax_id)?.name || 'Tax'}):
                           </small>
                         </td>
                         <td className="text-start">
-                          <small className="text-muted">₱{Number(calculateTaxAmount() || 0).toFixed(2)}</small>
+                          <small className="text-dark">₱{Number(calculateTaxAmount() || 0).toFixed(2)}</small>
                         </td>
                       </tr>
                     )}
                     {invoice.fee_id && (
                       <tr>
                         <td colSpan="4" className="text-end">
-                          <small className="text-muted">
+                          <small className="text-dark">
                             Fee ({fees.find(fee => fee.id == invoice.fee_id)?.name || 'Fee'}):
                           </small>
                         </td>
                         <td className="text-start">
-                          <small className="text-muted">₱{Number(calculateFeeAmount() || 0).toFixed(2)}</small>
+                          <small className="text-dark">₱{Number(calculateFeeAmount() || 0).toFixed(2)}</small>
                         </td>
                       </tr>
                     )}
                     {invoice.discount_id && (
                       <tr>
                         <td colSpan="4" className="text-end">
-                          <small className="text-muted">
+                          <small className="text-dark">
                             Discount ({discounts.find(discount => discount.id == invoice.discount_id)?.name || 'Discount'}):
                           </small>
                         </td>
                         <td className="text-start">
-                          <small className="text-muted text-success">-₱{Number(calculateDiscountAmount() || 0).toFixed(2)}</small>
+                          <small className="text-dark text-success">-₱{Number(calculateDiscountAmount() || 0).toFixed(2)}</small>
                         </td>
                       </tr>
                     )}
@@ -1269,7 +1269,7 @@ export default function InvoiceForm() {
                         id="current-product-images"
                       />
                       <label htmlFor="current-product-images" className="form-label">
-                        <small className="text-muted">
+                        <small className="text-dark">
                           Select multiple images (JPG, PNG, GIF, WebP). Each image should be less than 2MB.
                           {currentProductFiles.length > 0 && (
                             <span className="text-info d-block mt-1">

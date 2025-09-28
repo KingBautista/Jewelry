@@ -243,4 +243,42 @@ class PaymentService extends BaseService
             ->orderBy('payment_order')
             ->get();
     }
+
+    /**
+     * Send update invoice email with payment history and schedule details
+     */
+    public function sendUpdateInvoiceEmail($invoice, $paymentHistory, $paidSchedules, $totalPaid, $remainingBalance)
+    {
+        try {
+            // Generate PDF with updated information
+            $pdf = \PDF::loadView('invoices.pdf-updated', [
+                'invoice' => $invoice,
+                'paymentHistory' => $paymentHistory,
+                'paidSchedules' => $paidSchedules,
+                'totalPaid' => $totalPaid,
+                'remainingBalance' => $remainingBalance
+            ]);
+
+            // Send email with PDF attachment
+            \Mail::send('emails.invoice-updated', [
+                'invoice' => $invoice,
+                'customerName' => $invoice->customer->full_name ?? $invoice->customer->name,
+                'paymentHistory' => $paymentHistory,
+                'paidSchedules' => $paidSchedules,
+                'totalPaid' => $totalPaid,
+                'remainingBalance' => $remainingBalance
+            ], function ($message) use ($invoice, $pdf) {
+                $message->to($invoice->customer->user_email ?? $invoice->customer->email)
+                    ->subject('Updated Invoice - ' . $invoice->invoice_number)
+                    ->attachData($pdf->output(), 'invoice-updated-' . $invoice->invoice_number . '.pdf', [
+                        'mime' => 'application/pdf',
+                    ]);
+            });
+
+            return true;
+        } catch (\Exception $e) {
+            \Log::error('Failed to send update invoice email: ' . $e->getMessage());
+            throw $e;
+        }
+    }
 }
