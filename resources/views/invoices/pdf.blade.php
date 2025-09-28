@@ -293,19 +293,39 @@
             </tr>
         </thead>
         <tbody>
-            <tr>
-                <td class="description">{{ $invoice->product_name ?: 'Product/Service' }}</td>
-                <td class="unit-price">P{{ number_format($invoice->price, 2, '.', ',') }}</td>
-                <td class="qty">1</td>
-                <td class="total">P{{ number_format($invoice->price, 2, '.', ',') }}</td>
-            </tr>
-            @if($invoice->description)
-            <tr>
-                <td class="description" style="font-style: italic; color: #666;">{{ $invoice->description }}</td>
-                <td class="unit-price">-</td>
-                <td class="qty">-</td>
-                <td class="total">-</td>
-            </tr>
+            @if($invoice->items && count($invoice->items) > 0)
+                @foreach($invoice->items as $item)
+                <tr>
+                    <td class="description">{{ $item->product_name ?: 'Product/Service' }}</td>
+                    <td class="unit-price">P{{ number_format($item->price, 2, '.', ',') }}</td>
+                    <td class="qty">1</td>
+                    <td class="total">P{{ number_format($item->price, 2, '.', ',') }}</td>
+                </tr>
+                @if($item->description)
+                <tr>
+                    <td class="description" style="font-style: italic; color: #666;">{{ $item->description }}</td>
+                    <td class="unit-price">-</td>
+                    <td class="qty">-</td>
+                    <td class="total">-</td>
+                </tr>
+                @endif
+                @endforeach
+            @else
+                <!-- Fallback for old single product format -->
+                <tr>
+                    <td class="description">{{ $invoice->product_name ?: 'Product/Service' }}</td>
+                    <td class="unit-price">P{{ number_format($invoice->price, 2, '.', ',') }}</td>
+                    <td class="qty">1</td>
+                    <td class="total">P{{ number_format($invoice->price, 2, '.', ',') }}</td>
+                </tr>
+                @if($invoice->description)
+                <tr>
+                    <td class="description" style="font-style: italic; color: #666;">{{ $invoice->description }}</td>
+                    <td class="unit-price">-</td>
+                    <td class="qty">-</td>
+                    <td class="total">-</td>
+                </tr>
+                @endif
             @endif
         </tbody>
         <tfoot>
