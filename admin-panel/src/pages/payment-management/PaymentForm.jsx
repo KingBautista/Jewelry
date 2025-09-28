@@ -849,27 +849,6 @@ export default function PaymentForm() {
                   placeholder="0.00"
                   disabled={isReadOnly}
                 />
-                {selectedInvoice?.payment_schedules && !isReadOnly && (
-                  <button
-                    type="button"
-                    className="btn btn-outline-secondary"
-                    onClick={() => {
-                      const nextPendingSchedule = selectedInvoice.payment_schedules
-                        .filter(s => s.status === 'pending')
-                        .sort((a, b) => a.payment_order - b.payment_order)[0];
-                      
-                      if (nextPendingSchedule) {
-                        setPayment(prev => ({
-                          ...prev,
-                          expected_amount: nextPendingSchedule.expected_amount
-                        }));
-                      }
-                    }}
-                    title="Auto-fill from next pending payment schedule"
-                  >
-                    <FontAwesomeIcon icon={solidIconMap.magic} />
-                  </button>
-                )}
               </div>
             }
             labelClass="col-sm-12 col-md-3"
