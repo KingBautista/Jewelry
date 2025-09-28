@@ -108,6 +108,18 @@ class InvoiceResource extends JsonResource
                     'type' => $this->discount->type,
                 ];
             }),
+            'items' => $this->whenLoaded('items', function () {
+                return $this->items->map(function ($item) {
+                    return [
+                        'id' => $item->id,
+                        'product_name' => $item->product_name,
+                        'description' => $item->description,
+                        'price' => $item->price,
+                        'formatted_price' => $item->formatted_price,
+                        'product_images' => $item->product_images,
+                    ];
+                });
+            }),
         ];
     }
 }

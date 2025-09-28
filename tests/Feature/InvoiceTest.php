@@ -6,6 +6,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 use App\Models\Invoice;
+use App\Models\InvoiceItem;
 use App\Models\User;
 use App\Models\PaymentTerm;
 use App\Models\Tax;
@@ -112,10 +113,6 @@ class InvoiceTest extends TestCase
         $invoiceData = [
             'invoice_number' => $overrides['invoice_number'] ?? Invoice::generateInvoiceNumber(),
             'customer_id' => $customer->id,
-            'product_name' => $overrides['product_name'] ?? $this->faker->words(3, true),
-            'description' => $overrides['description'] ?? $this->faker->sentence(),
-            'price' => $overrides['price'] ?? $this->faker->randomFloat(2, 1000, 100000),
-            'product_images' => $overrides['product_images'] ?? null,
             'payment_term_id' => $paymentTerm?->id,
             'tax_id' => $tax?->id,
             'fee_id' => $fee?->id,
@@ -129,6 +126,22 @@ class InvoiceTest extends TestCase
         ];
 
         $invoice = Invoice::create($invoiceData);
+        
+        // Create invoice items
+        $items = $overrides['items'] ?? [
+            [
+                'product_name' => $overrides['product_name'] ?? $this->faker->words(3, true),
+                'description' => $overrides['description'] ?? $this->faker->sentence(),
+                'price' => $overrides['price'] ?? $this->faker->randomFloat(2, 1000, 100000),
+                'product_images' => $overrides['product_images'] ?? null,
+            ]
+        ];
+        
+        foreach ($items as $itemData) {
+            $itemData['invoice_id'] = $invoice->id;
+            InvoiceItem::create($itemData);
+        }
+        
         $invoice->calculateTotals()->save();
         return $invoice;
     }
@@ -147,8 +160,7 @@ class InvoiceTest extends TestCase
                             'id',
                             'invoice_number',
                             'customer_id',
-                            'product_name',
-                            'price',
+                            'items',
                             'status',
                             'total_amount',
                             'created_at',
@@ -169,9 +181,6 @@ class InvoiceTest extends TestCase
 
         $invoiceData = [
             'customer_id' => $customer->id,
-            'product_name' => 'Test Product',
-            'description' => 'Test Description',
-            'price' => 10000.00,
             'payment_term_id' => $paymentTerm->id,
             'tax_id' => $tax->id,
             'shipping_address' => 'Test Address',
@@ -179,20 +188,29 @@ class InvoiceTest extends TestCase
             'due_date' => now()->addDays(30)->toDateString(),
             'status' => 'draft',
             'notes' => 'Test Notes',
+            'products' => [
+                [
+                    'product_name' => 'Test Product',
+                    'description' => 'Test Description',
+                    'price' => 10000.00,
+                ]
+            ]
         ];
 
         $response = $this->actingAs($this->user)->postJson('/api/invoice-management/invoices', $invoiceData);
 
         $response->assertStatus(201)
                 ->assertJsonFragment([
-                    'product_name' => 'Test Product',
-                    'price' => '10000.00',
                     'status' => 'draft',
                 ]);
 
         $this->assertDatabaseHas('invoices', [
-            'product_name' => 'Test Product',
             'customer_id' => $customer->id,
+        ]);
+        
+        $this->assertDatabaseHas('invoice_items', [
+            'product_name' => 'Test Product',
+            'price' => 10000.00,
         ]);
     }
 
@@ -206,7 +224,6 @@ class InvoiceTest extends TestCase
                 ->assertJsonFragment([
                     'id' => $invoice->id,
                     'invoice_number' => $invoice->invoice_number,
-                    'product_name' => $invoice->product_name,
                 ]);
     }
 
@@ -215,22 +232,23 @@ class InvoiceTest extends TestCase
         $invoice = $this->createInvoice();
 
         $updateData = [
-            'product_name' => 'Updated Product',
-            'price' => 15000.00,
-            'description' => 'Updated Description',
+            'products' => [
+                [
+                    'product_name' => 'Updated Product',
+                    'price' => 15000.00,
+                    'description' => 'Updated Description',
+                ]
+            ]
         ];
 
         $response = $this->actingAs($this->user)->putJson("/api/invoice-management/invoices/{$invoice->id}", $updateData);
 
-        $response->assertStatus(200)
-                ->assertJsonFragment([
-                    'product_name' => 'Updated Product',
-                    'price' => '15000.00',
-                ]);
+        $response->assertStatus(200);
 
-        $this->assertDatabaseHas('invoices', [
-            'id' => $invoice->id,
+        $this->assertDatabaseHas('invoice_items', [
+            'invoice_id' => $invoice->id,
             'product_name' => 'Updated Product',
+            'price' => 15000.00,
         ]);
     }
 

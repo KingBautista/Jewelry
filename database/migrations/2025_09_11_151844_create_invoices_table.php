@@ -15,10 +15,6 @@ return new class extends Migration
             $table->id();
             $table->string('invoice_number')->unique();
             $table->foreignId('customer_id')->constrained('users')->onDelete('cascade');
-            $table->string('product_name');
-            $table->text('description')->nullable();
-            $table->decimal('price', 10, 2);
-            $table->json('product_images')->nullable();
             $table->foreignId('payment_term_id')->nullable()->constrained('payment_terms')->onDelete('set null');
             $table->foreignId('tax_id')->nullable()->constrained('taxes')->onDelete('set null');
             $table->foreignId('fee_id')->nullable()->constrained('fees')->onDelete('set null');
@@ -43,6 +39,17 @@ return new class extends Migration
             $table->timestamps();
             $table->softDeletes();
         });
+
+        // Create invoice_items table
+        Schema::create('invoice_items', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('invoice_id')->constrained()->onDelete('cascade');
+            $table->string('product_name');
+            $table->text('description')->nullable();
+            $table->decimal('price', 10, 2);
+            $table->json('product_images')->nullable();
+            $table->timestamps();
+        });
     }
 
     /**
@@ -50,6 +57,7 @@ return new class extends Migration
      */
     public function down(): void
     {
+        Schema::dropIfExists('invoice_items');
         Schema::dropIfExists('invoices');
     }
 };

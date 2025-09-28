@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use App\Models\Invoice;
+use App\Models\InvoiceItem;
 use App\Models\User;
 use App\Models\PaymentTerm;
 use App\Models\Tax;
@@ -25,10 +26,6 @@ class InvoiceSeeder extends Seeder
             [
                 'invoice_number' => 'INV000001',
                 'customer_id' => User::customers()->first()->id,
-                'product_name' => 'Diamond Engagement Ring',
-                'description' => 'Beautiful 1-carat diamond engagement ring with platinum setting',
-                'price' => 150000.00,
-                'product_images' => ['invoices/products/diamond-ring-1.jpg', 'invoices/products/diamond-ring-2.jpg'],
                 'payment_term_id' => PaymentTerm::first()->id,
                 'tax_id' => Tax::first()->id,
                 'fee_id' => Fee::first()->id,
@@ -39,14 +36,24 @@ class InvoiceSeeder extends Seeder
                 'status' => 'sent',
                 'notes' => 'Special order for wedding',
                 'active' => true,
+                'items' => [
+                    [
+                        'product_name' => 'Diamond Engagement Ring',
+                        'description' => 'Beautiful 1-carat diamond engagement ring with platinum setting',
+                        'price' => 150000.00,
+                        'product_images' => ['invoices/products/diamond-ring-1.jpg', 'invoices/products/diamond-ring-2.jpg'],
+                    ],
+                    [
+                        'product_name' => 'Wedding Band',
+                        'description' => 'Matching platinum wedding band',
+                        'price' => 25000.00,
+                        'product_images' => ['invoices/products/wedding-band.jpg'],
+                    ],
+                ]
             ],
             [
                 'invoice_number' => 'INV000002',
                 'customer_id' => User::customers()->skip(1)->first()->id,
-                'product_name' => 'Gold Necklace Set',
-                'description' => 'Elegant 18k gold necklace with matching earrings',
-                'price' => 75000.00,
-                'product_images' => ['invoices/products/gold-necklace-set.jpg'],
                 'payment_term_id' => PaymentTerm::skip(1)->first()->id,
                 'tax_id' => Tax::skip(1)->first()->id,
                 'fee_id' => Fee::skip(1)->first()->id,
@@ -57,14 +64,18 @@ class InvoiceSeeder extends Seeder
                 'status' => 'paid',
                 'notes' => 'Cash payment',
                 'active' => true,
+                'items' => [
+                    [
+                        'product_name' => 'Gold Necklace Set',
+                        'description' => 'Elegant 18k gold necklace with matching earrings',
+                        'price' => 75000.00,
+                        'product_images' => ['invoices/products/gold-necklace-set.jpg'],
+                    ],
+                ]
             ],
             [
                 'invoice_number' => 'INV000003',
                 'customer_id' => User::customers()->skip(2)->first()->id,
-                'product_name' => 'Pearl Earrings',
-                'description' => 'Classic white pearl earrings with sterling silver',
-                'price' => 25000.00,
-                'product_images' => ['invoices/products/pearl-earrings.jpg'],
                 'payment_term_id' => PaymentTerm::skip(2)->first()->id,
                 'tax_id' => null,
                 'fee_id' => null,
@@ -75,11 +86,32 @@ class InvoiceSeeder extends Seeder
                 'status' => 'draft',
                 'notes' => 'Pending customer approval',
                 'active' => true,
+                'items' => [
+                    [
+                        'product_name' => 'Pearl Earrings',
+                        'description' => 'Classic white pearl earrings with sterling silver',
+                        'price' => 25000.00,
+                        'product_images' => ['invoices/products/pearl-earrings.jpg'],
+                    ],
+                ]
             ],
         ];
 
         foreach ($invoices as $invoiceData) {
+            // Extract items from invoice data
+            $items = $invoiceData['items'];
+            unset($invoiceData['items']);
+            
+            // Create invoice
             $invoice = Invoice::create($invoiceData);
+            
+            // Create invoice items
+            foreach ($items as $itemData) {
+                $itemData['invoice_id'] = $invoice->id;
+                InvoiceItem::create($itemData);
+            }
+            
+            // Calculate totals after creating items
             $invoice->calculateTotals()->save();
             
             // Generate payment schedules if payment terms exist
@@ -124,24 +156,32 @@ class InvoiceSeeder extends Seeder
         $additionalCount = 25 - $existingCount;
         
         for ($i = 0; $i < $additionalCount; $i++) {
-            $productName = $faker->randomElement($productNames) . ' ' . $faker->numberBetween(1, 10);
             $invoiceNumber = 'INV' . str_pad($existingCount + $i + 1, 6, '0', STR_PAD_LEFT);
             $customer = $faker->randomElement($customers);
             $issueDate = $faker->dateTimeBetween('-30 days', '+5 days');
             $dueDate = $faker->dateTimeBetween($issueDate, '+60 days');
             
+            // Generate 1-3 random products per invoice
+            $itemCount = $faker->numberBetween(1, 3);
+            $items = [];
+            for ($j = 0; $j < $itemCount; $j++) {
+                $productName = $faker->randomElement($productNames) . ' ' . $faker->numberBetween(1, 10);
+                $items[] = [
+                    'product_name' => $productName,
+                    'description' => $faker->sentence(),
+                    'price' => $faker->randomFloat(2, 5000, 200000),
+                    'product_images' => $faker->optional(0.7)->randomElements([
+                        'invoices/products/sample-jewelry-1.jpg',
+                        'invoices/products/sample-jewelry-2.jpg',
+                        'invoices/products/sample-jewelry-3.jpg',
+                        'invoices/products/sample-jewelry-4.jpg'
+                    ], $faker->numberBetween(1, 3)),
+                ];
+            }
+            
             $invoiceData = [
                 'invoice_number' => $invoiceNumber,
                 'customer_id' => $customer->id,
-                'product_name' => $productName,
-                'description' => $faker->sentence(),
-                'price' => $faker->randomFloat(2, 5000, 200000),
-                'product_images' => $faker->optional(0.7)->randomElements([
-                    'invoices/products/sample-jewelry-1.jpg',
-                    'invoices/products/sample-jewelry-2.jpg',
-                    'invoices/products/sample-jewelry-3.jpg',
-                    'invoices/products/sample-jewelry-4.jpg'
-                ], $faker->numberBetween(1, 3)),
                 'payment_term_id' => $faker->optional(0.8)->randomElement($paymentTerms)?->id,
                 'tax_id' => $faker->optional(0.6)->randomElement($taxes)?->id,
                 'fee_id' => $faker->optional(0.4)->randomElement($fees)?->id,
@@ -152,9 +192,23 @@ class InvoiceSeeder extends Seeder
                 'status' => $faker->randomElement($statuses),
                 'notes' => $faker->optional(0.4)->sentence(),
                 'active' => $faker->boolean(90), // 90% active
+                'items' => $items,
             ];
             
+            // Extract items from invoice data
+            $items = $invoiceData['items'];
+            unset($invoiceData['items']);
+            
+            // Create invoice
             $invoice = Invoice::create($invoiceData);
+            
+            // Create invoice items
+            foreach ($items as $itemData) {
+                $itemData['invoice_id'] = $invoice->id;
+                InvoiceItem::create($itemData);
+            }
+            
+            // Calculate totals after creating items
             $invoice->calculateTotals()->save();
             
             // Generate payment schedules if payment terms exist

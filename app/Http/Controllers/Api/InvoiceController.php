@@ -32,18 +32,6 @@ class InvoiceController extends BaseController
             // Handle create operation
             $data = $request->validated();
 
-            // Handle file uploads
-            if ($request->hasFile('product_images')) {
-                $uploadedImages = [];
-                foreach ($request->file('product_images') as $file) {
-                    if ($file->isValid()) {
-                        $path = $file->store('invoices/products', 'public');
-                        $uploadedImages[] = asset('storage/' . $path);
-                    }
-                }
-                $data['product_images'] = $uploadedImages;
-            }
-
             // Generate invoice number if not provided
             if (!isset($data['invoice_number'])) {
                 $data['invoice_number'] = Invoice::generateInvoiceNumber();
@@ -54,15 +42,44 @@ class InvoiceController extends BaseController
                 $data['issue_date'] = now()->toDateString();
             }
 
+            // Create the invoice first
             $invoice = $this->service->store($data);
             
+            // Handle multiple products with file uploads
+            if ($request->has('products')) {
+                foreach ($request->input('products') as $index => $product) {
+                    $productData = [
+                        'invoice_id' => $invoice->id,
+                        'product_name' => $product['product_name'],
+                        'description' => $product['description'] ?? '',
+                        'price' => $product['price'],
+                        'product_images' => []
+                    ];
+
+                    // Handle file uploads for this product
+                    if ($request->hasFile("products.{$index}.product_images")) {
+                        $uploadedImages = [];
+                        foreach ($request->file("products.{$index}.product_images") as $file) {
+                            if ($file->isValid()) {
+                                $path = $file->store('invoices/products', 'public');
+                                $uploadedImages[] = asset('storage/' . $path);
+                            }
+                        }
+                        $productData['product_images'] = $uploadedImages;
+                    }
+
+                    // Create invoice item
+                    $invoice->items()->create($productData);
+                }
+            }
+
             // Calculate totals after creating the invoice
             $invoice->calculateTotals()->save();
             
             // Generate payment schedules if payment terms exist
             $invoice->generatePaymentSchedules();
             
-            return response($invoice, 201);
+            return response($invoice->load('items'), 201);
         } catch (\Exception $e) {
             \Log::error('Store Invoice Error: ' . $e->getMessage());
             return $this->messageService->responseError();
@@ -75,29 +92,47 @@ class InvoiceController extends BaseController
             $data = $request->validated();
             $invoice = Invoice::findOrFail($id);
 
-            // Handle file uploads - only if new files are provided
-            if ($request->hasFile('product_images')) {
-                $uploadedImages = [];
-                foreach ($request->file('product_images') as $file) {
-                    if ($file->isValid()) {
-                        $path = $file->store('invoices/products', 'public');
-                        $uploadedImages[] = asset('storage/' . $path);
-                    }
-                }
-                $data['product_images'] = $uploadedImages;
-            } else {
-                // If no new files, keep existing images
-                unset($data['product_images']);
-            }
-
-
+            // Update invoice basic data
             $invoice = $this->service->update($data, $id);
+
+            // Handle multiple products update
+            if ($request->has('products')) {
+                // Delete existing items
+                $invoice->items()->delete();
+                
+                // Create new items
+                foreach ($request->input('products') as $index => $product) {
+                    $productData = [
+                        'invoice_id' => $invoice->id,
+                        'product_name' => $product['product_name'],
+                        'description' => $product['description'] ?? '',
+                        'price' => $product['price'],
+                        'product_images' => []
+                    ];
+
+                    // Handle file uploads for this product
+                    if ($request->hasFile("products.{$index}.product_images")) {
+                        $uploadedImages = [];
+                        foreach ($request->file("products.{$index}.product_images") as $file) {
+                            if ($file->isValid()) {
+                                $path = $file->store('invoices/products', 'public');
+                                $uploadedImages[] = asset('storage/' . $path);
+                            }
+                        }
+                        $productData['product_images'] = $uploadedImages;
+                    }
+
+                    // Create invoice item
+                    $invoice->items()->create($productData);
+                }
+            }
             
             // Recalculate totals after updating
             $invoice->calculateTotals()->save();
             
-            return response($invoice, 200);
+            return response($invoice->load('items'), 200);
         } catch (\Exception $e) {
+            \Log::error('Update Invoice Error: ' . $e->getMessage());
             return $this->messageService->responseError();
         }
     }
@@ -138,8 +173,8 @@ class InvoiceController extends BaseController
 
     public function sendEmail(Int $id)
     {
-        // try {
-            $invoice = Invoice::with(['customer', 'paymentTerm', 'tax', 'fee', 'discount'])->findOrFail($id);
+        try {
+            $invoice = Invoice::with(['customer', 'paymentTerm', 'tax', 'fee', 'discount', 'items'])->findOrFail($id);
             
             // Generate PDF for email attachment
             $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('invoices.pdf', compact('invoice'));
@@ -147,8 +182,7 @@ class InvoiceController extends BaseController
             $pdfContent = $pdf->output();
             
             // Get customer email or use test email
-            // $customerEmail = $invoice->customer ? $invoice->customer->user_email : 'bautistael23@gmail.com';
-            $customerEmail = 'bautistael23@gmail.com';
+            $customerEmail = $invoice->customer ? $invoice->customer->user_email : 'bautistael23@gmail.com';
             $customerName = $invoice->customer_name;
             
             // Send email with PDF attachment
@@ -169,10 +203,10 @@ class InvoiceController extends BaseController
             \Log::info("Invoice {$invoice->invoice_number} sent to {$customerEmail}");
             
             return response(['message' => 'Invoice has been sent via email.'], 200);
-        // } catch (\Exception $e) {
-        //     \Log::error('Email Sending Error: ' . $e->getMessage());
-        //     return $this->messageService->responseError();
-        // }
+        } catch (\Exception $e) {
+            \Log::error('Email Sending Error: ' . $e->getMessage());
+            return $this->messageService->responseError();
+        }
     }
 
     public function getInvoiceStats()

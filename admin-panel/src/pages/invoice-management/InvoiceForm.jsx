@@ -136,12 +136,90 @@ export default function InvoiceForm() {
     setCurrentProduct({ ...currentProduct, product_images: images });
   };
 
-  // Calculate total amount
-  const calculateTotal = () => {
+  // Calculate total amount with tax, fee, and discount
+  const calculateSubtotal = () => {
+    if (!invoice.products || invoice.products.length === 0) return 0;
     return invoice.products.reduce((total, product) => {
       const price = parseFloat(product.price) || 0;
       return total + price;
     }, 0);
+  };
+
+  const calculateTaxAmount = () => {
+    try {
+      const subtotal = calculateSubtotal();
+      if (!taxes || !Array.isArray(taxes) || taxes.length === 0) return 0;
+      if (!invoice.tax_id) return 0;
+      
+      const selectedTax = taxes.find(tax => tax.id == invoice.tax_id);
+      if (!selectedTax) return 0;
+      
+      const rate = parseFloat(selectedTax.rate) || 0;
+      if (selectedTax.type === 'percentage') {
+        return (subtotal * rate) / 100;
+      } else {
+        return rate;
+      }
+    } catch (error) {
+      console.error('Error calculating tax amount:', error);
+      return 0;
+    }
+  };
+
+  const calculateFeeAmount = () => {
+    try {
+      const subtotal = calculateSubtotal();
+      if (!fees || !Array.isArray(fees) || fees.length === 0) return 0;
+      if (!invoice.fee_id) return 0;
+      
+      const selectedFee = fees.find(fee => fee.id == invoice.fee_id);
+      if (!selectedFee) return 0;
+      
+      const amount = parseFloat(selectedFee.amount) || 0;
+      if (selectedFee.type === 'percentage') {
+        return (subtotal * amount) / 100;
+      } else {
+        return amount;
+      }
+    } catch (error) {
+      console.error('Error calculating fee amount:', error);
+      return 0;
+    }
+  };
+
+  const calculateDiscountAmount = () => {
+    try {
+      const subtotal = calculateSubtotal();
+      if (!discounts || !Array.isArray(discounts) || discounts.length === 0) return 0;
+      if (!invoice.discount_id) return 0;
+      
+      const selectedDiscount = discounts.find(discount => discount.id == invoice.discount_id);
+      if (!selectedDiscount) return 0;
+      
+      const amount = parseFloat(selectedDiscount.amount) || 0;
+      if (selectedDiscount.type === 'percentage') {
+        return (subtotal * amount) / 100;
+      } else {
+        return amount;
+      }
+    } catch (error) {
+      console.error('Error calculating discount amount:', error);
+      return 0;
+    }
+  };
+
+  const calculateTotal = () => {
+    try {
+      const subtotal = calculateSubtotal();
+      const taxAmount = calculateTaxAmount();
+      const feeAmount = calculateFeeAmount();
+      const discountAmount = calculateDiscountAmount();
+      
+      return subtotal + taxAmount + feeAmount - discountAmount;
+    } catch (error) {
+      console.error('Error calculating total:', error);
+      return 0;
+    }
   };
 
   // Load dropdown data
@@ -156,11 +234,25 @@ export default function InvoiceForm() {
           axiosClient.get('/options/discounts')
         ]);
 
-        setCustomers(customersRes.data || []);
-        setPaymentTerms(paymentTermsRes.data || []);
-        setTaxes(taxesRes.data || []);
-        setFees(feesRes.data || []);
-        setDiscounts(discountsRes.data || []);
+        const customersData = customersRes.data || [];
+        const paymentTermsData = paymentTermsRes.data || [];
+        const taxesData = taxesRes.data || [];
+        const feesData = feesRes.data || [];
+        const discountsData = discountsRes.data || [];
+
+        console.log('Loaded data:', {
+          customers: customersData.length,
+          paymentTerms: paymentTermsData.length,
+          taxes: taxesData.length,
+          fees: feesData.length,
+          discounts: discountsData.length
+        });
+
+        setCustomers(customersData);
+        setPaymentTerms(paymentTermsData);
+        setTaxes(taxesData);
+        setFees(feesData);
+        setDiscounts(discountsData);
       } catch (error) {
         console.error('Error loading dropdown data:', error);
       }
@@ -198,6 +290,14 @@ export default function InvoiceForm() {
           // Handle products - if it's a single product, convert to array
           if (invoiceData.products && Array.isArray(invoiceData.products)) {
             // Already in correct format
+          } else if (invoiceData.items && Array.isArray(invoiceData.items)) {
+            // Convert items to products format
+            invoiceData.products = invoiceData.items.map(item => ({
+              product_name: item.product_name,
+              description: item.description || '',
+              price: item.price || '',
+              product_images: item.product_images || []
+            }));
           } else if (invoiceData.product_name) {
             // Convert single product to array format
             invoiceData.products = [{
@@ -504,6 +604,60 @@ export default function InvoiceForm() {
             inputClass="col-sm-12 col-md-9"
           />
 
+          {/* Issue Date Field */}
+          <Field
+            label="Issue Date"
+            required={true}
+            inputComponent={
+              <input
+                className="form-control"
+                type="date"
+                value={invoice.issue_date || ''}
+                onChange={ev => setInvoice({ ...invoice, issue_date: ev.target.value })}
+                required
+                placeholder="YYYY-MM-DD"
+              />
+            }
+            labelClass="col-sm-12 col-md-3"
+            inputClass="col-sm-12 col-md-9"
+          />
+
+          {/* Due Date Field */}
+          <Field
+            label="Due Date"
+            inputComponent={
+              <input
+                className="form-control"
+                type="date"
+                value={invoice.due_date || ''}
+                onChange={ev => setInvoice({ ...invoice, due_date: ev.target.value })}
+                placeholder="YYYY-MM-DD"
+              />
+            }
+            labelClass="col-sm-12 col-md-3"
+            inputClass="col-sm-12 col-md-9"
+          />
+
+          {/* Status Field */}
+          <Field
+            label="Status"
+            inputComponent={
+              <select
+                className="form-select"
+                value={invoice.status || 'draft'}
+                onChange={ev => setInvoice({ ...invoice, status: ev.target.value })}
+              >
+                <option value="draft">Draft</option>
+                <option value="sent">Sent</option>
+                <option value="paid">Paid</option>
+                <option value="overdue">Overdue</option>
+                <option value="cancelled">Cancelled</option>
+              </select>
+            }
+            labelClass="col-sm-12 col-md-3"
+            inputClass="col-sm-12 col-md-9"
+          />
+
           {/* Products Summary Section */}
           <div className="row mb-4">
             <div className="col-3">Products ({invoice.products.length})</div>
@@ -605,11 +759,55 @@ export default function InvoiceForm() {
                   <tfoot>
                     <tr>
                       <td colSpan="4" className="text-end">
+                        <strong>Subtotal:</strong>
+                      </td>
+                      <td className="text-start">
+                        <strong>₱{Number(calculateSubtotal() || 0).toFixed(2)}</strong>
+                      </td>
+                    </tr>
+                    {invoice.tax_id && (
+                      <tr>
+                        <td colSpan="4" className="text-end">
+                          <small className="text-muted">
+                            Tax ({taxes.find(tax => tax.id == invoice.tax_id)?.name || 'Tax'}):
+                          </small>
+                        </td>
+                        <td className="text-start">
+                          <small className="text-muted">₱{Number(calculateTaxAmount() || 0).toFixed(2)}</small>
+                        </td>
+                      </tr>
+                    )}
+                    {invoice.fee_id && (
+                      <tr>
+                        <td colSpan="4" className="text-end">
+                          <small className="text-muted">
+                            Fee ({fees.find(fee => fee.id == invoice.fee_id)?.name || 'Fee'}):
+                          </small>
+                        </td>
+                        <td className="text-start">
+                          <small className="text-muted">₱{Number(calculateFeeAmount() || 0).toFixed(2)}</small>
+                        </td>
+                      </tr>
+                    )}
+                    {invoice.discount_id && (
+                      <tr>
+                        <td colSpan="4" className="text-end">
+                          <small className="text-muted">
+                            Discount ({discounts.find(discount => discount.id == invoice.discount_id)?.name || 'Discount'}):
+                          </small>
+                        </td>
+                        <td className="text-start">
+                          <small className="text-muted text-success">-₱{Number(calculateDiscountAmount() || 0).toFixed(2)}</small>
+                        </td>
+                      </tr>
+                    )}
+                    <tr className="border-top">
+                      <td colSpan="4" className="text-end">
                         <strong>Total Amount:</strong>
                       </td>
                       <td className="text-start">
                         <strong className="fs-5">
-                          ₱{calculateTotal().toFixed(2)}
+                          ₱{Number(calculateTotal() || 0).toFixed(2)}
                         </strong>
                       </td>
                     </tr>
@@ -638,6 +836,134 @@ export default function InvoiceForm() {
             labelClass="col-sm-12 col-md-3"
             inputClass="col-sm-12 col-md-9"
           />
+
+          {/* Payment Breakdown Display */}
+          {invoice.payment_term_id && (
+            <div className="row mb-4">
+              <div className="col-3">Payment Breakdown</div>
+              <div className="col-9">
+                <div className="card">
+                  <div className="card-body">
+                    {(() => {
+                      const selectedTerm = paymentTerms.find(term => term.id == invoice.payment_term_id);
+                      const totalAmount = calculateTotal();
+                      
+                      if (!selectedTerm) return null;
+                      
+                      const downPaymentAmount = (totalAmount * (selectedTerm.down_payment_percentage || 0)) / 100;
+                      const remainingAmount = totalAmount - downPaymentAmount;
+                      
+                      return (
+                        <div className="row">
+                          <div className="col-md-6">
+                            <h6 className="text-primary">Down Payment</h6>
+                            <div className="d-flex justify-content-between">
+                              <span>Amount:</span>
+                              <strong>₱{downPaymentAmount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</strong>
+                            </div>
+                            <div className="d-flex justify-content-between">
+                              <span>Percentage:</span>
+                              <span>{selectedTerm.down_payment_percentage || 0}%</span>
+                            </div>
+                            <div className="d-flex justify-content-between">
+                              <span>Due Date:</span>
+                              <span>{invoice.issue_date || 'Issue Date'}</span>
+                            </div>
+                          </div>
+                          <div className="col-md-6">
+                            <h6 className="text-primary">Remaining Balance</h6>
+                            <div className="d-flex justify-content-between">
+                              <span>Amount:</span>
+                              <strong>₱{remainingAmount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</strong>
+                            </div>
+                            <div className="d-flex justify-content-between">
+                              <span>Percentage:</span>
+                              <span>{selectedTerm.remaining_percentage || 0}%</span>
+                            </div>
+                            <div className="d-flex justify-content-between">
+                              <span>Term:</span>
+                              <span>{selectedTerm.term_months || 0} months</span>
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })()}
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Monthly Payment Breakdown Display */}
+          {invoice.payment_term_id && (() => {
+            const selectedTerm = paymentTerms.find(term => term.id == invoice.payment_term_id);
+            if (!selectedTerm) return null;
+            
+            const totalAmount = calculateTotal();
+            const remainingAmount = totalAmount - ((totalAmount * (selectedTerm.down_payment_percentage || 0)) / 100);
+            
+            // If no schedules, show a simple message
+            if (!selectedTerm.schedules || selectedTerm.schedules.length === 0) {
+              return (
+                <div className="row mb-4">
+                  <div className="col-3">Monthly Payment Schedule</div>
+                  <div className="col-9">
+                    <div className="card">
+                      <div className="card-body">
+                        <div className="alert alert-info">
+                          <FontAwesomeIcon icon={solidIconMap.info} className="me-2" />
+                          No payment schedule defined for this payment term. The remaining balance of <strong>₱{remainingAmount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</strong> will be due according to the payment term settings.
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              );
+            }
+            
+            return (
+              <div className="row mb-4">
+                <div className="col-3">Monthly Payment Schedule</div>
+                <div className="col-9">
+                  <table className="table table-sm table-striped">
+                    <thead>
+                      <tr>
+                        <th>Month</th>
+                        <th>Description</th>
+                        <th>Percentage</th>
+                        <th>Amount</th>
+                        <th>Due Date</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {selectedTerm.schedules.map((schedule, index) => {
+                        const scheduleAmount = (remainingAmount * (schedule.percentage || 0)) / 100;
+                        const dueDate = new Date(invoice.issue_date || new Date());
+                        dueDate.setMonth(dueDate.getMonth() + (schedule.month_number || 0));
+                        
+                        return (
+                          <tr key={index}>
+                            <td>{schedule.month_number || 0}</td>
+                            <td>{schedule.description || `Month ${schedule.month_number || 0}`}</td>
+                            <td>{schedule.percentage || 0}%</td>
+                             <td><strong>₱{scheduleAmount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</strong></td>
+                            <td>{dueDate.toLocaleDateString()}</td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                    <tfoot>
+                      <tr className="table-primary">
+                        <td colSpan="3"><strong>Total Remaining:</strong></td>
+                         <td><strong>₱{remainingAmount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</strong></td>
+                        <td></td>
+                      </tr>
+                    </tfoot>
+                  </table>
+                </div>
+              </div>
+            );
+          })()}
 
           {/* Tax Field */}
           <Field
@@ -713,60 +1039,6 @@ export default function InvoiceForm() {
                 onChange={ev => setInvoice({ ...invoice, shipping_address: DOMPurify.sanitize(ev.target.value) })}
                 placeholder="Customer shipping address"
               />
-            }
-            labelClass="col-sm-12 col-md-3"
-            inputClass="col-sm-12 col-md-9"
-          />
-
-          {/* Issue Date Field */}
-          <Field
-            label="Issue Date"
-            required={true}
-            inputComponent={
-              <input
-                className="form-control"
-                type="date"
-                value={invoice.issue_date || ''}
-                onChange={ev => setInvoice({ ...invoice, issue_date: ev.target.value })}
-                required
-                placeholder="YYYY-MM-DD"
-              />
-            }
-            labelClass="col-sm-12 col-md-3"
-            inputClass="col-sm-12 col-md-9"
-          />
-
-          {/* Due Date Field */}
-          <Field
-            label="Due Date"
-            inputComponent={
-              <input
-                className="form-control"
-                type="date"
-                value={invoice.due_date || ''}
-                onChange={ev => setInvoice({ ...invoice, due_date: ev.target.value })}
-                placeholder="YYYY-MM-DD"
-              />
-            }
-            labelClass="col-sm-12 col-md-3"
-            inputClass="col-sm-12 col-md-9"
-          />
-
-          {/* Status Field */}
-          <Field
-            label="Status"
-            inputComponent={
-              <select
-                className="form-select"
-                value={invoice.status || 'draft'}
-                onChange={ev => setInvoice({ ...invoice, status: ev.target.value })}
-              >
-                <option value="draft">Draft</option>
-                <option value="sent">Sent</option>
-                <option value="paid">Paid</option>
-                <option value="overdue">Overdue</option>
-                <option value="cancelled">Cancelled</option>
-              </select>
             }
             labelClass="col-sm-12 col-md-3"
             inputClass="col-sm-12 col-md-9"

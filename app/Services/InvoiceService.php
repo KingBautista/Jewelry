@@ -14,6 +14,15 @@ class InvoiceService extends BaseService
     }
 
     /**
+     * Get Details for editing the specified resource.
+     */
+    public function show(int $id) 
+    {
+        $model = Invoice::with(['customer', 'paymentTerm', 'tax', 'fee', 'discount', 'items'])->findOrFail($id);
+        return $model;
+    }
+
+    /**
      * Retrieve all resources with paginate.
      */
     public function list($perPage = 10, $trash = false)
@@ -22,7 +31,7 @@ class InvoiceService extends BaseService
         $trashedInvoices = $this->getTrashedCount();
 
         return InvoiceResource::collection(Invoice::query()
-            ->with(['customer', 'paymentTerm', 'tax', 'fee', 'discount'])
+            ->with(['customer', 'paymentTerm', 'tax', 'fee', 'discount', 'items'])
             ->when($trash, function ($query) {
                 return $query->onlyTrashed();
             })
@@ -116,7 +125,7 @@ class InvoiceService extends BaseService
     public function searchInvoices($search)
     {
         return Invoice::active()
-            ->with(['customer', 'paymentTerm', 'paymentSchedules'])
+            ->with(['customer', 'paymentTerm', 'paymentSchedules', 'items'])
             ->when($search, function ($query) use ($search) {
                 return $query->search($search);
             })
@@ -166,7 +175,7 @@ class InvoiceService extends BaseService
     public function exportInvoices($format = 'csv')
     {
         $invoices = Invoice::withTrashed()
-            ->with(['customer', 'paymentTerm', 'tax', 'fee', 'discount'])
+            ->with(['customer', 'paymentTerm', 'tax', 'fee', 'discount', 'items'])
             ->get();
         
         if ($format === 'csv') {
@@ -182,22 +191,23 @@ class InvoiceService extends BaseService
                 
                 // CSV headers
                 fputcsv($file, [
-                    'ID', 'Invoice Number', 'Customer Name', 'Product Name', 'Description',
-                    'Price', 'Product Images', 'Payment Term', 'Tax', 'Fee', 'Discount', 'Subtotal',
+                    'ID', 'Invoice Number', 'Customer Name', 'Products', 'Payment Term', 'Tax', 'Fee', 'Discount', 'Subtotal',
                     'Tax Amount', 'Fee Amount', 'Discount Amount', 'Total Amount',
                     'Status', 'Issue Date', 'Due Date', 'Created At', 'Updated At'
                 ]);
 
                 // CSV data
                 foreach ($invoices as $invoice) {
+                    // Format products for CSV
+                    $products = $invoice->items->map(function($item) {
+                        return $item->product_name . ' (₱' . number_format($item->price, 2) . ')';
+                    })->join('; ');
+                    
                     fputcsv($file, [
                         $invoice->id,
                         $invoice->invoice_number,
                         $invoice->customer_name,
-                        $invoice->product_name,
-                        $invoice->description,
-                        $invoice->formatted_price,
-                        is_array($invoice->product_images) ? implode('; ', $invoice->product_images) : $invoice->product_images,
+                        $products,
                         $invoice->payment_term_name,
                         $invoice->tax_name,
                         $invoice->fee_name,

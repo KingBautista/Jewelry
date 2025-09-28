@@ -15,10 +15,6 @@ class Invoice extends Model
     protected $fillable = [
         'invoice_number',
         'customer_id',
-        'product_name',
-        'description',
-        'price',
-        'product_images',
         'payment_term_id',
         'tax_id',
         'fee_id',
@@ -45,8 +41,6 @@ class Invoice extends Model
     protected $casts = [
         'issue_date' => 'date',
         'due_date' => 'date',
-        'price' => 'decimal:2',
-        'product_images' => 'array',
         'subtotal' => 'decimal:2',
         'tax_amount' => 'decimal:2',
         'fee_amount' => 'decimal:2',
@@ -60,7 +54,6 @@ class Invoice extends Model
     ];
 
     protected $appends = [
-        'formatted_price',
         'formatted_subtotal',
         'formatted_tax_amount',
         'formatted_fee_amount',
@@ -143,6 +136,14 @@ class Invoice extends Model
     }
 
     /**
+     * Get the items for the invoice.
+     */
+    public function items(): HasMany
+    {
+        return $this->hasMany(InvoiceItem::class);
+    }
+
+    /**
      * Get the item statuses for the invoice.
      */
     public function itemStatuses(): HasMany
@@ -150,13 +151,6 @@ class Invoice extends Model
         return $this->hasMany(InvoiceItemStatus::class);
     }
 
-    /**
-     * Get formatted price attribute.
-     */
-    public function getFormattedPriceAttribute(): string
-    {
-        return '₱' . number_format($this->price, 2);
-    }
 
     /**
      * Get formatted subtotal attribute.
@@ -394,7 +388,8 @@ class Invoice extends Model
      */
     public function calculateTotals()
     {
-        $this->subtotal = $this->price;
+        // Calculate subtotal from all items
+        $this->subtotal = $this->items()->sum('price');
         
         // Calculate tax amount
         if ($this->tax) {
@@ -454,7 +449,7 @@ class Invoice extends Model
             'invoice_id' => $this->id,
             'payment_type' => 'downpayment',
             'due_date' => $this->issue_date,
-            'expected_amount' => $this->price * ($paymentTerm->down_payment_percentage / 100),
+            'expected_amount' => $this->total_amount * ($paymentTerm->down_payment_percentage / 100),
             'payment_order' => 1,
             'is_auto_generated' => true,
             'status' => 'pending'
@@ -466,7 +461,7 @@ class Invoice extends Model
                 'invoice_id' => $this->id,
                 'payment_type' => 'monthly',
                 'due_date' => $this->issue_date->addMonths($schedule->month_number),
-                'expected_amount' => $this->price * ($schedule->percentage / 100),
+                'expected_amount' => $this->total_amount * ($schedule->percentage / 100),
                 'payment_order' => $schedule->month_number + 1,
                 'is_auto_generated' => true,
                 'status' => 'pending'
