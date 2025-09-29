@@ -26,6 +26,7 @@ class Payment extends Model
         'confirmed_at',
         'confirmed_by',
         'notes',
+        'selected_schedules',
     ];
 
     protected $casts = [
@@ -34,6 +35,7 @@ class Payment extends Model
         'payment_date' => 'date',
         'confirmed_at' => 'datetime',
         'receipt_images' => 'array',
+        'selected_schedules' => 'array',
     ];
 
     protected $appends = [
@@ -44,6 +46,7 @@ class Payment extends Model
         'payment_method_name',
         'confirmed_by_name',
         'primary_receipt_image',
+        'receipt_image_urls',
     ];
 
     /**
@@ -138,9 +141,24 @@ class Payment extends Model
     public function getPrimaryReceiptImageAttribute(): ?string
     {
         if ($this->receipt_images && is_array($this->receipt_images) && count($this->receipt_images) > 0) {
-            return $this->receipt_images[0];
+            $imagePath = $this->receipt_images[0];
+            // Return full URL for the image
+            return asset('storage/' . $imagePath);
         }
         return null;
+    }
+
+    /**
+     * Get all receipt image URLs.
+     */
+    public function getReceiptImageUrlsAttribute(): array
+    {
+        if ($this->receipt_images && is_array($this->receipt_images)) {
+            return array_map(function($imagePath) {
+                return asset('storage/' . $imagePath);
+            }, $this->receipt_images);
+        }
+        return [];
     }
 
     /**

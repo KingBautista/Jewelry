@@ -170,6 +170,7 @@ class InvoicePaymentSchedule extends Model
     {
         $this->paid_amount += $amount;
         
+        // First determine payment status
         if ($this->paid_amount >= $this->expected_amount) {
             $this->status = 'paid';
         } elseif ($this->paid_amount > 0) {
@@ -178,8 +179,8 @@ class InvoicePaymentSchedule extends Model
             $this->status = 'pending';
         }
         
-        // Check if overdue
-        if ($this->due_date < now()->toDateString() && $this->status !== 'paid') {
+        // Check if overdue (only if not paid)
+        if ($this->status !== 'paid' && $this->due_date < now()->toDateString()) {
             $this->status = 'overdue';
         }
         

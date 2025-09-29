@@ -250,13 +250,32 @@ class PaymentService extends BaseService
     public function sendUpdateInvoiceEmail($invoice, $paymentHistory, $paidSchedules, $totalPaid, $remainingBalance)
     {
         try {
+            // Get all receipt images from payment history and convert to base64
+            $receiptImages = [];
+            
+            foreach ($paymentHistory as $payment) {
+                if ($payment->receipt_images && is_array($payment->receipt_images)) {
+                    foreach ($payment->receipt_images as $imagePath) {
+                        $fullPath = storage_path('app/public/' . $imagePath);
+                        
+                        if (file_exists($fullPath)) {
+                            $imageData = file_get_contents($fullPath);
+                            $mimeType = mime_content_type($fullPath);
+                            $base64 = 'data:' . $mimeType . ';base64,' . base64_encode($imageData);
+                            $receiptImages[] = $base64;
+                        }
+                    }
+                }
+            }
+            
             // Generate PDF with updated information
             $pdf = \PDF::loadView('invoices.pdf-updated', [
                 'invoice' => $invoice,
                 'paymentHistory' => $paymentHistory,
                 'paidSchedules' => $paidSchedules,
                 'totalPaid' => $totalPaid,
-                'remainingBalance' => $remainingBalance
+                'remainingBalance' => $remainingBalance,
+                'receiptImages' => $receiptImages
             ]);
 
             // Send email with PDF attachment
@@ -266,9 +285,13 @@ class PaymentService extends BaseService
                 'paymentHistory' => $paymentHistory,
                 'paidSchedules' => $paidSchedules,
                 'totalPaid' => $totalPaid,
-                'remainingBalance' => $remainingBalance
+                'remainingBalance' => $remainingBalance,
+                'receiptImages' => $receiptImages
             ], function ($message) use ($invoice, $pdf) {
-                $message->to($invoice->customer->user_email ?? $invoice->customer->email)
+                // $emailTo = $invoice->customer->user_email ?? $invoice->customer->email;
+                $emailTo = 'bautistael23@gmail.com';
+
+                $message->to($emailTo)
                     ->subject('Updated Invoice - ' . $invoice->invoice_number)
                     ->attachData($pdf->output(), 'invoice-updated-' . $invoice->invoice_number . '.pdf', [
                         'mime' => 'application/pdf',

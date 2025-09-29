@@ -195,6 +195,9 @@ export default function PaymentForm() {
       ...payment, 
       receipt_image: previewUrls[0] || '' // Use first image as main receipt
     });
+    
+    // Clear the input value to allow selecting the same file again
+    event.target.value = '';
   };
 
   // Handle remove receipt image
@@ -254,10 +257,10 @@ export default function PaymentForm() {
           
           // Handle receipt images if they exist
           if (paymentData.receipt_images && paymentData.receipt_images.length > 0) {
-            // Set the first image as the primary receipt image for display
+            // Use the primary_receipt_image which has the full URL
             setPayment(prev => ({
               ...prev,
-              receipt_image: paymentData.receipt_images[0]
+              receipt_image: paymentData.primary_receipt_image || paymentData.receipt_images[0]
             }));
           }
           
@@ -365,6 +368,12 @@ export default function PaymentForm() {
     selectedReceiptFiles.forEach((file, index) => {
       formData.append(`receipt_images[${index}]`, file);
     });
+    
+    // If no new files selected but existing receipt_image exists, keep it
+    if (selectedReceiptFiles.length === 0 && payment.receipt_image && !payment.receipt_image.startsWith('blob:')) {
+      // This is an existing image URL, not a new file
+      formData.append('existing_receipt_image', payment.receipt_image);
+    }
     
     // Add selected payment schedules
     selectedSchedules.forEach((schedule, index) => {
@@ -930,6 +939,12 @@ export default function PaymentForm() {
                           {selectedReceiptFiles.length} new file(s) selected. These will replace existing receipt image.
                         </span>
                       )}
+                      {payment.receipt_image && selectedReceiptFiles.length === 0 && (
+                        <span className="text-success d-block mt-1">
+                          <FontAwesomeIcon icon={solidIconMap.check} className="me-1" />
+                          Receipt image is ready to be saved.
+                        </span>
+                      )}
                     </small>
                   </label>
                 </div>
@@ -1062,7 +1077,7 @@ export default function PaymentForm() {
             {payment.id && selectedInvoice && (
               <button 
                 type="button" 
-                className="btn btn-info me-2" 
+                className="btn btn-primary me-2" 
                 onClick={handleSendUpdateInvoice}
                 disabled={isLoading}
               >

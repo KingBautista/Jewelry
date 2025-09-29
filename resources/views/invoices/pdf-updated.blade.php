@@ -405,62 +405,28 @@
         </tfoot>
     </table>
     
-    <!-- Payment History Section -->
-    @if($paymentHistory && count($paymentHistory) > 0)
-    <div class="section-title">Payment History</div>
-    <table class="payment-history-table">
-        <thead>
-            <tr>
-                <th>Payment Date</th>
-                <th>Payment Type</th>
-                <th>Amount Paid</th>
-                <th>Reference Number</th>
-                <th>Status</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach($paymentHistory as $payment)
-            <tr>
-                <td>{{ $payment->payment_date ? \Carbon\Carbon::parse($payment->payment_date)->format('M d, Y') : 'N/A' }}</td>
-                <td>{{ ucfirst(str_replace('_', ' ', $payment->payment_type)) }}</td>
-                <td>P{{ number_format($payment->amount_paid, 2, '.', ',') }}</td>
-                <td>{{ $payment->reference_number }}</td>
-                <td>
-                    <span style="color: {{ $payment->status === 'confirmed' ? 'green' : 'orange' }}; font-weight: bold;">
-                        {{ strtoupper($payment->status) }}
-                    </span>
-                </td>
-            </tr>
-            @endforeach
-        </tbody>
-    </table>
-    @endif
     
     <!-- Paid Payment Schedules Section -->
     @if($paidSchedules && count($paidSchedules) > 0)
     <div class="section-title">Paid Payment Schedule</div>
-    <table class="payment-schedule-table">
+    <table class="items-table">
         <thead>
             <tr>
-                <th>Payment Order</th>
-                <th>Payment Type</th>
-                <th>Due Date</th>
-                <th>Expected Amount</th>
-                <th>Paid Amount</th>
-                <th>Status</th>
+                <th class="description">DESCRIPTION</th>
+                <th class="unit-price">DUE DATE</th>
+                <th class="qty">STATUS</th>
+                <th class="total">AMOUNT PAID</th>
             </tr>
         </thead>
         <tbody>
             @foreach($paidSchedules as $schedule)
             <tr>
-                <td>{{ $schedule->payment_order }}</td>
-                <td>{{ $schedule->payment_type }}</td>
-                <td>{{ \Carbon\Carbon::parse($schedule->due_date)->format('M d, Y') }}</td>
-                <td>P{{ number_format($schedule->expected_amount, 2, '.', ',') }}</td>
-                <td>P{{ number_format($schedule->paid_amount, 2, '.', ',') }}</td>
-                <td>
+                <td class="description">{{ $schedule->payment_type }} - Payment #{{ $schedule->payment_order }}</td>
+                <td class="unit-price">{{ \Carbon\Carbon::parse($schedule->due_date)->format('M d, Y') }}</td>
+                <td class="qty">
                     <span style="color: green; font-weight: bold;">PAID</span>
                 </td>
+                <td class="total">P{{ number_format($schedule->paid_amount, 2, '.', ',') }}</td>
             </tr>
             @endforeach
         </tbody>
@@ -483,6 +449,22 @@
             <span>P{{ number_format($remainingBalance, 2, '.', ',') }}</span>
         </div>
     </div>
+    
+    <!-- Receipt Images Section -->
+    @if(isset($receiptImages) && count($receiptImages) > 0)
+    <div class="section-title">Payment Receipt</div>
+    <div style="margin: 20px 0;">
+        @foreach($receiptImages as $index => $receiptImage)
+        <div style="margin-bottom: 20px; text-align: center; page-break-inside: avoid;">
+            <img src="{{ $receiptImage }}" alt="Payment Receipt {{ $index + 1 }}" 
+                 style="max-width: 100%; max-height: 300px; border: 1px solid #ddd; border-radius: 5px; display: block; margin: 0 auto;" />
+            <div style="margin-top: 8px; font-size: 11px; color: #666; font-weight: bold;">
+                Payment Receipt {{ $index + 1 }}
+            </div>
+        </div>
+        @endforeach
+    </div>
+    @endif
     
     <!-- Payment Details and Terms -->
     <table class="payment-table">

@@ -28,11 +28,27 @@ class PaymentController extends BaseController
             // Handle receipt image uploads
             if ($request->hasFile('receipt_images')) {
                 $receiptImages = [];
-                foreach ($request->file('receipt_images') as $file) {
-                    $path = $file->store('receipts', 'public');
-                    $receiptImages[] = $path;
+                $files = $request->file('receipt_images');
+                
+                // Handle both single file and multiple files
+                if (is_array($files)) {
+                    foreach ($files as $file) {
+                        if ($file && $file->isValid()) {
+                            $path = $file->store('receipts', 'public');
+                            $receiptImages[] = $path;
+                        }
+                    }
+                } else {
+                    // Single file
+                    if ($files && $files->isValid()) {
+                        $path = $files->store('receipts', 'public');
+                        $receiptImages[] = $path;
+                    }
                 }
-                $data['receipt_images'] = $receiptImages; // Store all images as JSON array
+                
+                if (!empty($receiptImages)) {
+                    $data['receipt_images'] = $receiptImages; // Store all images as JSON array
+                }
             }
 
             // Handle update vs create
@@ -40,6 +56,13 @@ class PaymentController extends BaseController
                 $payment = $this->service->update($data, $data['payment_id']);
             } else {
                 $payment = $this->service->store($data);    
+            }
+            
+            // Handle selected payment schedules
+            $selectedSchedules = $request->input('selected_schedules', []);
+            if (!empty($selectedSchedules)) {
+                // Store the selected schedules for this payment
+                $payment->update(['selected_schedules' => $selectedSchedules]);
             }
             
             // Update invoice payment status (schedules will be marked as paid when payment is confirmed)
@@ -107,6 +130,9 @@ class PaymentController extends BaseController
             
             // Mark selected payment schedules as paid (now that payment is confirmed)
             $selectedSchedules = $request->input('selected_schedules', []);
+            if (empty($selectedSchedules) && $payment->selected_schedules) {
+                $selectedSchedules = $payment->selected_schedules;
+            }
             if (!empty($selectedSchedules)) {
                 $this->service->markSchedulesAsPaid($selectedSchedules, $payment->amount_paid);
             }
@@ -339,7 +365,7 @@ class PaymentController extends BaseController
             $paymentHistory = Payment::where('invoice_id', $payment->invoice_id)
                 ->where('status', 'confirmed')
                 ->orderBy('payment_date', 'asc')
-                ->get();
+                ->get(['id', 'invoice_id', 'amount_paid', 'payment_date', 'receipt_images', 'status']);
             
             // Get paid payment schedules
             $paidSchedules = $payment->invoice->paymentSchedules()

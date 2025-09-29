@@ -4790,7 +4790,7 @@ hr {
   
   /* About page specific styles - Champagne Elegance */
   .container-fluid {
-    background-color: #2C2C2C;
+    /* background-color: #2C2C2C; */
     color: #F7E7CE;
   }
   
@@ -5037,9 +5037,9 @@ hr {
   }
   
   /* Dashboard specific dark theme styling */
-  .dashboard-metrics {
+  /* .dashboard-metrics {
     background-color: #2C2C2C;
-  }
+  } */
   
   .dashboard-metrics .card {
     background-color: #F7E7CE;
