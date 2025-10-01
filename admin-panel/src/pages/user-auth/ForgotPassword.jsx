@@ -47,16 +47,30 @@ export default function ForgotPassword() {
 
 	return (
 		<div className="col-lg-9">
-			<div className="row g-0 rounded-4 overflow-hidden shadow-xl" style={{ backgroundColor: '#1a1a1a', border: '1px solid rgba(255,255,255,0.1)' }}>
+			<div className="row g-0 rounded-4 overflow-hidden shadow-xl" style={{ 
+				backgroundColor: 'var(--surface-color)', 
+				border: '1px solid var(--border-color)',
+				boxShadow: '0 10px 25px rgba(0,0,0,0.1)'
+			}}>
 				{/* Forgot Password Form - Left Side */}
 				<div className="col-lg-6">
 					<div className="h-100 d-flex flex-column justify-content-center">
 						<div className="p-5">
 							{/* Header Section */}
 							<div className="text-center mb-5">
-								<FontAwesomeIcon icon={solidIconMap.key} className="text-light fs-1 mb-4" style={{ filter: 'drop-shadow(0 4px 8px rgba(0,0,0,0.3))' }} />
-								<h1 className="fw-bold text-white mb-2" style={{ fontSize: '2.5rem', letterSpacing: '-0.5px' }}>Forgot Password?</h1>
-								<p className="text-light mb-0 fs-5" style={{ opacity: 0.8 }}>Enter your email to reset your password</p>
+								<FontAwesomeIcon icon={solidIconMap.key} className="fs-1 mb-4" style={{ 
+									filter: 'drop-shadow(0 4px 8px rgba(0,0,0,0.3))',
+									color: 'var(--text-color)'
+								}} />
+								<h1 className="fw-bold mb-2" style={{ 
+									fontSize: '2.5rem', 
+									letterSpacing: '-0.5px',
+									color: 'var(--text-color)'
+								}}>Forgot Password?</h1>
+								<p className="mb-0 fs-5" style={{ 
+									opacity: 0.8,
+									color: 'var(--text-color-muted)'
+								}}>Enter your email to reset your password</p>
 							</div>
 
 							<form onSubmit={onSubmit} className={isValidated}>
@@ -93,19 +107,31 @@ export default function ForgotPassword() {
 								
 								{/* Email Input */}
 								<div className="mb-4">
-									<label htmlFor="email" className="form-label fw-semibold text-white mb-2" style={{ fontSize: '1.1rem' }}>Email Address</label>
+									<label htmlFor="email" className="form-label fw-semibold mb-2" style={{ 
+										fontSize: '1.1rem',
+										color: 'var(--text-color)'
+									}}>Email Address</label>
 									<div className="input-group input-group-lg shadow-sm">
-										<span className="input-group-text bg-dark border-end-0 border-2" style={{ borderColor: '#404040', color: '#9ca3af' }}>
-											<FontAwesomeIcon icon={solidIconMap.envelope} className="text-light" />
+										<span className="input-group-text border-end-0 border-2" style={{ 
+											borderColor: 'var(--border-color)', 
+											color: 'var(--text-color-muted)',
+											backgroundColor: 'var(--surface-color-secondary)'
+										}}>
+											<FontAwesomeIcon icon={solidIconMap.envelope} />
 										</span>
 										<input 
 											id="email"
 											ref={emailRef}
-											className={`form-control border-start-0 border-2 bg-dark text-white ${errors && errors.email ? 'is-invalid' : ''}`}
+											className={`form-control border-start-0 border-2 ${errors && errors.email ? 'is-invalid' : ''}`}
 											type="email"
 											placeholder="Enter your email"
 											required
-											style={{ fontSize: '1rem', borderColor: '#404040' }}
+											style={{ 
+												fontSize: '1rem', 
+												borderColor: 'var(--border-color)',
+												backgroundColor: 'var(--surface-color)',
+												color: 'var(--text-color)'
+											}}
 										/>
 										{errors && errors.email && (
 											<div className="invalid-feedback">
@@ -125,11 +151,11 @@ export default function ForgotPassword() {
 											padding: '0.8rem 1.5rem',
 											fontSize: '1.1rem',
 											borderRadius: '0.75rem',
-											backgroundColor: '#374151',
-											borderColor: '#4b5563',
-											color: 'white',
-											boxShadow: '0 4px 15px rgba(75, 85, 99, 0.3)',
-											border: '1px solid #4b5563'
+											backgroundColor: 'var(--primary-color)',
+											borderColor: 'var(--primary-color)',
+											color: 'black',
+											boxShadow: '0 4px 15px rgba(0, 0, 0, 0.1)',
+											border: '1px solid var(--primary-color)'
 										}}
 									>
 										{isLoading ? (
@@ -148,7 +174,11 @@ export default function ForgotPassword() {
 								
 								{/* Back to Login Link */}
 								<div className="text-center">
-									<Link to="/login" className="text-decoration-none text-light fw-semibold" style={{ fontSize: '1rem', transition: 'all 0.3s ease' }}>
+									<Link to="/login" className="text-decoration-none fw-semibold" style={{ 
+										fontSize: '1rem', 
+										transition: 'all 0.3s ease',
+										color: 'var(--text-color)'
+									}}>
 										<FontAwesomeIcon icon={solidIconMap.arrowLeft} className="me-2" />
 										Back to Login
 									</Link>
@@ -163,7 +193,7 @@ export default function ForgotPassword() {
 					<div 
 						className="h-100 d-flex align-items-center justify-content-center"
 						style={{ 
-							background: 'linear-gradient(135deg, #1f2937 0%, #374151 50%, #4b5563 100%)',
+							background: 'var(--surface-color-secondary)',
 							minHeight: '500px'
 						}}
 					>
@@ -177,45 +207,88 @@ export default function ForgotPassword() {
 						></div>
 						
 						{/* Content */}
-						<div className="text-center text-white position-relative">
+						<div className="text-center position-relative">
 							{/* Icon */}
-							<div className="mb-3">
-								<FontAwesomeIcon icon={solidIconMap.shieldAlt} className="text-white" style={{ fontSize: '3.5rem', filter: 'drop-shadow(0 8px 16px rgba(0,0,0,0.3))' }} />
+							<div className="mb-5">
+								<FontAwesomeIcon icon={solidIconMap.shieldAlt} style={{ 
+									fontSize: '4rem', 
+									filter: 'drop-shadow(0 8px 16px rgba(0,0,0,0.3))',
+									color: 'var(--text-color)'
+								}} />
 							</div>
 							
 							{/* Welcome Text */}
-							<h2 className="fw-bold mb-3 text-white" style={{ fontSize: '2.2rem', letterSpacing: '-1px', textShadow: '0 4px 8px rgba(0,0,0,0.3)' }}>
+							<h2 className="fw-bold mb-4" style={{ 
+								fontSize: '2.8rem', 
+								letterSpacing: '-1px', 
+								textShadow: '0 4px 8px rgba(0,0,0,0.3)',
+								color: 'var(--text-color)'
+							}}>
 								Password Recovery
 							</h2>
 							
-							<p className="fs-5 text-white mb-4" style={{ maxWidth: '400px', margin: '0 auto', opacity: 0.95, lineHeight: '1.5' }}>
+							<p className="fs-4" style={{ 
+								maxWidth: '450px', 
+								margin: '0 auto', 
+								opacity: 0.95, 
+								lineHeight: '1.6',
+								color: 'var(--text-color-muted)'
+							}}>
 								Secure password reset process to protect your account
 							</p>
 							
 							{/* Features List */}
-							<div className="row g-2 text-start" style={{ maxWidth: '360px', margin: '0 auto' }}>
+							<div className="row g-4 text-start" style={{ maxWidth: '380px', margin: '0 auto' }}>
 								<div className="col-12">
-									<div className="d-flex align-items-center p-2 rounded" style={{ backgroundColor: 'rgba(0,0,0,0.2)', backdropFilter: 'blur(10px)', border: '1px solid rgba(255,255,255,0.1)' }}>
-										<FontAwesomeIcon icon={solidIconMap.check} className="text-white me-2" style={{ fontSize: '1.1rem' }} />
-										<span className="text-white fw-medium" style={{ fontSize: '0.95rem' }}>Secure email verification</span>
+									<div className="d-flex align-items-center p-3 rounded" style={{ 
+										backgroundColor: 'var(--surface-color)', 
+										backdropFilter: 'blur(10px)', 
+										border: '1px solid var(--border-color)' 
+									}}>
+										<FontAwesomeIcon icon={solidIconMap.check} className="me-3" style={{ 
+											fontSize: '1.3rem',
+											color: 'var(--text-color)'
+										}} />
+										<span className="fw-medium" style={{ color: 'var(--text-color)' }}>Secure email verification</span>
 									</div>
 								</div>
 								<div className="col-12">
-									<div className="d-flex align-items-center p-2 rounded" style={{ backgroundColor: 'rgba(0,0,0,0.2)', backdropFilter: 'blur(10px)', border: '1px solid rgba(255,255,255,0.1)' }}>
-										<FontAwesomeIcon icon={solidIconMap.check} className="text-white me-2" style={{ fontSize: '1.1rem' }} />
-										<span className="text-white fw-medium" style={{ fontSize: '0.95rem' }}>Quick password reset</span>
+									<div className="d-flex align-items-center p-3 rounded" style={{ 
+										backgroundColor: 'var(--surface-color)', 
+										backdropFilter: 'blur(10px)', 
+										border: '1px solid var(--border-color)' 
+									}}>
+										<FontAwesomeIcon icon={solidIconMap.check} className="me-3" style={{ 
+											fontSize: '1.3rem',
+											color: 'var(--text-color)'
+										}} />
+										<span className="fw-medium" style={{ color: 'var(--text-color)' }}>Quick password reset</span>
 									</div>
 								</div>
 								<div className="col-12">
-									<div className="d-flex align-items-center p-2 rounded" style={{ backgroundColor: 'rgba(0,0,0,0.2)', backdropFilter: 'blur(10px)', border: '1px solid rgba(255,255,255,0.1)' }}>
-										<FontAwesomeIcon icon={solidIconMap.check} className="text-white me-2" style={{ fontSize: '1.1rem' }} />
-										<span className="text-white fw-medium" style={{ fontSize: '0.95rem' }}>Account security protection</span>
+									<div className="d-flex align-items-center p-3 rounded" style={{ 
+										backgroundColor: 'var(--surface-color)', 
+										backdropFilter: 'blur(10px)', 
+										border: '1px solid var(--border-color)' 
+									}}>
+										<FontAwesomeIcon icon={solidIconMap.check} className="me-3" style={{ 
+											fontSize: '1.3rem',
+											color: 'var(--text-color)'
+										}} />
+										<span className="fw-medium" style={{ color: 'var(--text-color)' }}>Account security protection</span>
 									</div>
 								</div>
 								<div className="col-12">
-									<div className="d-flex align-items-center p-2 rounded" style={{ backgroundColor: 'rgba(0,0,0,0.2)', backdropFilter: 'blur(10px)', border: '1px solid rgba(255,255,255,0.1)' }}>
-										<FontAwesomeIcon icon={solidIconMap.check} className="text-white me-2" style={{ fontSize: '1.1rem' }} />
-										<span className="text-white fw-medium" style={{ fontSize: '0.95rem' }}>Easy access restoration</span>
+									<div className="d-flex align-items-center p-3 rounded" style={{ 
+										backgroundColor: 'var(--surface-color)', 
+										backdropFilter: 'blur(10px)', 
+										border: '1px solid var(--border-color)' 
+									}}>
+										<FontAwesomeIcon icon={solidIconMap.check} className="me-3" style={{ 
+											fontSize: '1.3rem',
+											color: 'var(--text-color)'
+										}} />
+										<span className="fw-medium" style={{ color: 'var(--text-color)' }}>Easy access restoration</span>
 									</div>
 								</div>
 							</div>
