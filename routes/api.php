@@ -17,6 +17,7 @@ use App\Http\Controllers\Api\CustomerController;
 use App\Http\Controllers\Api\InvoiceController;
 use App\Http\Controllers\Api\PaymentController;
 use App\Http\Controllers\Api\AuditTrailController;
+use App\Http\Controllers\Api\CustomerPortalController;
 
 /*
 |--------------------------------------------------------------------------
@@ -338,3 +339,21 @@ Route::post('/signup', [AuthController::class, 'signup']);
 Route::post('/validate', [AuthController::class, 'activateUser']);
 Route::post('/generate-password', [AuthController::class, 'genTempPassword']);
 Route::post('/login', [AuthController::class, 'login']);
+
+// Customer Portal Public Routes
+Route::post('/customer/login', [CustomerPortalController::class, 'login']);
+Route::post('/customer/forgot-password', [CustomerPortalController::class, 'forgotPassword']);
+
+// Customer Portal Protected Routes
+Route::middleware('auth:sanctum')->prefix('customer')->group(function () {
+    Route::get('/user', [CustomerPortalController::class, 'getProfile']);
+    Route::put('/user', [CustomerPortalController::class, 'updateProfile']);
+    
+    Route::get('/dashboard/overview', [CustomerPortalController::class, 'dashboardOverview']);
+    Route::get('/invoices', [CustomerPortalController::class, 'getInvoices']);
+    Route::get('/invoices/{id}', [CustomerPortalController::class, 'getInvoice']);
+    Route::get('/invoices/{id}/pdf', [CustomerPortalController::class, 'downloadInvoicePdf']);
+    
+    Route::post('/payment-submission', [CustomerPortalController::class, 'submitPayment']);
+    Route::get('/payment-submissions', [CustomerPortalController::class, 'getPaymentSubmissions']);
+});
