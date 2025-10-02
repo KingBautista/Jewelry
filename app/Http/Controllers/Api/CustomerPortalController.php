@@ -28,7 +28,7 @@ class CustomerPortalController extends Controller
 
         $user = User::where('user_email', $request->email)
             ->where('user_status', 1)
-            ->where('user_role_id', 5)
+            ->where('user_role_id', 7)
             ->first();
 
         if (!$user) {
@@ -42,7 +42,7 @@ class CustomerPortalController extends Controller
         // Make user_salt visible for authentication
         $user->makeVisible(['user_salt']);
 
-        if (!Hash::check($user->user_salt . $request->password . env("PEPPER_HASH"), $user->user_pass)) {
+        if (!Hash::check($user->user_salt . $request->password . (env("PEPPER_HASH") ?: ''), $user->user_pass)) {
             return response([
                 'errors' => ['Invalid email or password.'],
                 'status' => false,
@@ -292,6 +292,8 @@ class CustomerPortalController extends Controller
      */
     public function updateProfile(Request $request)
     {
+        \Log::info('Profile update request received:', $request->all());
+        
         $request->validate([
             'user_login' => 'required|string|max:191',
             'user_email' => 'required|email|unique:users,user_email,' . $request->user()->id,
@@ -300,8 +302,29 @@ class CustomerPortalController extends Controller
         ]);
 
         $user = $request->user();
-        $user->update($request->only(['user_login', 'user_email', 'phone', 'address']));
+        \Log::info('Updating user:', ['user_id' => $user->id, 'user_email' => $user->user_email]);
+        
+        // Update basic user fields
+        $user->update($request->only(['user_login', 'user_email']));
+        
+        // Update user meta fields (phone and address)
+        $metaData = [];
+        if ($request->has('phone')) {
+            $metaData['phone'] = $request->phone;
+        }
+        if ($request->has('address')) {
+            $metaData['address'] = $request->address;
+        }
+        
+        \Log::info('Meta data to save:', $metaData);
+        
+        if (!empty($metaData)) {
+            $user->saveUserMeta($metaData);
+            \Log::info('User meta saved successfully');
+        }
 
+        \Log::info('Profile update completed successfully');
+        
         return response([
             'message' => 'Profile updated successfully',
             'data' => new CustomerResource($user)

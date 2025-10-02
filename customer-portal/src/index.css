@@ -218,7 +218,7 @@ a:hover {
 }
 
 .table thead th {
-  background: var(--gradient-champagne);
+  background: #f8f9fa;
   color: var(--text-color);
   border: none;
   font-weight: 600;

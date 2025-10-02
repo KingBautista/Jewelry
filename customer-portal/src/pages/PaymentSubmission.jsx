@@ -34,8 +34,16 @@ const PaymentSubmission = () => {
 
   const fetchInvoices = async () => {
     try {
-      const response = await axiosClient.get('/customer/invoices?status=unpaid,partially_paid');
-      setInvoices(response.data.data || []);
+      console.log('Fetching invoices...');
+      const response = await axiosClient.get('/customer/invoices');
+      console.log('Invoices response:', response.data);
+      const allInvoices = response.data.data || [];
+      // Filter for unpaid and partially paid invoices
+      const filteredInvoices = allInvoices.filter(invoice => 
+        invoice.payment_status === 'unpaid' || invoice.payment_status === 'partially_paid'
+      );
+      console.log('Filtered invoices:', filteredInvoices);
+      setInvoices(filteredInvoices);
     } catch (error) {
       console.error('Error fetching invoices:', error);
     }
@@ -43,7 +51,9 @@ const PaymentSubmission = () => {
 
   const fetchInvoiceDetails = async (id) => {
     try {
+      console.log('Fetching invoice details for ID:', id);
       const response = await axiosClient.get(`/customer/invoices/${id}`);
+      console.log('Invoice details response:', response.data);
       const invoice = response.data.data;
       setSelectedInvoice(invoice);
       setFormData(prev => ({
@@ -51,6 +61,7 @@ const PaymentSubmission = () => {
         invoice_id: id,
         expected_amount: invoice.remaining_balance
       }));
+      console.log('Selected invoice set:', invoice);
     } catch (error) {
       console.error('Error fetching invoice details:', error);
     }
@@ -62,6 +73,11 @@ const PaymentSubmission = () => {
       ...prev,
       [name]: value
     }));
+    
+    // If invoice selection changed, fetch invoice details
+    if (name === 'invoice_id' && value) {
+      fetchInvoiceDetails(value);
+    }
     
     // Clear error when user starts typing
     if (errors[name]) {
@@ -121,13 +137,20 @@ const PaymentSubmission = () => {
   const formatCurrency = (amount) => {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
-      currency: 'USD'
+      currency: 'PHP'
     }).format(amount);
   };
 
   if (loading) {
     return <LoadingSpinner />;
   }
+
+  // Debug logging
+  console.log('PaymentSubmission state:', {
+    invoices: invoices.length,
+    selectedInvoice: selectedInvoice,
+    formData: formData
+  });
 
   return (
     <div className="container-fluid">
@@ -177,12 +200,21 @@ const PaymentSubmission = () => {
                     required
                   >
                     <option value="">Choose an invoice...</option>
-                    {invoices.map(invoice => (
-                      <option key={invoice.id} value={invoice.id}>
-                        {invoice.invoice_number} - {formatCurrency(invoice.remaining_balance)} remaining
-                      </option>
-                    ))}
+                    {invoices.length > 0 ? (
+                      invoices.map(invoice => (
+                        <option key={invoice.id} value={invoice.id}>
+                          {invoice.invoice_number} - {formatCurrency(invoice.remaining_balance)} remaining
+                        </option>
+                      ))
+                    ) : (
+                      <option value="" disabled>No unpaid invoices available</option>
+                    )}
                   </select>
+                  {invoices.length === 0 && (
+                    <div className="form-text text-warning">
+                      No unpaid or partially paid invoices found.
+                    </div>
+                  )}
                 </div>
 
                 {/* Selected Invoice Details */}
@@ -217,7 +249,7 @@ const PaymentSubmission = () => {
                       Amount Paid *
                     </label>
                     <div className="input-group">
-                      <span className="input-group-text">$</span>
+                      <span className="input-group-text">₱</span>
                       <input
                         type="number"
                         id="amount_paid"
@@ -236,7 +268,7 @@ const PaymentSubmission = () => {
                       Expected Amount *
                     </label>
                     <div className="input-group">
-                      <span className="input-group-text">$</span>
+                      <span className="input-group-text">₱</span>
                       <input
                         type="number"
                         id="expected_amount"

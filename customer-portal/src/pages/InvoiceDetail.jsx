@@ -48,7 +48,7 @@ const InvoiceDetail = () => {
   const formatCurrency = (amount) => {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
-      currency: 'USD'
+      currency: 'PHP'
     }).format(amount);
   };
 
@@ -143,7 +143,7 @@ const InvoiceDetail = () => {
                 <div className="table-responsive">
                   <h6 className="fw-semibold mb-3">Invoice Items</h6>
                   <table className="table table-bordered">
-                    <thead className="table-light">
+                    <thead>
                       <tr>
                         <th>Description</th>
                         <th>Quantity</th>
@@ -154,10 +154,10 @@ const InvoiceDetail = () => {
                     <tbody>
                       {invoice.items.map((item, index) => (
                         <tr key={index}>
-                          <td>{item.description}</td>
-                          <td>{item.quantity}</td>
-                          <td>{formatCurrency(item.unit_price)}</td>
-                          <td>{formatCurrency(item.total_price)}</td>
+                          <td>{item.description || item.product_name}</td>
+                          <td>1</td>
+                          <td>{formatCurrency(item.price || 0)}</td>
+                          <td>{formatCurrency(item.price || 0)}</td>
                         </tr>
                       ))}
                     </tbody>

@@ -81,7 +81,7 @@ const Dashboard = () => {
                 className="text-success mb-3" 
                 style={{ fontSize: '2.5rem' }} 
               />
-              <h3 className="fw-bold mb-1">${overview.total_paid || 0}</h3>
+              <h3 className="fw-bold mb-1">₱{overview.total_paid || 0}</h3>
               <p className="text-muted mb-0">Total Paid</p>
             </div>
           </div>
@@ -95,7 +95,7 @@ const Dashboard = () => {
                 className="text-warning mb-3" 
                 style={{ fontSize: '2.5rem' }} 
               />
-              <h3 className="fw-bold mb-1">${overview.outstanding_balance || 0}</h3>
+              <h3 className="fw-bold mb-1">₱{overview.outstanding_balance || 0}</h3>
               <p className="text-muted mb-0">Outstanding Balance</p>
             </div>
           </div>
@@ -168,7 +168,7 @@ const Dashboard = () => {
               {recentInvoices.length > 0 ? (
                 <div className="table-responsive">
                   <table className="table table-hover mb-0">
-                    <thead className="table-light">
+                    <thead>
                       <tr>
                         <th>Invoice #</th>
                         <th>Date</th>
@@ -182,7 +182,7 @@ const Dashboard = () => {
                         <tr key={invoice.id}>
                           <td className="fw-semibold">{invoice.invoice_number}</td>
                           <td>{new Date(invoice.issue_date).toLocaleDateString()}</td>
-                          <td className="fw-semibold">${invoice.total_amount}</td>
+                          <td className="fw-semibold">₱{invoice.total_amount}</td>
                           <td>
                             <span className={`badge ${
                               invoice.payment_status === 'fully_paid' ? 'badge-success' :
@@ -261,7 +261,7 @@ const Dashboard = () => {
                       </small>
                     </div>
                     <div className="text-end">
-                      <div className="fw-semibold">${invoice.remaining_balance}</div>
+                      <div className="fw-semibold">₱{invoice.remaining_balance}</div>
                     </div>
                   </div>
                 ))}

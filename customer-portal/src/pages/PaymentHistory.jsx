@@ -44,7 +44,7 @@ const PaymentHistory = () => {
   const formatCurrency = (amount) => {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
-      currency: 'USD'
+      currency: 'PHP'
     }).format(amount);
   };
 
@@ -103,7 +103,7 @@ const PaymentHistory = () => {
               {submissions.length > 0 ? (
                 <div className="table-responsive">
                   <table className="table table-hover mb-0">
-                    <thead className="table-light">
+                    <thead>
                       <tr>
                         <th>Invoice #</th>
                         <th>Amount Paid</th>

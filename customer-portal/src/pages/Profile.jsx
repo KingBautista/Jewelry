@@ -62,10 +62,14 @@ const Profile = () => {
     setMessage('');
 
     try {
+      console.log('Sending profile update:', formData);
       const response = await axiosClient.put('/customer/user', formData);
+      console.log('Profile update response:', response.data);
       setUser(response.data.data);
       setMessage('Profile updated successfully!');
     } catch (error) {
+      console.error('Profile update error:', error);
+      console.error('Error response:', error.response?.data);
       if (error.response?.status === 422) {
         setErrors(error.response.data.errors);
       } else {

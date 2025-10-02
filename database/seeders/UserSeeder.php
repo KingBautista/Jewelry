@@ -161,6 +161,32 @@ class UserSeeder extends Seeder
         ];
         $accountantUser->saveUserMeta($accountantMetaData);
 
+        // Add customer portal user
+        $customerPortalSalt = PasswordHelper::generateSalt();
+        $customerPortalPassword = PasswordHelper::generatePassword($customerPortalSalt, 'password123');
+        $customerPortalUser = User::create([
+            'user_login' => 'customer_portal',
+            'user_email' => 'customer@invoice-system.com',
+            'user_pass' => $customerPortalPassword,
+            'user_salt' => $customerPortalSalt,
+            'user_status' => 1,
+            'user_activation_key' => null,
+            'remember_token' => null,
+            'user_role_id' => 7, // Customer role
+        ]);
+        $customerPortalMetaData = [
+            'first_name' => 'John',
+            'last_name' => 'Doe',
+            'nickname' => 'Customer',
+            'biography' => 'Customer portal user for testing invoice and payment functionality.',
+            'theme' => 'light',
+            'phone' => '+1-555-0123',
+            'address' => '123 Main Street, Anytown, ST 12345',
+            'user_type' => 'customer',
+            'customer_code' => 'CUST000001',
+        ];
+        $customerPortalUser->saveUserMeta($customerPortalMetaData);
+
         // Create additional staff users to reach 25 total
         $faker = \Faker\Factory::create();
         $roles = [2, 3, 4, 5, 6]; // Admin, Finance Manager, Customer Service, Sales Rep, Accountant

@@ -21,6 +21,7 @@ class RoleSeeder extends Seeder
             [4, 'Invoice Manager', 1, 0],
             [5, 'Customer Service', 1, 0],
             [6, 'Accountant', 1, 0],
+            [7, 'Customer', 1, 0],
         ];
 
         foreach ($roles as $role) {
