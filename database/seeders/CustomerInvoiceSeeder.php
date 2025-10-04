@@ -17,78 +17,78 @@ class CustomerInvoiceSeeder extends Seeder
 {
     public function run(): void
     {
-        // Get the customer user
-        $customer = User::where('user_email', 'customer@invoice-system.com')->first();
+        // Get the customer portal user
+        $customer = User::where('user_email', 'customer-portal@invoice-system.com')->first();
         
         if (!$customer) {
-            $this->command->error('Customer user not found. Please run UserSeeder first.');
+            $this->command->error('Customer portal user not found. Please run UserSeeder first.');
             return;
         }
 
-        $this->command->info('Creating sample invoices for customer: ' . $customer->user_email);
+        $this->command->info('Creating sample invoices for customer portal user: ' . $customer->user_email);
 
         // Create sample taxes, fees, discounts, and payment terms if they don't exist
         $tax = Tax::firstOrCreate([
-            'name' => 'Sales Tax',
-            'rate' => 8.5,
+            'name' => 'VAT (Value Added Tax)',
+            'rate' => 12.0,
             'active' => 1
         ]);
 
         $fee = Fee::firstOrCreate([
-            'name' => 'Processing Fee',
-            'amount' => 15.00,
+            'name' => 'Metro Manila Delivery',
+            'amount' => 150.00,
             'active' => 1
         ]);
 
         $discount = Discount::firstOrCreate([
-            'name' => 'Early Payment Discount',
-            'type' => 'percentage',
-            'amount' => 5.0,
+            'name' => 'Bagong Customer (New Customer)',
+            'type' => 'fixed',
+            'amount' => 2000.0,
             'active' => 1
         ]);
 
         $paymentTerm = PaymentTerm::firstOrCreate([
-            'name' => 'Net 30',
-            'code' => 'NET30',
-            'down_payment_percentage' => 0.00,
-            'remaining_percentage' => 100.00,
-            'term_months' => 1,
+            'name' => 'Hulugan Plan A (Installment Plan A)',
+            'code' => 'HULUGAN_A',
+            'down_payment_percentage' => 30.00,
+            'remaining_percentage' => 70.00,
+            'term_months' => 6,
             'active' => 1
         ]);
 
-        // Sample invoice data
+        // Sample invoice data with Philippines jewelry services
         $invoices = [
             [
                 'invoice_number' => 'INV-CUST-001',
                 'issue_date' => Carbon::now()->subDays(15),
                 'due_date' => Carbon::now()->addDays(15),
-                'subtotal' => 500.00,
-                'tax_amount' => 42.50,
-                'fee_amount' => 15.00,
-                'discount_amount' => 25.00,
-                'total_amount' => 532.50,
+                'subtotal' => 5000.00,
+                'tax_amount' => 600.00,
+                'fee_amount' => 150.00,
+                'discount_amount' => 2000.00,
+                'total_amount' => 3750.00,
                 'total_paid_amount' => 0.00,
-                'remaining_balance' => 532.50,
+                'remaining_balance' => 3750.00,
                 'payment_status' => 'unpaid',
-                'notes' => 'Jewelry repair services - Ring resizing and cleaning',
+                'notes' => 'Serbisyo sa alahas - Pag-ayos ng singsing at paglilinis (Jewelry repair services - Ring resizing and cleaning)',
                 'items' => [
                     [
-                        'description' => 'Ring Resizing Service',
+                        'description' => 'Pag-ayos ng Singsing (Ring Resizing)',
                         'quantity' => 1,
-                        'unit_price' => 150.00,
-                        'total_price' => 150.00
+                        'unit_price' => 1500.00,
+                        'total_price' => 1500.00
                     ],
                     [
-                        'description' => 'Jewelry Cleaning Service',
+                        'description' => 'Paglilinis ng Alahas (Jewelry Cleaning)',
                         'quantity' => 2,
-                        'unit_price' => 25.00,
-                        'total_price' => 50.00
+                        'unit_price' => 250.00,
+                        'total_price' => 500.00
                     ],
                     [
-                        'description' => 'Prong Repair',
+                        'description' => 'Pagkumpuni ng Prong (Prong Repair)',
                         'quantity' => 1,
-                        'unit_price' => 300.00,
-                        'total_price' => 300.00
+                        'unit_price' => 3000.00,
+                        'total_price' => 3000.00
                     ]
                 ]
             ],
@@ -96,27 +96,27 @@ class CustomerInvoiceSeeder extends Seeder
                 'invoice_number' => 'INV-CUST-002',
                 'issue_date' => Carbon::now()->subDays(30),
                 'due_date' => Carbon::now()->subDays(5),
-                'subtotal' => 1200.00,
-                'tax_amount' => 102.00,
+                'subtotal' => 12000.00,
+                'tax_amount' => 1440.00,
                 'fee_amount' => 0.00,
                 'discount_amount' => 0.00,
-                'total_amount' => 1302.00,
-                'total_paid_amount' => 651.00,
-                'remaining_balance' => 651.00,
+                'total_amount' => 13440.00,
+                'total_paid_amount' => 6720.00,
+                'remaining_balance' => 6720.00,
                 'payment_status' => 'partially_paid',
-                'notes' => 'Custom jewelry design and creation',
+                'notes' => 'Custom na disenyo ng alahas at paggawa (Custom jewelry design and creation)',
                 'items' => [
                     [
-                        'description' => 'Custom Ring Design',
+                        'description' => 'Custom na Disenyo ng Singsing (Custom Ring Design)',
                         'quantity' => 1,
-                        'unit_price' => 800.00,
-                        'total_price' => 800.00
+                        'unit_price' => 8000.00,
+                        'total_price' => 8000.00
                     ],
                     [
-                        'description' => 'Gold Material (14k)',
+                        'description' => 'Materyal na Ginto (14k Gold Material)',
                         'quantity' => 1,
-                        'unit_price' => 400.00,
-                        'total_price' => 400.00
+                        'unit_price' => 4000.00,
+                        'total_price' => 4000.00
                     ]
                 ]
             ],
@@ -124,33 +124,33 @@ class CustomerInvoiceSeeder extends Seeder
                 'invoice_number' => 'INV-CUST-003',
                 'issue_date' => Carbon::now()->subDays(45),
                 'due_date' => Carbon::now()->subDays(20),
-                'subtotal' => 300.00,
-                'tax_amount' => 25.50,
+                'subtotal' => 3000.00,
+                'tax_amount' => 360.00,
                 'fee_amount' => 0.00,
                 'discount_amount' => 0.00,
-                'total_amount' => 325.50,
-                'total_paid_amount' => 325.50,
+                'total_amount' => 3360.00,
+                'total_paid_amount' => 3360.00,
                 'remaining_balance' => 0.00,
                 'payment_status' => 'fully_paid',
-                'notes' => 'Watch repair and maintenance',
+                'notes' => 'Pag-ayos at pagmamaintain ng relo (Watch repair and maintenance)',
                 'items' => [
                     [
-                        'description' => 'Watch Battery Replacement',
+                        'description' => 'Pagpalit ng Baterya ng Relo (Watch Battery Replacement)',
                         'quantity' => 1,
-                        'unit_price' => 50.00,
-                        'total_price' => 50.00
+                        'unit_price' => 500.00,
+                        'total_price' => 500.00
                     ],
                     [
-                        'description' => 'Watch Cleaning Service',
+                        'description' => 'Paglilinis ng Relo (Watch Cleaning Service)',
                         'quantity' => 1,
-                        'unit_price' => 75.00,
-                        'total_price' => 75.00
+                        'unit_price' => 750.00,
+                        'total_price' => 750.00
                     ],
                     [
-                        'description' => 'Strap Replacement',
+                        'description' => 'Pagpalit ng Strap (Strap Replacement)',
                         'quantity' => 1,
-                        'unit_price' => 175.00,
-                        'total_price' => 175.00
+                        'unit_price' => 1750.00,
+                        'total_price' => 1750.00
                     ]
                 ]
             ],
@@ -158,33 +158,33 @@ class CustomerInvoiceSeeder extends Seeder
                 'invoice_number' => 'INV-CUST-004',
                 'issue_date' => Carbon::now()->subDays(60),
                 'due_date' => Carbon::now()->subDays(35),
-                'subtotal' => 750.00,
-                'tax_amount' => 63.75,
+                'subtotal' => 7500.00,
+                'tax_amount' => 900.00,
                 'fee_amount' => 0.00,
                 'discount_amount' => 0.00,
-                'total_amount' => 813.75,
+                'total_amount' => 8400.00,
                 'total_paid_amount' => 0.00,
-                'remaining_balance' => 813.75,
+                'remaining_balance' => 8400.00,
                 'payment_status' => 'overdue',
-                'notes' => 'Necklace repair and chain replacement',
+                'notes' => 'Pag-ayos ng kuwintas at pagpalit ng kadena (Necklace repair and chain replacement)',
                 'items' => [
                     [
-                        'description' => 'Chain Replacement (18k Gold)',
+                        'description' => 'Pagpalit ng Kadena (18k Gold Chain Replacement)',
                         'quantity' => 1,
-                        'unit_price' => 400.00,
-                        'total_price' => 400.00
+                        'unit_price' => 4000.00,
+                        'total_price' => 4000.00
                     ],
                     [
-                        'description' => 'Clasp Repair',
+                        'description' => 'Pagkumpuni ng Clasp (Clasp Repair)',
                         'quantity' => 1,
-                        'unit_price' => 150.00,
-                        'total_price' => 150.00
+                        'unit_price' => 1500.00,
+                        'total_price' => 1500.00
                     ],
                     [
-                        'description' => 'Pendant Cleaning and Polishing',
+                        'description' => 'Paglilinis at Pagpupulido ng Pendant (Pendant Cleaning and Polishing)',
                         'quantity' => 1,
-                        'unit_price' => 200.00,
-                        'total_price' => 200.00
+                        'unit_price' => 2000.00,
+                        'total_price' => 2000.00
                     ]
                 ]
             ],
@@ -192,27 +192,27 @@ class CustomerInvoiceSeeder extends Seeder
                 'invoice_number' => 'INV-CUST-005',
                 'issue_date' => Carbon::now()->subDays(5),
                 'due_date' => Carbon::now()->addDays(25),
-                'subtotal' => 250.00,
-                'tax_amount' => 21.25,
+                'subtotal' => 2500.00,
+                'tax_amount' => 300.00,
                 'fee_amount' => 0.00,
                 'discount_amount' => 0.00,
-                'total_amount' => 271.25,
+                'total_amount' => 2800.00,
                 'total_paid_amount' => 0.00,
-                'remaining_balance' => 271.25,
+                'remaining_balance' => 2800.00,
                 'payment_status' => 'unpaid',
-                'notes' => 'Earring repair and maintenance',
+                'notes' => 'Pag-ayos at pagmamaintain ng hikaw (Earring repair and maintenance)',
                 'items' => [
                     [
-                        'description' => 'Earring Post Repair',
+                        'description' => 'Pagkumpuni ng Post ng Hikaw (Earring Post Repair)',
                         'quantity' => 2,
-                        'unit_price' => 75.00,
-                        'total_price' => 150.00
+                        'unit_price' => 750.00,
+                        'total_price' => 1500.00
                     ],
                     [
-                        'description' => 'Back Replacement',
+                        'description' => 'Pagpalit ng Back (Back Replacement)',
                         'quantity' => 2,
-                        'unit_price' => 50.00,
-                        'total_price' => 100.00
+                        'unit_price' => 500.00,
+                        'total_price' => 1000.00
                     ]
                 ]
             ]
@@ -258,9 +258,10 @@ class CustomerInvoiceSeeder extends Seeder
                     'amount_paid' => $invoiceData['total_paid_amount'],
                     'expected_amount' => $invoiceData['total_amount'],
                     'payment_date' => $invoiceData['issue_date']->addDays(rand(1, 10)),
-                    'payment_type' => 'credit_card',
-                    'reference_number' => 'PAY-' . str_pad(rand(1, 9999), 4, '0', STR_PAD_LEFT),
+                    'payment_type' => 'hulugan',
+                    'reference_number' => 'BAYAD-' . str_pad(rand(1, 9999), 4, '0', STR_PAD_LEFT),
                     'status' => 'approved',
+                    'source' => 'admin_created',
                 ]);
             }
 

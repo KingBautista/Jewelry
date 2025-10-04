@@ -103,38 +103,38 @@
                 
                 <div class="detail-row">
                     <span class="detail-label">Invoice Number:</span>
-                    <span class="detail-value">{{ $paymentSubmission->invoice->invoice_number }}</span>
+                    <span class="detail-value">{{ $payment->invoice->invoice_number }}</span>
                 </div>
                 
                 <div class="detail-row">
                     <span class="detail-label">Customer:</span>
-                    <span class="detail-value">{{ $paymentSubmission->customer->user_login }}</span>
+                    <span class="detail-value">{{ $payment->customer->user_login }}</span>
                 </div>
                 
                 <div class="detail-row">
                     <span class="detail-label">Amount Paid:</span>
-                    <span class="detail-value">${{ number_format($paymentSubmission->amount_paid, 2) }}</span>
+                    <span class="detail-value">₱{{ number_format($payment->amount_paid, 2) }}</span>
                 </div>
                 
                 <div class="detail-row">
                     <span class="detail-label">Expected Amount:</span>
-                    <span class="detail-value">${{ number_format($paymentSubmission->expected_amount, 2) }}</span>
+                    <span class="detail-value">₱{{ number_format($payment->expected_amount, 2) }}</span>
                 </div>
                 
                 <div class="detail-row">
                     <span class="detail-label">Reference Number:</span>
-                    <span class="detail-value">{{ $paymentSubmission->reference_number }}</span>
+                    <span class="detail-value">{{ $payment->reference_number }}</span>
                 </div>
                 
                 <div class="detail-row">
                     <span class="detail-label">Submitted At:</span>
-                    <span class="detail-value">{{ $paymentSubmission->submitted_at->format('M d, Y H:i A') }}</span>
+                    <span class="detail-value">{{ $payment->created_at->format('M d, Y H:i A') }}</span>
                 </div>
                 
-                @if($paymentSubmission->receipt_images)
+                @if($payment->receipt_images)
                     <div class="detail-row">
                         <span class="detail-label">Receipt Images:</span>
-                        <span class="detail-value">{{ count(json_decode($paymentSubmission->receipt_images, true)) }} file(s)</span>
+                        <span class="detail-value">{{ count(json_decode($payment->receipt_images, true)) }} file(s)</span>
                     </div>
                 @endif
             </div>

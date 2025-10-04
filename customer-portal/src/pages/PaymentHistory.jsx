@@ -224,18 +224,101 @@ const PaymentHistory = () => {
                 {/* Receipt Images */}
                 {submission.receipt_images && submission.receipt_images.length > 0 && (
                   <div className="mt-4">
-                    <h6 className="fw-semibold">Receipt Images</h6>
+                    <h6 className="fw-semibold">Receipt Images ({submission.receipt_images.length})</h6>
                     <div className="row g-2">
-                      {submission.receipt_images.map((image, index) => (
-                        <div key={index} className="col-md-4">
-                          <img 
-                            src={`/storage/${image}`} 
-                            alt={`Receipt ${index + 1}`}
-                            className="img-fluid rounded border"
-                            style={{ maxHeight: '200px', objectFit: 'cover' }}
-                          />
-                        </div>
-                      ))}
+                      {submission.receipt_images.map((image, index) => {
+                        // Handle different image path formats
+                        let imageUrl = image;
+                        
+                        // Always ensure we have the correct storage path
+                        if (image.startsWith('payment-receipts/') || image.startsWith('receipts/')) {
+                          imageUrl = `/storage/${image}`;
+                        } else if (!image.startsWith('/storage/') && !image.startsWith('http')) {
+                          imageUrl = `/storage/${image}`;
+                        }
+                        
+                        // Get the API base URL from axios client and construct image URLs
+                        const apiBaseUrl = axiosClient.defaults.baseURL || 'http://127.0.0.1:8000';
+                        const baseUrl = apiBaseUrl.replace('/api', ''); // Remove /api from base URL
+                        const baseUrls = [
+                          imageUrl,
+                          `${baseUrl}${imageUrl}`,
+                          `http://localhost/Jewelry/public${imageUrl}`,
+                          `http://localhost:8000${imageUrl}`,
+                          `http://127.0.0.1:8000${imageUrl}`
+                        ];
+                        
+                        console.log('Processing receipt image:', { 
+                          original: image, 
+                          processed: imageUrl,
+                          baseUrls: baseUrls 
+                        });
+                        
+                        return (
+                          <div key={index} className="col-md-3 col-sm-6 mb-3">
+                            <div className="position-relative">
+                              <img 
+                                src={`${baseUrl}${imageUrl}`} 
+                                alt={`Receipt ${index + 1}`}
+                                className="img-fluid rounded border shadow-sm"
+                                style={{ 
+                                  maxHeight: '120px', 
+                                  maxWidth: '180px',
+                                  objectFit: 'cover', 
+                                  width: '100%',
+                                  height: '120px',
+                                  cursor: 'pointer',
+                                  transition: 'transform 0.2s ease-in-out'
+                                }}
+                                onMouseEnter={(e) => {
+                                  e.target.style.transform = 'scale(1.05)';
+                                }}
+                                onMouseLeave={(e) => {
+                                  e.target.style.transform = 'scale(1)';
+                                }}
+                                onClick={() => {
+                                  window.open(`${baseUrl}${imageUrl}`, '_blank');
+                                }}
+                                onError={(e) => {
+                                  console.error('Failed to load image:', { 
+                                    original: image, 
+                                    url: imageUrl,
+                                    allUrls: baseUrls 
+                                  });
+                                  
+                                  // Try alternative URLs
+                                  const currentSrc = e.target.src;
+                                  const altIndex = baseUrls.indexOf(currentSrc);
+                                  
+                                  if (altIndex < baseUrls.length - 1) {
+                                    console.log('Trying alternative URL:', baseUrls[altIndex + 1]);
+                                    e.target.src = baseUrls[altIndex + 1];
+                                    return;
+                                  }
+                                  
+                                  // If all URLs fail, show error
+                                  e.target.style.display = 'none';
+                                  const errorDiv = document.createElement('div');
+                                  errorDiv.className = 'alert alert-warning';
+                                  errorDiv.innerHTML = `
+                                    <strong>Failed to load image:</strong><br>
+                                    <small>Original: ${image}</small><br>
+                                    <small>URL: ${imageUrl}</small><br>
+                                    <small>Try: <a href="${baseUrls[1]}" target="_blank">${baseUrls[1]}</a></small>
+                                  `;
+                                  e.target.parentNode.appendChild(errorDiv);
+                                }}
+                                onLoad={() => {
+                                  console.log('Successfully loaded image:', imageUrl);
+                                }}
+                              />
+                              <small className="text-muted d-block mt-1 text-truncate" style={{ fontSize: '0.75rem' }}>
+                                {image.split('/').pop()}
+                              </small>
+                            </div>
+                          </div>
+                        );
+                      })}
                     </div>
                   </div>
                 )}

@@ -118,6 +118,28 @@ class UserSeeder extends Seeder
         $invoiceUser->saveUserMeta($invoiceMetaData);
 
         // Add customer service user
+        $customerServiceSalt = PasswordHelper::generateSalt();
+        $customerServicePassword = PasswordHelper::generatePassword($customerServiceSalt, 'password123');
+        $customerServiceUser = User::create([
+            'user_login' => 'customer_service',
+            'user_email' => 'customer-service@invoice-system.com',
+            'user_pass' => $customerServicePassword,
+            'user_salt' => $customerServiceSalt,
+            'user_status' => 1,
+            'user_activation_key' => null,
+            'remember_token' => null,
+            'user_role_id' => 5, // Customer Service role
+        ]);
+        $customerServiceMetaData = [
+            'first_name' => 'Emily',
+            'last_name' => 'Thompson',
+            'nickname' => 'Customer Service',
+            'biography' => 'Customer service representative managing customer relationships.',
+            'theme' => 'light',
+        ];
+        $customerServiceUser->saveUserMeta($customerServiceMetaData);
+
+        // Add actual customer user for portal login
         $customerSalt = PasswordHelper::generateSalt();
         $customerPassword = PasswordHelper::generatePassword($customerSalt, 'password123');
         $customerUser = User::create([
@@ -128,14 +150,18 @@ class UserSeeder extends Seeder
             'user_status' => 1,
             'user_activation_key' => null,
             'remember_token' => null,
-            'user_role_id' => 5, // Assuming 5 is Customer Service role
+            'user_role_id' => 7, // Customer role
         ]);
         $customerMetaData = [
-            'first_name' => 'Emily',
-            'last_name' => 'Thompson',
+            'first_name' => 'Maria',
+            'last_name' => 'Santos',
             'nickname' => 'Customer',
-            'biography' => 'Customer service representative managing customer relationships.',
+            'biography' => 'Customer portal user for invoice and payment management.',
             'theme' => 'light',
+            'phone' => '+63-912-345-6789',
+            'address' => '123 Rizal Street, Barangay Poblacion, Manila, Philippines',
+            'user_type' => 'customer',
+            'customer_code' => 'CUST000001',
         ];
         $customerUser->saveUserMeta($customerMetaData);
 

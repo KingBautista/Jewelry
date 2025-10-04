@@ -269,14 +269,13 @@ class CustomerPortalController extends Controller
     }
 
     /**
-     * Get payment submissions
+     * Get payment submissions - shows all payments for the customer
      */
     public function getPaymentSubmissions(Request $request)
     {
         $user = $request->user();
         
         $payments = Payment::where('customer_id', $user->id)
-            ->where('source', 'customer_submission')
             ->with(['invoice'])
             ->orderBy('created_at', 'desc')
             ->paginate($request->get('per_page', 15));

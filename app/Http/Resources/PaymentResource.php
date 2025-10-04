@@ -28,17 +28,26 @@ class PaymentResource extends JsonResource
             'formatted_expected_amount' => $this->formatted_expected_amount,
             'reference_number' => $this->reference_number,
             'receipt_image' => $this->receipt_image,
+            'receipt_images' => $this->receipt_images ?? [],
             'status' => $this->status,
             'status_text' => $this->status_text,
             'rejection_reason' => $this->rejection_reason,
             'payment_date' => $this->payment_date?->format('Y-m-d'),
             'confirmed_at' => $this->confirmed_at?->format('Y-m-d H:i:s'),
+            'reviewed_at' => $this->confirmed_at, // Alias for frontend compatibility
+            'submitted_at' => $this->created_at, // Alias for frontend compatibility
             'confirmed_by' => $this->confirmed_by,
             'confirmed_by_name' => $this->confirmed_by_name,
             'notes' => $this->notes,
+            'source' => $this->source,
             'created_at' => $this->created_at->format('Y-m-d H:i:s'),
             'updated_at' => $this->updated_at->format('Y-m-d H:i:s'),
             'deleted_at' => $this->deleted_at?->format('Y-m-d H:i:s'),
+            
+            // Include invoice number directly for frontend compatibility
+            'invoice_number' => $this->whenLoaded('invoice', function () {
+                return $this->invoice->invoice_number;
+            }),
             
             // Include related data when loaded
             'invoice' => $this->whenLoaded('invoice', function () {
