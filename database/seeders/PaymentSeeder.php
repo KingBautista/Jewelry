@@ -5,7 +5,7 @@ namespace Database\Seeders;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use App\Models\Payment;
-use App\Models\PaymentSubmission;
+// Removed PaymentSubmission import as we're using unified Payment table
 use App\Models\InvoicePaymentSchedule;
 use App\Models\InvoiceItemStatus;
 use App\Models\Invoice;
@@ -22,9 +22,9 @@ class PaymentSeeder extends Seeder
         $faker = \Faker\Factory::create();
         $invoices = Invoice::with(['customer', 'paymentSchedules'])->get();
         $paymentMethods = PaymentMethod::all();
-        $paymentTypes = ['downpayment', 'monthly', 'full', 'partial', 'refund', 'reversal'];
+        $paymentTypes = ['downpayment', 'monthly', 'full', 'partial', 'refund', 'reversal', 'hulugan', 'bayad_agad'];
         $statuses = ['pending', 'approved', 'confirmed', 'rejected'];
-        $itemStatuses = ['pending', 'packed', 'for_delivery', 'delivered', 'returned'];
+        $itemStatuses = ['pending', 'packed', 'for_delivery', 'delivered', 'returned', 'naka-pack', 'para_hatid', 'na-deliver', 'binalik'];
 
         // Create payments for existing invoices
         foreach ($invoices as $invoice) {
@@ -43,7 +43,7 @@ class PaymentSeeder extends Seeder
                     'payment_method_id' => $faker->randomElement($paymentMethods)?->id,
                     'amount_paid' => $amountPaid,
                     'expected_amount' => $faker->randomFloat(2, $amountPaid, $amountPaid * 1.2),
-                    'reference_number' => 'PAY' . $faker->unique()->numerify('######'),
+                    'reference_number' => 'BAYAD' . $faker->unique()->numerify('######'),
                     'receipt_images' => $faker->optional(0.7)->randomElements([
                         'receipts/sample_receipt_1.jpg',
                         'receipts/sample_receipt_2.jpg',
@@ -55,26 +55,30 @@ class PaymentSeeder extends Seeder
                     'confirmed_at' => $status === 'confirmed' ? $faker->dateTimeBetween($invoice->created_at, 'now') : null,
                     'confirmed_by' => $status === 'confirmed' ? User::inRandomOrder()->first()?->id : null,
                     'notes' => $faker->optional(0.4)->sentence(),
+                    'source' => 'admin_created',
                 ]);
             }
         }
 
-        // Create payment submissions
+        // Create customer payment submissions
         foreach ($invoices->take(10) as $invoice) {
-            PaymentSubmission::create([
+            Payment::create([
                 'invoice_id' => $invoice->id,
                 'customer_id' => $invoice->customer_id,
+                'payment_type' => 'hulugan',
                 'amount_paid' => $faker->randomFloat(2, 1000, $invoice->total_amount / 2),
                 'expected_amount' => $faker->randomFloat(2, 1000, $invoice->total_amount / 2),
-                'reference_number' => 'SUB' . $faker->unique()->numerify('######'),
+                'reference_number' => 'HULUGAN' . $faker->unique()->numerify('######'),
                 'receipt_images' => $faker->optional(0.8)->randomElements([
                     'receipt1.jpg', 'receipt2.jpg', 'receipt3.jpg'
                 ], $faker->numberBetween(1, 3)),
                 'status' => $faker->randomElement(['pending', 'approved', 'rejected']),
                 'rejection_reason' => $faker->optional(0.3)->sentence(),
-                'submitted_at' => $faker->dateTimeBetween($invoice->created_at, 'now'),
-                'reviewed_at' => $faker->optional(0.7)->dateTimeBetween($invoice->created_at, 'now'),
-                'reviewed_by' => $faker->optional(0.7)->randomElement(User::pluck('id')->toArray()),
+                'payment_date' => $faker->dateTimeBetween($invoice->created_at, 'now'),
+                'confirmed_at' => $faker->optional(0.7)->dateTimeBetween($invoice->created_at, 'now'),
+                'confirmed_by' => $faker->optional(0.7)->randomElement(User::pluck('id')->toArray()),
+                'source' => 'customer_submission',
+                'notes' => $faker->optional(0.4)->sentence(),
             ]);
         }
 

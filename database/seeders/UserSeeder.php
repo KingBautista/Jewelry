@@ -166,7 +166,7 @@ class UserSeeder extends Seeder
         $customerPortalPassword = PasswordHelper::generatePassword($customerPortalSalt, 'password123');
         $customerPortalUser = User::create([
             'user_login' => 'customer_portal',
-            'user_email' => 'customer@invoice-system.com',
+            'user_email' => 'customer-portal@invoice-system.com',
             'user_pass' => $customerPortalPassword,
             'user_salt' => $customerPortalSalt,
             'user_status' => 1,

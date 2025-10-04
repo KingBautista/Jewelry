@@ -110,13 +110,15 @@ class AuthController extends Controller
 	{
 		$credentials = $request->validated();
 
-		$user = User::where('user_email', '=', $credentials['email'])->where('user_status', 1)->first();
-		if (!Hash::check($user->user_salt.$credentials['password'].env("PEPPER_HASH"), $user->user_pass))
+		$user = User::where('user_email', $credentials['email'])->where('user_status', 1)->first();
+		
+		if (!$user || !Hash::check($user->user_salt.$credentials['password'].(env("PEPPER_HASH") ?: ''), $user->user_pass)) {
 			return response([
 				'errors' => ['Invalid email or password.'],
 				'status' => false,
 				'status_code' => 422,
 			], 422);
+		}
 		
 		$user->tokens()->delete();
 

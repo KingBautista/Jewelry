@@ -94,11 +94,12 @@ class PaymentService extends BaseService
     }
 
     /**
-     * Get payment submissions
+     * Get payment submissions (now using unified Payment table)
      */
     public function getPaymentSubmissions()
     {
-        return PaymentSubmission::with(['invoice', 'customer', 'reviewedBy'])
+        return Payment::with(['invoice', 'customer', 'confirmedBy'])
+            ->where('source', 'customer_submission')
             ->when(request('status'), function ($query) {
                 return $query->byStatus(request('status'));
             })
@@ -126,7 +127,7 @@ class PaymentService extends BaseService
     {
         return Payment::confirmed()
             ->select('id', 'reference_number', 'amount_paid', 'payment_date')
-            ->with(['invoice:id,invoice_number,product_name'])
+            ->with(['invoice:id,invoice_number'])
             ->get()
             ->map(function($payment) {
                 return [
@@ -135,7 +136,7 @@ class PaymentService extends BaseService
                     'amount_paid' => $payment->formatted_amount_paid,
                     'payment_date' => $payment->payment_date->format('Y-m-d'),
                     'invoice_number' => $payment->invoice?->invoice_number ?? 'N/A',
-                    'product_name' => $payment->invoice?->product_name ?? 'N/A',
+                    'invoice_id' => $payment->invoice?->id ?? 'N/A',
                 ];
             })
             ->sortBy('payment_date')

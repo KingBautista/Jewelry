@@ -6,13 +6,12 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\Invoice;
-use App\Models\PaymentSubmission;
 use App\Models\Payment;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Resources\CustomerResource;
 use App\Http\Resources\InvoiceResource;
-use App\Http\Resources\PaymentSubmissionResource;
+use App\Http\Resources\PaymentResource;
 
 class CustomerPortalController extends Controller
 {
@@ -234,24 +233,38 @@ class CustomerPortalController extends Controller
             }
         }
 
-        $paymentSubmission = PaymentSubmission::create([
+        $payment = Payment::create([
             'invoice_id' => $request->invoice_id,
             'customer_id' => $user->id,
+            'payment_type' => 'partial', // Default type for customer submissions
             'amount_paid' => $request->amount_paid,
             'expected_amount' => $request->expected_amount,
             'reference_number' => $request->reference_number,
-            'receipt_images' => json_encode($receiptImages),
+            'receipt_images' => $receiptImages,
             'status' => 'pending',
-            'submitted_at' => now(),
+            'payment_date' => now()->toDateString(),
+            'source' => 'customer_submission',
+            'notes' => $request->notes,
         ]);
 
-        // Send notification email to admin
-        \Illuminate\Support\Facades\Mail::to(env('ADMIN_EMAIL'))
-            ->send(new \App\Mail\PaymentSubmissionNotification($paymentSubmission));
+        // Send notification email to admin (if admin email is configured)
+        $adminEmail = env('ADMIN_EMAIL');
+        if ($adminEmail && filter_var($adminEmail, FILTER_VALIDATE_EMAIL)) {
+            try {
+                \Illuminate\Support\Facades\Mail::to($adminEmail)
+                    ->send(new \App\Mail\PaymentSubmissionNotification($payment));
+                \Log::info('Payment submission notification email sent to: ' . $adminEmail);
+            } catch (\Exception $e) {
+                \Log::error('Failed to send payment submission notification email: ' . $e->getMessage());
+                // Continue execution even if email fails
+            }
+        } else {
+            \Log::info('Admin email not configured, skipping email notification');
+        }
 
         return response([
             'message' => 'Payment submission successful. You will receive an email notification once it is reviewed.',
-            'data' => new PaymentSubmissionResource($paymentSubmission)
+            'data' => new PaymentResource($payment)
         ]);
     }
 
@@ -262,17 +275,18 @@ class CustomerPortalController extends Controller
     {
         $user = $request->user();
         
-        $submissions = PaymentSubmission::where('customer_id', $user->id)
+        $payments = Payment::where('customer_id', $user->id)
+            ->where('source', 'customer_submission')
             ->with(['invoice'])
             ->orderBy('created_at', 'desc')
             ->paginate($request->get('per_page', 15));
 
         return response([
-            'data' => PaymentSubmissionResource::collection($submissions->items()),
-            'current_page' => $submissions->currentPage(),
-            'last_page' => $submissions->lastPage(),
-            'per_page' => $submissions->perPage(),
-            'total' => $submissions->total(),
+            'data' => PaymentResource::collection($payments->items()),
+            'current_page' => $payments->currentPage(),
+            'last_page' => $payments->lastPage(),
+            'per_page' => $payments->perPage(),
+            'total' => $payments->total(),
         ]);
     }
 

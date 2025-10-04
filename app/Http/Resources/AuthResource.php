@@ -21,7 +21,7 @@ class AuthResource extends JsonResource
       'first_name' => (isset($this->user_details['first_name'])) ? $this->user_details['first_name'] : '',
       'last_name' => (isset($this->user_details['last_name'])) ? $this->user_details['last_name'] : '',
       'attachment_file' => (isset($this->user_details['attachment_file'])) ? $this->user_details['attachment_file'] : '',
-      'user_routes' => $this->user_role->getUserRoutes(),
+      'user_routes' => $this->user_role ? $this->user_role->getUserRoutes() : [],
       'theme' => (isset($this->user_details['theme'])) ? $this->user_details['theme'] : '',
       'updated_at' => $this->updated_at->format('Y-m-d H:m:s'),
       'deleted_at' => ($this->deleted_at) ? $this->deleted_at->format('Y-m-d H:m:s') : null

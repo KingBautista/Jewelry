@@ -21,7 +21,7 @@ class InvoiceSeeder extends Seeder
     {
         $faker = \Faker\Factory::create();
         
-        // Create specific invoices with realistic data
+        // Create Philippines-specific invoices with realistic data
         $invoices = [
             [
                 'invoice_number' => 'INV000001',
@@ -30,21 +30,21 @@ class InvoiceSeeder extends Seeder
                 'tax_id' => Tax::first()->id,
                 'fee_id' => Fee::first()->id,
                 'discount_id' => Discount::first()->id,
-                'shipping_address' => '123 Rizal Street, Manila, Metro Manila, 1000',
+                'shipping_address' => '123 Rizal Street, Barangay San Antonio, Manila, Metro Manila, 1000',
                 'issue_date' => now()->subDays(5),
                 'due_date' => now()->addDays(30),
                 'status' => 'sent',
-                'notes' => 'Special order for wedding',
+                'notes' => 'Espesyal na order para sa kasal',
                 'active' => true,
                 'items' => [
                     [
-                        'product_name' => 'Diamond Engagement Ring',
-                        'description' => 'Beautiful 1-carat diamond engagement ring with platinum setting',
+                        'product_name' => 'Diamond Engagement Ring (Singsing sa Pakikipagtipan)',
+                        'description' => 'Magandang 1-carat diamond engagement ring na may platinum setting',
                         'price' => 150000.00,
                         'product_images' => ['invoices/products/diamond-ring-1.jpg', 'invoices/products/diamond-ring-2.jpg'],
                     ],
                     [
-                        'product_name' => 'Wedding Band',
+                        'product_name' => 'Wedding Band (Singsing sa Kasal)',
                         'description' => 'Matching platinum wedding band',
                         'price' => 25000.00,
                         'product_images' => ['invoices/products/wedding-band.jpg'],

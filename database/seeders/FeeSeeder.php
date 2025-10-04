@@ -13,46 +13,70 @@ class FeeSeeder extends Seeder
      */
     public function run(): void
     {
-        // Create specific fees
+        // Create Philippines-specific fees
         $fees = [
             [
-                'name' => 'Delivery Fee',
-                'code' => 'DELIVERY',
+                'name' => 'Metro Manila Delivery',
+                'code' => 'MM_DELIVERY',
+                'amount' => 150.00,
+                'type' => 'fixed',
+                'description' => 'Delivery fee within Metro Manila',
+                'active' => true,
+            ],
+            [
+                'name' => 'Provincial Delivery',
+                'code' => 'PROVINCIAL_DELIVERY',
+                'amount' => 300.00,
+                'type' => 'fixed',
+                'description' => 'Delivery fee to provinces',
+                'active' => true,
+            ],
+            [
+                'name' => 'Jewelry Appraisal Fee',
+                'code' => 'APPRAISAL',
                 'amount' => 500.00,
                 'type' => 'fixed',
-                'description' => 'Standard delivery fee for jewelry items',
+                'description' => 'Professional jewelry appraisal fee',
                 'active' => true,
             ],
             [
-                'name' => 'Processing Fee',
-                'code' => 'PROCESSING',
-                'amount' => 50.00,
+                'name' => 'Jewelry Cleaning Service',
+                'code' => 'CLEANING',
+                'amount' => 200.00,
                 'type' => 'fixed',
-                'description' => 'Processing fee for orders',
+                'description' => 'Professional jewelry cleaning service',
                 'active' => true,
             ],
             [
-                'name' => 'Installation Fee',
-                'code' => 'INSTALLATION',
+                'name' => 'Jewelry Repair Service',
+                'code' => 'REPAIR',
                 'amount' => 1000.00,
                 'type' => 'fixed',
-                'description' => 'Installation fee for jewelry items',
+                'description' => 'Jewelry repair and restoration service',
                 'active' => true,
             ],
             [
-                'name' => 'Service Fee',
-                'code' => 'SERVICE',
-                'amount' => 5.00,
+                'name' => 'Insurance Fee',
+                'code' => 'INSURANCE',
+                'amount' => 2.00,
                 'type' => 'percentage',
-                'description' => 'Service fee percentage',
+                'description' => 'Jewelry insurance coverage fee',
                 'active' => true,
             ],
             [
-                'name' => 'Handling Fee',
-                'code' => 'HANDLING',
-                'amount' => 2.50,
+                'name' => 'Bank Transfer Fee',
+                'code' => 'BANK_TRANSFER',
+                'amount' => 25.00,
+                'type' => 'fixed',
+                'description' => 'Bank transfer processing fee',
+                'active' => true,
+            ],
+            [
+                'name' => 'Credit Card Processing',
+                'code' => 'CC_PROCESSING',
+                'amount' => 3.50,
                 'type' => 'percentage',
-                'description' => 'Handling fee percentage',
+                'description' => 'Credit card processing fee',
                 'active' => true,
             ],
         ];
@@ -61,11 +85,11 @@ class FeeSeeder extends Seeder
             Fee::firstOrCreate(['code' => $fee['code']], $fee);
         }
 
-        // Create additional random fees to reach 25 total
+        // Create additional Philippines-specific fees to reach 25 total
         $faker = \Faker\Factory::create();
         $feeTypes = ['fixed', 'percentage'];
-        $feeNames = ['Delivery Fee', 'Processing Fee', 'Installation Fee', 'Service Fee', 'Handling Fee', 'Shipping Fee', 'Packaging Fee', 'Insurance Fee', 'Customization Fee', 'Rush Fee', 'Express Fee', 'Standard Fee', 'Premium Fee', 'Basic Fee', 'Advanced Fee'];
-        $feeCodes = ['DELIVERY', 'PROCESSING', 'INSTALLATION', 'SERVICE', 'HANDLING', 'SHIPPING', 'PACKAGING', 'INSURANCE', 'CUSTOM', 'RUSH', 'EXPRESS', 'STANDARD', 'PREMIUM', 'BASIC', 'ADVANCED'];
+        $feeNames = ['Metro Manila Delivery', 'Provincial Delivery', 'Jewelry Appraisal', 'Jewelry Cleaning', 'Jewelry Repair', 'Insurance Coverage', 'Bank Transfer', 'Credit Card Processing', 'Express Delivery', 'Same Day Delivery', 'Jewelry Customization', 'Engraving Service', 'Jewelry Resizing', 'Jewelry Polishing', 'Jewelry Authentication'];
+        $feeCodes = ['MM_DELIVERY', 'PROVINCIAL_DELIVERY', 'APPRAISAL', 'CLEANING', 'REPAIR', 'INSURANCE', 'BANK_TRANSFER', 'CC_PROCESSING', 'EXPRESS', 'SAME_DAY', 'CUSTOMIZATION', 'ENGRAVING', 'RESIZING', 'POLISHING', 'AUTHENTICATION'];
         
         // Calculate how many more fees we need to reach 25 total
         $existingCount = count($fees);

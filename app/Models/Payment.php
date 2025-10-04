@@ -27,6 +27,7 @@ class Payment extends Model
         'confirmed_by',
         'notes',
         'selected_schedules',
+        'source',
     ];
 
     protected $casts = [
@@ -213,8 +214,7 @@ class Payment extends Model
                                });
               })
               ->orWhereHas('invoice', function ($invoiceQuery) use ($search) {
-                  $invoiceQuery->where('invoice_number', 'LIKE', "%{$search}%")
-                              ->orWhere('product_name', 'LIKE', "%{$search}%");
+                  $invoiceQuery->where('invoice_number', 'LIKE', "%{$search}%");
               });
         });
     }

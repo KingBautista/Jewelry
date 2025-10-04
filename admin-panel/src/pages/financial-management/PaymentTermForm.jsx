@@ -415,7 +415,7 @@ export default function PaymentTermForm() {
                               <td>
                                 <div className="d-flex align-items-center">
                                   <span className="badge bg-primary me-2">{schedule.month_number}</span>
-                                  <span style={{ color: '#6c757d', opacity: 0.8 }}>Month {schedule.month_number}</span>
+                                  <span style={{ color: '#F7E7CE', opacity: 0.8 }}>&nbsp;Month {schedule.month_number}</span>
                                 </div>
                               </td>
                               <td>

@@ -21,11 +21,12 @@ class PaymentSubmissionResource extends JsonResource
             'amount_paid' => $this->amount_paid,
             'expected_amount' => $this->expected_amount,
             'reference_number' => $this->reference_number,
-            'receipt_images' => json_decode($this->receipt_images, true) ?? [],
+            'receipt_images' => $this->receipt_images ?? [],
             'status' => $this->status,
             'rejection_reason' => $this->rejection_reason,
-            'submitted_at' => $this->submitted_at,
-            'reviewed_at' => $this->reviewed_at,
+            'submitted_at' => $this->created_at, // Use created_at as submitted_at
+            'reviewed_at' => $this->confirmed_at,
+            'source' => $this->source,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
         ];

@@ -27,6 +27,8 @@ return new class extends Migration
             $table->timestamp('confirmed_at')->nullable();
             $table->foreignId('confirmed_by')->nullable()->constrained('users')->onDelete('set null');
             $table->text('notes')->nullable();
+            $table->enum('source', ['customer_submission', 'admin_created'])->default('admin_created');
+            $table->json('selected_schedules')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });

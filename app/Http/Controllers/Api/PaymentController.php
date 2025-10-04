@@ -9,7 +9,7 @@ use App\Http\Requests\StorePaymentSubmissionRequest;
 use App\Services\PaymentService;
 use App\Services\MessageService;
 use App\Models\Payment;
-use App\Models\PaymentSubmission;
+// Removed PaymentSubmission import as we're using unified Payment table
 use App\Models\Invoice;
 
 class PaymentController extends BaseController
@@ -55,6 +55,8 @@ class PaymentController extends BaseController
             if (isset($data['payment_id'])) {
                 $payment = $this->service->update($data, $data['payment_id']);
             } else {
+                // Set source as admin_created for admin-created payments
+                $data['source'] = 'admin_created';
                 $payment = $this->service->store($data);    
             }
             
@@ -209,11 +211,14 @@ class PaymentController extends BaseController
     {
         try {
             $data = $request->validated();
-            $data['submitted_at'] = now();
+            $data['source'] = 'customer_submission';
+            $data['payment_type'] = 'partial'; // Default for customer submissions
+            $data['payment_date'] = now()->toDateString();
+            $data['status'] = 'pending';
 
-            $submission = PaymentSubmission::create($data);
+            $payment = Payment::create($data);
             
-            return response($submission, 201);
+            return response($payment, 201);
         } catch (\Exception $e) {
             return $this->messageService->responseError();
         }
@@ -222,37 +227,23 @@ class PaymentController extends BaseController
     public function approveSubmission(Request $request, Int $id)
     {
         try {
-            $submission = PaymentSubmission::findOrFail($id);
+            $payment = Payment::findOrFail($id);
             
-            if ($submission->status !== 'pending') {
-                return response(['message' => 'Only pending submissions can be approved.'], 400);
+            if ($payment->status !== 'pending') {
+                return response(['message' => 'Only pending payments can be approved.'], 400);
             }
             
-            $submission->update([
+            $payment->update([
                 'status' => 'approved',
-                'reviewed_at' => now(),
-                'reviewed_by' => auth()->id()
-            ]);
-            
-            // Create payment record
-            $payment = Payment::create([
-                'invoice_id' => $submission->invoice_id,
-                'customer_id' => $submission->customer_id,
-                'payment_type' => 'partial', // Default type, can be customized
-                'amount_paid' => $submission->amount_paid,
-                'expected_amount' => $submission->expected_amount,
-                'reference_number' => $submission->reference_number,
-                'receipt_image' => $submission->receipt_images[0] ?? null, // Use first receipt
-                'status' => 'approved',
-                'payment_date' => now()->toDateString(),
-                'notes' => 'Payment approved from customer submission'
+                'confirmed_at' => now(),
+                'confirmed_by' => auth()->id()
             ]);
             
             // Update invoice payment status
-            $invoice = Invoice::find($submission->invoice_id);
+            $invoice = Invoice::find($payment->invoice_id);
             $invoice->updatePaymentStatus();
             
-            return response(['message' => 'Payment submission has been approved and payment created.'], 200);
+            return response(['message' => 'Payment has been approved.'], 200);
         } catch (\Exception $e) {
             return $this->messageService->responseError();
         }
@@ -261,24 +252,24 @@ class PaymentController extends BaseController
     public function rejectSubmission(Request $request, Int $id)
     {
         try {
-            $submission = PaymentSubmission::findOrFail($id);
+            $payment = Payment::findOrFail($id);
             
-            if ($submission->status !== 'pending') {
-                return response(['message' => 'Only pending submissions can be rejected.'], 400);
+            if ($payment->status !== 'pending') {
+                return response(['message' => 'Only pending payments can be rejected.'], 400);
             }
             
             $request->validate([
                 'rejection_reason' => 'required|string|max:500'
             ]);
             
-            $submission->update([
+            $payment->update([
                 'status' => 'rejected',
                 'rejection_reason' => $request->rejection_reason,
-                'reviewed_at' => now(),
-                'reviewed_by' => auth()->id()
+                'confirmed_at' => now(),
+                'confirmed_by' => auth()->id()
             ]);
             
-            return response(['message' => 'Payment submission has been rejected.'], 200);
+            return response(['message' => 'Payment has been rejected.'], 200);
         } catch (\Exception $e) {
             return $this->messageService->responseError();
         }

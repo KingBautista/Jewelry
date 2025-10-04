@@ -13,34 +13,48 @@ class TaxSeeder extends Seeder
      */
     public function run(): void
     {
-        // Create specific taxes
+        // Create Philippines-specific taxes
         $taxes = [
             [
-                'name' => 'VAT',
+                'name' => 'VAT (Value Added Tax)',
                 'code' => 'VAT',
                 'rate' => 12.00,
-                'description' => 'Value Added Tax',
+                'description' => 'Philippines Standard VAT Rate - 12%',
                 'active' => true,
             ],
             [
-                'name' => 'Sales Tax',
-                'code' => 'SALES_TAX',
-                'rate' => 8.00,
-                'description' => 'Sales Tax on Jewelry',
+                'name' => 'Jewelry Excise Tax',
+                'code' => 'JEWELRY_EXCISE',
+                'rate' => 20.00,
+                'description' => 'Excise Tax on Jewelry and Precious Metals',
                 'active' => true,
             ],
             [
-                'name' => 'Service Tax',
-                'code' => 'SERVICE_TAX',
-                'rate' => 10.00,
-                'description' => 'Service Tax for Jewelry Services',
+                'name' => 'Withholding Tax - Expanded',
+                'code' => 'EWT',
+                'rate' => 1.00,
+                'description' => 'Expanded Withholding Tax for Services',
                 'active' => true,
             ],
             [
-                'name' => 'Withholding Tax',
-                'code' => 'WHT',
+                'name' => 'Withholding Tax - Final',
+                'code' => 'FWT',
                 'rate' => 2.00,
-                'description' => 'Withholding Tax',
+                'description' => 'Final Withholding Tax',
+                'active' => true,
+            ],
+            [
+                'name' => 'Local Business Tax',
+                'code' => 'LBT',
+                'rate' => 1.00,
+                'description' => 'Local Business Tax (Municipal/City)',
+                'active' => true,
+            ],
+            [
+                'name' => 'Documentary Stamp Tax',
+                'code' => 'DST',
+                'rate' => 1.50,
+                'description' => 'Documentary Stamp Tax on Receipts',
                 'active' => true,
             ],
         ];
@@ -49,10 +63,10 @@ class TaxSeeder extends Seeder
             Tax::firstOrCreate(['code' => $tax['code']], $tax);
         }
 
-        // Create additional random taxes to reach 25 total
+        // Create additional Philippines-specific taxes to reach 25 total
         $faker = \Faker\Factory::create();
-        $taxTypes = ['VAT', 'Sales Tax', 'Service Tax', 'Withholding Tax', 'Excise Tax', 'Import Tax', 'Export Tax', 'Luxury Tax', 'Environmental Tax', 'Digital Tax'];
-        $taxCodes = ['VAT', 'SALES', 'SERVICE', 'WHT', 'EXCISE', 'IMPORT', 'EXPORT', 'LUXURY', 'ENV', 'DIGITAL'];
+        $taxTypes = ['VAT', 'Jewelry Excise Tax', 'Withholding Tax', 'Local Business Tax', 'Documentary Stamp Tax', 'Income Tax', 'Capital Gains Tax', 'Donor\'s Tax', 'Estate Tax', 'Real Property Tax', 'Professional Tax', 'Franchise Tax', 'Amusement Tax', 'Community Tax', 'Transfer Tax'];
+        $taxCodes = ['VAT', 'JEWELRY_EXCISE', 'WHT', 'LBT', 'DST', 'INCOME', 'CGT', 'DONOR', 'ESTATE', 'RPT', 'PROF', 'FRANCHISE', 'AMUSEMENT', 'COMMUNITY', 'TRANSFER'];
         
         // Calculate how many more taxes we need to reach 25 total
         $existingCount = count($taxes);
