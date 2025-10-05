@@ -13,64 +13,98 @@
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #D4AF37 0%, #F7E7CE 50%, #FFF8DC 100%);
+            background: #000;
             min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
-            color: #2C2C2C;
+            color: #fff;
         }
 
         .container {
             max-width: 1200px;
             margin: 0 auto;
-            padding: 40px 20px;
+            padding: 20px 15px;
             text-align: center;
         }
 
         .logo {
-            margin-bottom: 40px;
+            margin-bottom: 20px;
+        }
+
+        .logo-section {
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            margin-bottom: 20px;
+        }
+
+        .logo-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
         }
 
         .logo-icon {
-            width: 120px;
-            height: 120px;
-            margin: 0 auto 20px;
-            background: linear-gradient(135deg, #D4AF37, #F7E7CE);
-            border-radius: 50%;
+            width: 80px;
+            height: 80px;
+            background: #000;
+            color: #fff;
             display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 10px 30px rgba(212, 175, 55, 0.3);
-            border: 4px solid #FFF8DC;
+            flex-direction: column;
+            justify-content: flex-end;
+            align-items: flex-start;
+            margin: 0 0 20px 0;
+            font-weight: bold;
+            font-size: 14px;
+            border: 2px solid #fff;
+            padding: 10px;
+            position: relative;
         }
 
-        .logo-icon .logo-text {
-            font-size: 1.8rem;
-            font-weight: bold;
-            color: #2C2C2C;
+        .logo-text {
             line-height: 1;
+            font-size: 20px;
+            bottom: 15px;
+            left: 15px;
+            right: 20px;
+            font-weight: bold;
+            color: #fff;
+            text-align: left;
+        }
+
+        .logo-subtitle {
+            font-size: 10px;
+            margin-top: 5px;
             text-align: center;
+            width: 100%;
+            color: #fff;
+        }
+
+        .company-info {
+            font-size: 14px;
+            color: #fff;
         }
 
         .logo h1 {
             font-size: 3.5rem;
             font-weight: 300;
-            color: #2C2C2C;
+            color: #fff;
             margin-bottom: 10px;
             letter-spacing: 2px;
         }
 
         .logo .tagline {
             font-size: 1.2rem;
-            color: #666;
+            color: #ccc;
             font-weight: 300;
             margin-bottom: 5px;
         }
 
         .logo .established {
             font-size: 0.9rem;
-            color: #D4AF37;
+            color: #fff;
             font-weight: 600;
             margin-bottom: 0;
             letter-spacing: 1px;
@@ -80,7 +114,7 @@
         .main-content {
             background: rgba(255, 255, 255, 0.95);
             border-radius: 20px;
-            padding: 60px 40px;
+            padding: 30px 25px;
             box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
             backdrop-filter: blur(10px);
             border: 1px solid rgba(255, 255, 255, 0.2);
@@ -97,7 +131,7 @@
             font-size: 1.3rem;
             color: #666;
             line-height: 1.6;
-            margin-bottom: 40px;
+            margin-bottom: 25px;
             max-width: 800px;
             margin-left: auto;
             margin-right: auto;
@@ -106,14 +140,14 @@
         .features {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 30px;
-            margin: 50px 0;
+            gap: 20px;
+            margin: 30px 0;
         }
 
         .feature-card {
             background: linear-gradient(135deg, #FFF8DC, #F7E7CE);
             border-radius: 15px;
-            padding: 30px;
+            padding: 20px;
             text-align: center;
             box-shadow: 0 10px 30px rgba(212, 175, 55, 0.1);
             border: 1px solid rgba(212, 175, 55, 0.2);
@@ -144,7 +178,7 @@
         }
 
         .access-links {
-            margin-top: 50px;
+            margin-top: 30px;
             display: flex;
             gap: 20px;
             justify-content: center;
@@ -185,7 +219,7 @@
         }
 
         .footer {
-            margin-top: 60px;
+            margin-top: 30px;
             color: #666;
             font-size: 0.9rem;
         }
@@ -226,12 +260,16 @@
 <body>
     <div class="container">
         <div class="logo">
-            <div class="logo-icon">
-                <div class="logo-text">IL<br>LUSSO</div>
+            <div class="logo-section">
+                <div class="logo-container">
+                    <div class="logo-icon">
+                        <div class="logo-text">IL<br>LUSSO</div>
+                    </div>
+                    <div class="logo-subtitle">EST 2020</div>
+                </div>
+                <div class="company-info">
+                </div>
             </div>
-            <h1>ILLUSSO</h1>
-            <p class="tagline">Jewelry Management Excellence</p>
-            <p class="established">EST 2020</p>
         </div>
 
         <div class="main-content">
