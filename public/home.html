@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -298,16 +298,6 @@
             </div>
 
             <div class="access-links">
-                @if (Route::has('login'))
-                    @auth
-                        <a href="{{ url('/home') }}" class="access-btn">Dashboard</a>
-                    @else
-                        <a href="{{ route('login') }}" class="access-btn">Login</a>
-                        @if (Route::has('register'))
-                            <a href="{{ route('register') }}" class="access-btn secondary">Register</a>
-                        @endif
-                    @endauth
-                @endif
                 <a href="/admin-panel" class="access-btn">Admin Panel</a>
                 <a href="/customer-portal" class="access-btn secondary">Customer Portal</a>
             </div>
@@ -315,9 +305,6 @@
             <div class="footer">
                 <p>&copy; 2025 Illusso Jewelry Management System. All rights reserved.</p>
                 <p>Designed for jewelry businesses who value excellence and efficiency.</p>
-                <p style="margin-top: 10px; font-size: 0.8rem; color: #999;">
-                    Laravel v{{ Illuminate\Foundation\Application::VERSION }} (PHP v{{ PHP_VERSION }})
-                </p>
             </div>
         </div>
     </div>

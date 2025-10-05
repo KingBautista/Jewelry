@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () { return view('scan'); });
+Route::get('/', function () { return view('welcome'); });
 Route::get('/check-shell-exec', function () {
     if (function_exists('shell_exec')) {
         try {   
