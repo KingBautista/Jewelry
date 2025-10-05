@@ -22,6 +22,118 @@ class NavigationController extends BaseController
   }
 
   /**
+   * @OA\Get(
+   *     path="/api/navigation-management/navigations",
+   *     summary="Get all navigation items",
+   *     description="Retrieve a paginated list of all navigation items",
+   *     tags={"Navigation"},
+   *     security={{"sanctum":{}}},
+   *     @OA\Parameter(
+   *         name="per_page",
+   *         in="query",
+   *         description="Number of items per page",
+   *         @OA\Schema(type="integer", example=10)
+   *     ),
+   *     @OA\Parameter(
+   *         name="page",
+   *         in="query",
+   *         description="Page number",
+   *         @OA\Schema(type="integer", example=1)
+   *     ),
+   *     @OA\Response(
+   *         response=200,
+   *         description="Navigation items retrieved successfully",
+   *         @OA\JsonContent(
+   *             @OA\Property(property="data", type="array", @OA\Items(type="object")),
+   *             @OA\Property(property="current_page", type="integer", example=1),
+   *             @OA\Property(property="per_page", type="integer", example=10),
+   *             @OA\Property(property="total", type="integer", example=100)
+   *         )
+   *     ),
+   *     @OA\Response(
+   *         response=401,
+   *         description="Unauthenticated"
+   *     )
+   * )
+   */
+  public function index()
+  {
+    return parent::index();
+  }
+
+  /**
+   * @OA\Get(
+   *     path="/api/navigation-management/navigations/{id}",
+   *     summary="Get a specific navigation item",
+   *     description="Retrieve detailed information about a specific navigation item",
+   *     tags={"Navigation"},
+   *     security={{"sanctum":{}}},
+   *     @OA\Parameter(
+   *         name="id",
+   *         in="path",
+   *         required=true,
+   *         description="Navigation ID",
+   *         @OA\Schema(type="integer", example=1)
+   *     ),
+   *     @OA\Response(
+   *         response=200,
+   *         description="Navigation item retrieved successfully",
+   *         @OA\JsonContent(
+   *             @OA\Property(property="navigation", type="object")
+   *         )
+   *     ),
+   *     @OA\Response(
+   *         response=404,
+   *         description="Navigation item not found"
+   *     ),
+   *     @OA\Response(
+   *         response=401,
+   *         description="Unauthenticated"
+   *     )
+   * )
+   */
+  public function show($id)
+  {
+    return parent::show($id);
+  }
+
+  /**
+   * @OA\Delete(
+   *     path="/api/navigation-management/navigations/{id}",
+   *     summary="Delete a navigation item",
+   *     description="Move a navigation item to trash (soft delete)",
+   *     tags={"Navigation"},
+   *     security={{"sanctum":{}}},
+   *     @OA\Parameter(
+   *         name="id",
+   *         in="path",
+   *         required=true,
+   *         description="Navigation ID",
+   *         @OA\Schema(type="integer", example=1)
+   *     ),
+   *     @OA\Response(
+   *         response=200,
+   *         description="Navigation item moved to trash successfully",
+   *         @OA\JsonContent(
+   *             @OA\Property(property="message", type="string", example="Resource has been moved to trash.")
+   *         )
+   *     ),
+   *     @OA\Response(
+   *         response=404,
+   *         description="Navigation item not found"
+   *     ),
+   *     @OA\Response(
+   *         response=401,
+   *         description="Unauthenticated"
+   *     )
+   * )
+   */
+  public function destroy($id)
+  {
+    return parent::destroy($id);
+  }
+
+  /**
    * @OA\Post(
    *     path="/api/navigation-management/navigations",
    *     summary="Create a new navigation item",
