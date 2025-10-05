@@ -23,13 +23,13 @@ class BaseController extends Controller
    */
   public function index()
   {
-    // try {
+    try {
       $perPage = request('per_page', 10);
       $items = $this->service->list($perPage);
       return $items;
-    // } catch (\Exception $e) {
-    //   return $this->messageService->responseError();
-    // }
+    } catch (\Exception $e) {
+      return $this->messageService->responseError();
+    }
   }
 
   // Common method to handle showing resources

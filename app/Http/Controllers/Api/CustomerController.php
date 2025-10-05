@@ -9,7 +9,14 @@ use App\Services\CustomerService;
 use App\Services\MessageService;
 use App\Models\User;
 use App\Helpers\PasswordHelper;
+use OpenApi\Annotations as OA;
 
+/**
+ * @OA\Tag(
+ *     name="Customers",
+ *     description="Customer management endpoints"
+ * )
+ */
 class CustomerController extends BaseController
 {
     public function __construct(CustomerService $customerService, MessageService $messageService)
@@ -18,6 +25,154 @@ class CustomerController extends BaseController
         parent::__construct($customerService, $messageService);
     }
 
+    /**
+     * @OA\Get(
+     *     path="/api/customer-management/customers",
+     *     summary="Get all customers",
+     *     description="Retrieve a paginated list of all customers",
+     *     tags={"Customers"},
+     *     security={{"sanctum":{}}},
+     *     @OA\Parameter(
+     *         name="per_page",
+     *         in="query",
+     *         description="Number of items per page",
+     *         @OA\Schema(type="integer", example=10)
+     *     ),
+     *     @OA\Parameter(
+     *         name="page",
+     *         in="query",
+     *         description="Page number",
+     *         @OA\Schema(type="integer", example=1)
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Customers retrieved successfully",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="data", type="array", @OA\Items(type="object")),
+     *             @OA\Property(property="current_page", type="integer", example=1),
+     *             @OA\Property(property="per_page", type="integer", example=10),
+     *             @OA\Property(property="total", type="integer", example=100)
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Unauthenticated"
+     *     )
+     * )
+     */
+    public function index()
+    {
+        return parent::index();
+    }
+
+    /**
+     * @OA\Get(
+     *     path="/api/customer-management/customers/{id}",
+     *     summary="Get a specific customer",
+     *     description="Retrieve detailed information about a specific customer",
+     *     tags={"Customers"},
+     *     security={{"sanctum":{}}},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         description="Customer ID",
+     *         @OA\Schema(type="integer", example=1)
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Customer retrieved successfully",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="customer", type="object")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Customer not found"
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Unauthenticated"
+     *     )
+     * )
+     */
+    public function show($id)
+    {
+        return parent::show($id);
+    }
+
+    /**
+     * @OA\Delete(
+     *     path="/api/customer-management/customers/{id}",
+     *     summary="Delete a customer",
+     *     description="Move a customer to trash (soft delete)",
+     *     tags={"Customers"},
+     *     security={{"sanctum":{}}},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         description="Customer ID",
+     *         @OA\Schema(type="integer", example=1)
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Customer moved to trash successfully",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Resource has been moved to trash.")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Customer not found"
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Unauthenticated"
+     *     )
+     * )
+     */
+    public function destroy($id)
+    {
+        return parent::destroy($id);
+    }
+
+    /**
+     * @OA\Post(
+     *     path="/api/customer-management/customers",
+     *     summary="Create a new customer",
+     *     description="Create a new customer account",
+     *     tags={"Customers"},
+     *     security={{"sanctum":{}}},
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"email","first_name","last_name","user_pass"},
+     *             @OA\Property(property="email", type="string", format="email", example="customer@example.com"),
+     *             @OA\Property(property="first_name", type="string", example="John"),
+     *             @OA\Property(property="last_name", type="string", example="Doe"),
+     *             @OA\Property(property="user_pass", type="string", format="password", example="password123"),
+     *             @OA\Property(property="phone", type="string", example="+1234567890"),
+     *             @OA\Property(property="address", type="string", example="123 Main St"),
+     *             @OA\Property(property="city", type="string", example="New York"),
+     *             @OA\Property(property="state", type="string", example="NY"),
+     *             @OA\Property(property="zip", type="string", example="10001")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=201,
+     *         description="Customer created successfully",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Customer created successfully"),
+     *             @OA\Property(property="customer", type="object")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=422,
+     *         description="Validation error"
+     *     )
+     * )
+     */
     public function store(StoreCustomerRequest $request)
     {
         try {
@@ -66,6 +221,57 @@ class CustomerController extends BaseController
         }
     }
 
+    /**
+     * @OA\Put(
+     *     path="/api/customer-management/customers/{id}",
+     *     summary="Update a customer",
+     *     description="Update an existing customer's information",
+     *     tags={"Customers"},
+     *     security={{"sanctum":{}}},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         description="Customer ID",
+     *         @OA\Schema(type="integer", example=1)
+     *     ),
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"email","first_name","last_name"},
+     *             @OA\Property(property="email", type="string", format="email", example="customer@example.com"),
+     *             @OA\Property(property="first_name", type="string", example="John"),
+     *             @OA\Property(property="last_name", type="string", example="Doe"),
+     *             @OA\Property(property="user_pass", type="string", format="password", example="newpassword123"),
+     *             @OA\Property(property="phone", type="string", example="+1234567890"),
+     *             @OA\Property(property="address", type="string", example="123 Main St"),
+     *             @OA\Property(property="city", type="string", example="New York"),
+     *             @OA\Property(property="state", type="string", example="NY"),
+     *             @OA\Property(property="postal_code", type="string", example="10001"),
+     *             @OA\Property(property="country", type="string", example="USA"),
+     *             @OA\Property(property="date_of_birth", type="string", format="date", example="1990-01-15"),
+     *             @OA\Property(property="gender", type="string", example="male"),
+     *             @OA\Property(property="notes", type="string", example="VIP customer"),
+     *             @OA\Property(property="active", type="boolean", example=true)
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Customer updated successfully",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="customer", type="object")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Customer not found"
+     *     ),
+     *     @OA\Response(
+     *         response=422,
+     *         description="Validation error"
+     *     )
+     * )
+     */
     public function update(UpdateCustomerRequest $request, Int $id)
     {
         try {
@@ -109,7 +315,30 @@ class CustomerController extends BaseController
         }
     }
 
-
+    /**
+     * @OA\Get(
+     *     path="/api/options/customers",
+     *     summary="Get customers for dropdown",
+     *     description="Retrieve a list of customers for dropdown/select options",
+     *     tags={"Customers"},
+     *     security={{"sanctum":{}}},
+     *     @OA\Response(
+     *         response=200,
+     *         description="Customers retrieved successfully",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="customers", type="array", @OA\Items(
+     *                 @OA\Property(property="id", type="integer", example=1),
+     *                 @OA\Property(property="name", type="string", example="John Doe"),
+     *                 @OA\Property(property="email", type="string", example="john@example.com")
+     *             ))
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Unauthenticated"
+     *     )
+     * )
+     */
     public function getCustomersForDropdown()
     {
         try {
@@ -120,6 +349,29 @@ class CustomerController extends BaseController
         }
     }
 
+    /**
+     * @OA\Get(
+     *     path="/api/customer-management/customers/statistics",
+     *     summary="Get customer statistics",
+     *     description="Retrieve customer statistics and analytics",
+     *     tags={"Customers"},
+     *     security={{"sanctum":{}}},
+     *     @OA\Response(
+     *         response=200,
+     *         description="Customer statistics retrieved successfully",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="total_customers", type="integer", example=150),
+     *             @OA\Property(property="active_customers", type="integer", example=120),
+     *             @OA\Property(property="new_customers_this_month", type="integer", example=25),
+     *             @OA\Property(property="total_revenue", type="number", format="float", example=125000.00)
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Unauthenticated"
+     *     )
+     * )
+     */
     public function getCustomerStats()
     {
         try {
@@ -130,6 +382,33 @@ class CustomerController extends BaseController
         }
     }
 
+    /**
+     * @OA\Get(
+     *     path="/api/customer-management/customers/export",
+     *     summary="Export customers",
+     *     description="Export customers data in various formats (CSV, Excel, PDF)",
+     *     tags={"Customers"},
+     *     security={{"sanctum":{}}},
+     *     @OA\Parameter(
+     *         name="format",
+     *         in="query",
+     *         description="Export format",
+     *         @OA\Schema(type="string", enum={"csv", "excel", "pdf"}, example="csv")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Export file generated successfully",
+     *         @OA\MediaType(
+     *             mediaType="application/octet-stream",
+     *             @OA\Schema(type="string", format="binary")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Unauthenticated"
+     *     )
+     * )
+     */
     public function exportCustomers(Request $request)
     {
         try {
@@ -141,7 +420,24 @@ class CustomerController extends BaseController
     }
 
     /**
-     * Get the next customer code
+     * @OA\Get(
+     *     path="/api/customer-management/customers/next-code",
+     *     summary="Get next customer code",
+     *     description="Generate the next available customer code",
+     *     tags={"Customers"},
+     *     security={{"sanctum":{}}},
+     *     @OA\Response(
+     *         response=200,
+     *         description="Next customer code generated successfully",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="next_code", type="string", example="CUST-2024-001")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Unauthenticated"
+     *     )
+     * )
      */
     public function nextCode()
     {

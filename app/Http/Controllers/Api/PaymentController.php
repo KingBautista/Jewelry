@@ -11,7 +11,14 @@ use App\Services\MessageService;
 use App\Models\Payment;
 // Removed PaymentSubmission import as we're using unified Payment table
 use App\Models\Invoice;
+use OpenApi\Annotations as OA;
 
+/**
+ * @OA\Tag(
+ *     name="Payment Management",
+ *     description="Payment management endpoints"
+ * )
+ */
 class PaymentController extends BaseController
 {
     public function __construct(PaymentService $paymentService, MessageService $messageService)
@@ -20,6 +27,43 @@ class PaymentController extends BaseController
         parent::__construct($paymentService, $messageService);
     }
 
+    /**
+     * @OA\Post(
+     *     path="/api/payment-management/payments",
+     *     summary="Create a new payment",
+     *     description="Create a new payment record with receipt images",
+     *     tags={"Payment Management"},
+     *     security={{"sanctum":{}}},
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\MediaType(
+     *             mediaType="multipart/form-data",
+     *             @OA\Schema(
+     *                 required={"invoice_id","amount","payment_method_id"},
+     *                 @OA\Property(property="invoice_id", type="integer", example=1),
+     *                 @OA\Property(property="amount", type="number", format="float", example=500.00),
+     *                 @OA\Property(property="payment_method_id", type="integer", example=1),
+     *                 @OA\Property(property="payment_date", type="string", format="date", example="2024-01-15"),
+     *                 @OA\Property(property="reference_number", type="string", example="REF123456"),
+     *                 @OA\Property(property="notes", type="string", example="Payment notes"),
+     *                 @OA\Property(property="receipt_images", type="array", @OA\Items(type="string", format="binary"))
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=201,
+     *         description="Payment created successfully",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Payment created successfully"),
+     *             @OA\Property(property="payment", type="object")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=422,
+     *         description="Validation error"
+     *     )
+     * )
+     */
     public function store(StorePaymentRequest $request)
     {
         try {
@@ -77,6 +121,37 @@ class PaymentController extends BaseController
         }
     }
 
+    /**
+     * @OA\Get(
+     *     path="/api/payment-management/payments/{id}",
+     *     summary="Get a specific payment",
+     *     description="Retrieve detailed information about a specific payment",
+     *     tags={"Payment Management"},
+     *     security={{"sanctum":{}}},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         description="Payment ID",
+     *         @OA\Schema(type="integer", example=1)
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Payment retrieved successfully",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="payment", type="object")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Payment not found"
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Unauthenticated"
+     *     )
+     * )
+     */
     public function show($id)
     {
         try {
@@ -97,6 +172,49 @@ class PaymentController extends BaseController
         }
     }
 
+    /**
+     * @OA\Put(
+     *     path="/api/payment-management/payments/{id}",
+     *     summary="Update a payment",
+     *     description="Update an existing payment record",
+     *     tags={"Payment Management"},
+     *     security={{"sanctum":{}}},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         description="Payment ID",
+     *         @OA\Schema(type="integer", example=1)
+     *     ),
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"invoice_id","amount","payment_method_id"},
+     *             @OA\Property(property="invoice_id", type="integer", example=1),
+     *             @OA\Property(property="amount", type="number", format="float", example=500.00),
+     *             @OA\Property(property="payment_method_id", type="integer", example=1),
+     *             @OA\Property(property="payment_date", type="string", format="date", example="2024-01-15"),
+     *             @OA\Property(property="reference_number", type="string", example="REF123456"),
+     *             @OA\Property(property="notes", type="string", example="Updated payment notes")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Payment updated successfully",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="payment", type="object")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Payment not found"
+     *     ),
+     *     @OA\Response(
+     *         response=422,
+     *         description="Validation error"
+     *     )
+     * )
+     */
     public function update(UpdatePaymentRequest $request, Int $id)
     {
         try {
@@ -115,6 +233,43 @@ class PaymentController extends BaseController
         }
     }
 
+    /**
+     * @OA\Patch(
+     *     path="/api/payment-management/payments/{id}/confirm",
+     *     summary="Confirm a payment",
+     *     description="Confirm an approved payment and mark payment schedules as paid",
+     *     tags={"Payment Management"},
+     *     security={{"sanctum":{}}},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         description="Payment ID",
+     *         @OA\Schema(type="integer", example=1)
+     *     ),
+     *     @OA\RequestBody(
+     *         required=false,
+     *         @OA\JsonContent(
+     *             @OA\Property(property="selected_schedules", type="array", @OA\Items(type="integer"), example={1,2,3})
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Payment confirmed successfully",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Payment has been confirmed.")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=400,
+     *         description="Only approved payments can be confirmed"
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Payment not found"
+     *     )
+     * )
+     */
     public function confirm(Request $request, Int $id)
     {
         try {
@@ -166,6 +321,37 @@ class PaymentController extends BaseController
         }
     }
 
+    /**
+     * @OA\Patch(
+     *     path="/api/payment-management/payments/{id}/approve",
+     *     summary="Approve a payment",
+     *     description="Approve a pending payment submission",
+     *     tags={"Payment Management"},
+     *     security={{"sanctum":{}}},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         description="Payment ID",
+     *         @OA\Schema(type="integer", example=1)
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Payment approved successfully",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Payment has been approved.")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=400,
+     *         description="Only pending payments can be approved"
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Payment not found"
+     *     )
+     * )
+     */
     public function approve(Int $id)
     {
         try {
@@ -183,6 +369,44 @@ class PaymentController extends BaseController
         }
     }
 
+    /**
+     * @OA\Patch(
+     *     path="/api/payment-management/payments/{id}/reject",
+     *     summary="Reject a payment",
+     *     description="Reject a pending payment submission with reason",
+     *     tags={"Payment Management"},
+     *     security={{"sanctum":{}}},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         description="Payment ID",
+     *         @OA\Schema(type="integer", example=1)
+     *     ),
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"rejection_reason"},
+     *             @OA\Property(property="rejection_reason", type="string", example="Invalid receipt or insufficient documentation")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Payment rejected successfully",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Payment has been rejected.")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=400,
+     *         description="Only pending payments can be rejected"
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Payment not found"
+     *     )
+     * )
+     */
     public function reject(Request $request, Int $id)
     {
         try {

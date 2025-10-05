@@ -6,7 +6,14 @@ use App\Http\Controllers\Controller;
 use App\Services\DashboardService;
 use App\Services\MessageService;
 use Illuminate\Http\Request;
+use OpenApi\Annotations as OA;
 
+/**
+ * @OA\Tag(
+ *     name="Dashboard",
+ *     description="Dashboard analytics and statistics endpoints"
+ * )
+ */
 class DashboardController extends Controller
 {
     protected $service;
@@ -19,7 +26,28 @@ class DashboardController extends Controller
     }
 
     /**
-     * Get dashboard overview data
+     * @OA\Get(
+     *     path="/api/dashboard/overview",
+     *     summary="Get dashboard overview data",
+     *     description="Retrieve comprehensive dashboard statistics and metrics",
+     *     tags={"Dashboard"},
+     *     security={{"sanctum":{}}},
+     *     @OA\Response(
+     *         response=200,
+     *         description="Dashboard overview data retrieved successfully",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="total_revenue", type="number", format="float", example=125000.00),
+     *             @OA\Property(property="total_customers", type="integer", example=150),
+     *             @OA\Property(property="total_invoices", type="integer", example=75),
+     *             @OA\Property(property="pending_payments", type="integer", example=12),
+     *             @OA\Property(property="recent_activities", type="array", @OA\Items(type="object"))
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Unauthenticated"
+     *     )
+     * )
      */
     public function overview()
     {

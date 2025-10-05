@@ -9,7 +9,14 @@ use App\Services\InvoiceService;
 use App\Services\MessageService;
 use App\Models\Invoice;
 use Illuminate\Support\Facades\Mail;
+use OpenApi\Annotations as OA;
 
+/**
+ * @OA\Tag(
+ *     name="Invoice Management",
+ *     description="Invoice management endpoints"
+ * )
+ */
 class InvoiceController extends BaseController
 {
     public function __construct(InvoiceService $invoiceService, MessageService $messageService)
@@ -18,6 +25,46 @@ class InvoiceController extends BaseController
         parent::__construct($invoiceService, $messageService);
     }
 
+    /**
+     * @OA\Post(
+     *     path="/api/invoice-management/invoices",
+     *     summary="Create a new invoice",
+     *     description="Create a new invoice with products and customer information",
+     *     tags={"Invoice Management"},
+     *     security={{"sanctum":{}}},
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"customer_id","products"},
+     *             @OA\Property(property="customer_id", type="integer", example=1),
+     *             @OA\Property(property="invoice_number", type="string", example="INV-2024-001"),
+     *             @OA\Property(property="issue_date", type="string", format="date", example="2024-01-15"),
+     *             @OA\Property(property="due_date", type="string", format="date", example="2024-02-15"),
+     *             @OA\Property(property="products", type="array", @OA\Items(
+     *                 @OA\Property(property="name", type="string", example="Gold Ring"),
+     *                 @OA\Property(property="description", type="string", example="18k Gold Ring"),
+     *                 @OA\Property(property="quantity", type="integer", example=1),
+     *                 @OA\Property(property="unit_price", type="number", format="float", example=500.00),
+     *                 @OA\Property(property="tax_id", type="integer", example=1),
+     *                 @OA\Property(property="discount_id", type="integer", example=1)
+     *             )),
+     *             @OA\Property(property="notes", type="string", example="Special instructions")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=201,
+     *         description="Invoice created successfully",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Invoice created successfully"),
+     *             @OA\Property(property="invoice", type="object")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=422,
+     *         description="Validation error"
+     *     )
+     * )
+     */
     public function store(StoreInvoiceRequest $request)
     {
         try {
@@ -86,6 +133,56 @@ class InvoiceController extends BaseController
         }
     }
 
+    /**
+     * @OA\Put(
+     *     path="/api/invoice-management/invoices/{id}",
+     *     summary="Update an invoice",
+     *     description="Update an existing invoice with products and customer information",
+     *     tags={"Invoice Management"},
+     *     security={{"sanctum":{}}},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         description="Invoice ID",
+     *         @OA\Schema(type="integer", example=1)
+     *     ),
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"customer_id","products"},
+     *             @OA\Property(property="customer_id", type="integer", example=1),
+     *             @OA\Property(property="invoice_number", type="string", example="INV-2024-001"),
+     *             @OA\Property(property="issue_date", type="string", format="date", example="2024-01-15"),
+     *             @OA\Property(property="due_date", type="string", format="date", example="2024-02-15"),
+     *             @OA\Property(property="products", type="array", @OA\Items(
+     *                 @OA\Property(property="name", type="string", example="Gold Ring"),
+     *                 @OA\Property(property="description", type="string", example="18k Gold Ring"),
+     *                 @OA\Property(property="quantity", type="integer", example=1),
+     *                 @OA\Property(property="unit_price", type="number", format="float", example=500.00),
+     *                 @OA\Property(property="tax_id", type="integer", example=1),
+     *                 @OA\Property(property="discount_id", type="integer", example=1)
+     *             )),
+     *             @OA\Property(property="notes", type="string", example="Updated instructions")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Invoice updated successfully",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="invoice", type="object")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Invoice not found"
+     *     ),
+     *     @OA\Response(
+     *         response=422,
+     *         description="Validation error"
+     *     )
+     * )
+     */
     public function update(StoreInvoiceRequest $request, Int $id)
     {
         try {
@@ -137,6 +234,37 @@ class InvoiceController extends BaseController
         }
     }
 
+    /**
+     * @OA\Patch(
+     *     path="/api/invoice-management/invoices/{id}/cancel",
+     *     summary="Cancel an invoice",
+     *     description="Cancel an existing invoice (only if not paid)",
+     *     tags={"Invoice Management"},
+     *     security={{"sanctum":{}}},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         description="Invoice ID",
+     *         @OA\Schema(type="integer", example=1)
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Invoice cancelled successfully",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Invoice has been cancelled.")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=400,
+     *         description="Cannot cancel paid invoice"
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Invoice not found"
+     *     )
+     * )
+     */
     public function cancel(Int $id)
     {
         try {
@@ -154,6 +282,34 @@ class InvoiceController extends BaseController
         }
     }
 
+    /**
+     * @OA\Get(
+     *     path="/api/invoice-management/invoices/{id}/pdf",
+     *     summary="Generate invoice PDF",
+     *     description="Generate and download invoice as PDF",
+     *     tags={"Invoice Management"},
+     *     security={{"sanctum":{}}},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         description="Invoice ID",
+     *         @OA\Schema(type="integer", example=1)
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="PDF generated successfully",
+     *         @OA\MediaType(
+     *             mediaType="application/pdf",
+     *             @OA\Schema(type="string", format="binary")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Invoice not found"
+     *     )
+     * )
+     */
     public function generatePdf(Int $id)
     {
         try {
@@ -171,6 +327,33 @@ class InvoiceController extends BaseController
         }
     }
 
+    /**
+     * @OA\Post(
+     *     path="/api/invoice-management/invoices/{id}/send-email",
+     *     summary="Send invoice via email",
+     *     description="Send invoice to customer via email with PDF attachment",
+     *     tags={"Invoice Management"},
+     *     security={{"sanctum":{}}},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         description="Invoice ID",
+     *         @OA\Schema(type="integer", example=1)
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Invoice sent successfully",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Invoice has been sent via email.")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Invoice not found"
+     *     )
+     * )
+     */
     public function sendEmail(Int $id)
     {
         try {

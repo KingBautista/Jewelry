@@ -12,10 +12,43 @@ use Illuminate\Support\Facades\Auth;
 use App\Http\Resources\CustomerResource;
 use App\Http\Resources\InvoiceResource;
 use App\Http\Resources\PaymentResource;
+use OpenApi\Annotations as OA;
 
+/**
+ * @OA\Tag(
+ *     name="Customer Portal",
+ *     description="Customer portal endpoints for self-service"
+ * )
+ */
 class CustomerPortalController extends Controller
 {
     /**
+     * @OA\Post(
+     *     path="/api/customer-portal/login",
+     *     summary="Customer login",
+     *     description="Authenticate customer and return access token",
+     *     tags={"Customer Portal"},
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"email","password"},
+     *             @OA\Property(property="email", type="string", format="email", example="customer@example.com"),
+     *             @OA\Property(property="password", type="string", format="password", example="password123")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Login successful",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="user", type="object"),
+     *             @OA\Property(property="token", type="string", example="1|abc123...")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=422,
+     *         description="Invalid credentials"
+     *     )
+     * )
      * Customer login
      */
     public function login(Request $request)
@@ -59,6 +92,30 @@ class CustomerPortalController extends Controller
     }
 
     /**
+     * @OA\Post(
+     *     path="/api/customer-portal/forgot-password",
+     *     summary="Customer forgot password",
+     *     description="Send password reset email to customer",
+     *     tags={"Customer Portal"},
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"email"},
+     *             @OA\Property(property="email", type="string", format="email", example="customer@example.com")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Password reset email sent",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Your temporary password has been sent to your registered email.")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=422,
+     *         description="Validation error"
+     *     )
+     * )
      * Customer forgot password
      */
     public function forgotPassword(Request $request)
@@ -96,6 +153,28 @@ class CustomerPortalController extends Controller
     }
 
     /**
+     * @OA\Get(
+     *     path="/api/customer-portal/dashboard",
+     *     summary="Get customer dashboard overview",
+     *     description="Retrieve customer dashboard statistics and overview",
+     *     tags={"Customer Portal"},
+     *     security={{"sanctum":{}}},
+     *     @OA\Response(
+     *         response=200,
+     *         description="Dashboard data retrieved successfully",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="total_invoices", type="integer", example=5),
+     *             @OA\Property(property="total_paid", type="number", example=2500.00),
+     *             @OA\Property(property="outstanding_balance", type="number", example=1500.00),
+     *             @OA\Property(property="overdue_invoices", type="array", @OA\Items(type="object")),
+     *             @OA\Property(property="upcoming_dues", type="array", @OA\Items(type="object"))
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Unauthenticated"
+     *     )
+     * )
      * Get customer dashboard overview
      */
     public function dashboardOverview(Request $request)
@@ -131,6 +210,46 @@ class CustomerPortalController extends Controller
     }
 
     /**
+     * @OA\Get(
+     *     path="/api/customer-portal/invoices",
+     *     summary="Get customer invoices",
+     *     description="Retrieve paginated list of customer invoices with filters",
+     *     tags={"Customer Portal"},
+     *     security={{"sanctum":{}}},
+     *     @OA\Parameter(
+     *         name="search",
+     *         in="query",
+     *         description="Search term for invoice number or notes",
+     *         @OA\Schema(type="string", example="INV-2024")
+     *     ),
+     *     @OA\Parameter(
+     *         name="status",
+     *         in="query",
+     *         description="Filter by payment status",
+     *         @OA\Schema(type="string", enum={"pending","partial","fully_paid","overdue"})
+     *     ),
+     *     @OA\Parameter(
+     *         name="per_page",
+     *         in="query",
+     *         description="Number of items per page",
+     *         @OA\Schema(type="integer", example=15)
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Invoices retrieved successfully",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="data", type="array", @OA\Items(type="object")),
+     *             @OA\Property(property="current_page", type="integer", example=1),
+     *             @OA\Property(property="last_page", type="integer", example=3),
+     *             @OA\Property(property="per_page", type="integer", example=15),
+     *             @OA\Property(property="total", type="integer", example=45)
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Unauthenticated"
+     *     )
+     * )
      * Get customer invoices
      */
     public function getInvoices(Request $request)
@@ -166,6 +285,35 @@ class CustomerPortalController extends Controller
     }
 
     /**
+     * @OA\Get(
+     *     path="/api/customer-portal/invoices/{id}",
+     *     summary="Get single invoice details",
+     *     description="Retrieve detailed information about a specific invoice",
+     *     tags={"Customer Portal"},
+     *     security={{"sanctum":{}}},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         description="Invoice ID",
+     *         @OA\Schema(type="integer", example=1)
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Invoice details retrieved successfully",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="data", type="object")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Invoice not found"
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Unauthenticated"
+     *     )
+     * )
      * Get single invoice details
      */
     public function getInvoice(Request $request, $id)
@@ -182,6 +330,36 @@ class CustomerPortalController extends Controller
     }
 
     /**
+     * @OA\Get(
+     *     path="/api/customer-portal/invoices/{id}/pdf",
+     *     summary="Download invoice PDF",
+     *     description="Download invoice as PDF file",
+     *     tags={"Customer Portal"},
+     *     security={{"sanctum":{}}},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         description="Invoice ID",
+     *         @OA\Schema(type="integer", example=1)
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="PDF file downloaded successfully",
+     *         @OA\MediaType(
+     *             mediaType="application/pdf",
+     *             @OA\Schema(type="string", format="binary")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Invoice not found"
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Unauthenticated"
+     *     )
+     * )
      * Download invoice PDF
      */
     public function downloadInvoicePdf(Request $request, $id)
@@ -203,6 +381,45 @@ class CustomerPortalController extends Controller
     }
 
     /**
+     * @OA\Post(
+     *     path="/api/customer-portal/payments",
+     *     summary="Submit payment",
+     *     description="Submit a payment with receipt images for review",
+     *     tags={"Customer Portal"},
+     *     security={{"sanctum":{}}},
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\MediaType(
+     *             mediaType="multipart/form-data",
+     *             @OA\Schema(
+     *                 required={"invoice_id","amount_paid","expected_amount","reference_number","payment_method"},
+     *                 @OA\Property(property="invoice_id", type="integer", example=1),
+     *                 @OA\Property(property="amount_paid", type="number", format="float", example=500.00),
+     *                 @OA\Property(property="expected_amount", type="number", format="float", example=500.00),
+     *                 @OA\Property(property="reference_number", type="string", example="REF123456"),
+     *                 @OA\Property(property="payment_method", type="string", example="Bank Transfer"),
+     *                 @OA\Property(property="receipt_images", type="array", @OA\Items(type="string", format="binary")),
+     *                 @OA\Property(property="notes", type="string", example="Payment notes")
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=201,
+     *         description="Payment submitted successfully",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Payment submission successful. You will receive an email notification once it is reviewed."),
+     *             @OA\Property(property="data", type="object")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=422,
+     *         description="Validation error"
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Unauthenticated"
+     *     )
+     * )
      * Submit payment
      */
     public function submitPayment(Request $request)
@@ -269,6 +486,34 @@ class CustomerPortalController extends Controller
     }
 
     /**
+     * @OA\Get(
+     *     path="/api/customer-portal/payments",
+     *     summary="Get payment submissions",
+     *     description="Retrieve paginated list of customer payment submissions",
+     *     tags={"Customer Portal"},
+     *     security={{"sanctum":{}}},
+     *     @OA\Parameter(
+     *         name="per_page",
+     *         in="query",
+     *         description="Number of items per page",
+     *         @OA\Schema(type="integer", example=15)
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Payment submissions retrieved successfully",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="data", type="array", @OA\Items(type="object")),
+     *             @OA\Property(property="current_page", type="integer", example=1),
+     *             @OA\Property(property="last_page", type="integer", example=2),
+     *             @OA\Property(property="per_page", type="integer", example=15),
+     *             @OA\Property(property="total", type="integer", example=25)
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Unauthenticated"
+     *     )
+     * )
      * Get payment submissions - shows all payments for the customer
      */
     public function getPaymentSubmissions(Request $request)
@@ -290,6 +535,24 @@ class CustomerPortalController extends Controller
     }
 
     /**
+     * @OA\Get(
+     *     path="/api/customer-portal/profile",
+     *     summary="Get customer profile",
+     *     description="Retrieve authenticated customer profile information",
+     *     tags={"Customer Portal"},
+     *     security={{"sanctum":{}}},
+     *     @OA\Response(
+     *         response=200,
+     *         description="Profile retrieved successfully",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="data", type="object")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Unauthenticated"
+     *     )
+     * )
      * Get customer profile
      */
     public function getProfile(Request $request)
@@ -301,6 +564,39 @@ class CustomerPortalController extends Controller
     }
 
     /**
+     * @OA\Put(
+     *     path="/api/customer-portal/profile",
+     *     summary="Update customer profile",
+     *     description="Update authenticated customer profile information",
+     *     tags={"Customer Portal"},
+     *     security={{"sanctum":{}}},
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"user_login","user_email"},
+     *             @OA\Property(property="user_login", type="string", example="updated_username"),
+     *             @OA\Property(property="user_email", type="string", format="email", example="updated@example.com"),
+     *             @OA\Property(property="phone", type="string", example="+1234567890"),
+     *             @OA\Property(property="address", type="string", example="123 Main St, City, State")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Profile updated successfully",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Profile updated successfully"),
+     *             @OA\Property(property="data", type="object")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=422,
+     *         description="Validation error"
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Unauthenticated"
+     *     )
+     * )
      * Update customer profile
      */
     public function updateProfile(Request $request)

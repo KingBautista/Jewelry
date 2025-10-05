@@ -16,12 +16,27 @@ use Illuminate\Support\Facades\Auth;
 use App\Http\Resources\AuthResource;
 
 use Hash;
+use OpenApi\Annotations as OA;
 
+/**
+ * @OA\Info(
+ *     title="Jewelry API",
+ *     version="1.0.0",
+ *     description="API for Jewelry Management System"
+ * )
+ * @OA\Server(
+ *     url=L5_SWAGGER_CONST_HOST,
+ *     description="API Server"
+ * )
+ * @OA\SecurityScheme(
+ *     securityScheme="sanctum",
+ *     type="http",
+ *     scheme="bearer",
+ *     bearerFormat="JWT"
+ * )
+ */
 class AuthController extends Controller
 {
-	/**
-	 * Create a new user account.
-	 */
 	public function signup(SignupRequest $request) 
 	{
 		$data = $request->validated();
@@ -104,7 +119,32 @@ class AuthController extends Controller
 	}
 
 	/**
-	 * Login a user and generate authentication token.
+	 * @OA\Post(
+	 *     path="/api/login",
+	 *     summary="Login user",
+	 *     description="Authenticate user and return access token",
+	 *     tags={"Authentication"},
+	 *     @OA\RequestBody(
+	 *         required=true,
+	 *         @OA\JsonContent(
+	 *             required={"email","password"},
+	 *             @OA\Property(property="email", type="string", format="email", example="john@example.com"),
+	 *             @OA\Property(property="password", type="string", format="password", example="password123")
+	 *         )
+	 *     ),
+	 *     @OA\Response(
+	 *         response=200,
+	 *         description="Login successful",
+	 *         @OA\JsonContent(
+	 *             @OA\Property(property="user", type="object"),
+	 *             @OA\Property(property="token", type="string", example="1|abcdef123456...")
+	 *         )
+	 *     ),
+	 *     @OA\Response(
+	 *         response=422,
+	 *         description="Invalid credentials"
+	 *     )
+	 * )
 	 */
 	public function login(LoginRequest $request) 
 	{
@@ -131,7 +171,21 @@ class AuthController extends Controller
 	}
 
 	/**
-	 * Logout a user and invalidate the current token.
+	 * @OA\Post(
+	 *     path="/api/logout",
+	 *     summary="Logout user",
+	 *     description="Invalidate the current access token",
+	 *     tags={"Authentication"},
+	 *     security={{"sanctum":{}}},
+	 *     @OA\Response(
+	 *         response=204,
+	 *         description="Logout successful"
+	 *     ),
+	 *     @OA\Response(
+	 *         response=401,
+	 *         description="Unauthenticated"
+	 *     )
+	 * )
 	 */
 	public function logout(Request $request) 
 	{

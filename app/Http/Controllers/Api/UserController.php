@@ -12,7 +12,14 @@ use App\Services\MessageService;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Resources\UserResource;
+use OpenApi\Annotations as OA;
 
+/**
+ * @OA\Tag(
+ *     name="User Management",
+ *     description="User management endpoints"
+ * )
+ */
 class UserController extends BaseController
 {
 	public function __construct(UserService $userService, MessageService $messageService)
@@ -21,6 +28,42 @@ class UserController extends BaseController
     parent::__construct($userService, $messageService);
   }
 
+  /**
+   * @OA\Post(
+   *     path="/api/user-management/users",
+   *     summary="Create a new user",
+   *     description="Create a new user account with role assignment",
+   *     tags={"User Management"},
+   *     security={{"sanctum":{}}},
+   *     @OA\RequestBody(
+   *         required=true,
+   *         @OA\JsonContent(
+   *             required={"user_login","user_email","user_pass","first_name","last_name"},
+   *             @OA\Property(property="user_login", type="string", example="john_doe"),
+   *             @OA\Property(property="user_email", type="string", format="email", example="john@example.com"),
+   *             @OA\Property(property="user_pass", type="string", format="password", example="password123"),
+   *             @OA\Property(property="first_name", type="string", example="John"),
+   *             @OA\Property(property="last_name", type="string", example="Doe"),
+   *             @OA\Property(property="phone", type="string", example="+1234567890"),
+   *             @OA\Property(property="user_role", type="object",
+   *                 @OA\Property(property="id", type="integer", example=1)
+   *             )
+   *         )
+   *     ),
+   *     @OA\Response(
+   *         response=201,
+   *         description="User created successfully",
+   *         @OA\JsonContent(
+   *             @OA\Property(property="message", type="string", example="User created successfully"),
+   *             @OA\Property(property="user", type="object")
+   *         )
+   *     ),
+   *     @OA\Response(
+   *         response=422,
+   *         description="Validation error"
+   *     )
+   * )
+   */
   public function store(StoreUserRequest $request)
   {
     // try {
@@ -59,6 +102,53 @@ class UserController extends BaseController
     // }
   }
 
+  /**
+   * @OA\Put(
+   *     path="/api/user-management/users/{id}",
+   *     summary="Update a user",
+   *     description="Update an existing user account with role assignment",
+   *     tags={"User Management"},
+   *     security={{"sanctum":{}}},
+   *     @OA\Parameter(
+   *         name="id",
+   *         in="path",
+   *         required=true,
+   *         description="User ID",
+   *         @OA\Schema(type="integer", example=1)
+   *     ),
+   *     @OA\RequestBody(
+   *         required=true,
+   *         @OA\JsonContent(
+   *             required={"user_login","user_email"},
+   *             @OA\Property(property="user_login", type="string", example="updated_john_doe"),
+   *             @OA\Property(property="user_email", type="string", format="email", example="updated@example.com"),
+   *             @OA\Property(property="user_pass", type="string", format="password", example="newpassword123"),
+   *             @OA\Property(property="first_name", type="string", example="Updated John"),
+   *             @OA\Property(property="last_name", type="string", example="Updated Doe"),
+   *             @OA\Property(property="phone", type="string", example="+1234567890"),
+   *             @OA\Property(property="user_status", type="integer", example=1),
+   *             @OA\Property(property="user_role", type="object",
+   *                 @OA\Property(property="id", type="integer", example=2)
+   *             )
+   *         )
+   *     ),
+   *     @OA\Response(
+   *         response=200,
+   *         description="User updated successfully",
+   *         @OA\JsonContent(
+   *             @OA\Property(property="user", type="object")
+   *         )
+   *     ),
+   *     @OA\Response(
+   *         response=404,
+   *         description="User not found"
+   *     ),
+   *     @OA\Response(
+   *         response=422,
+   *         description="Validation error"
+   *     )
+   * )
+   */
   public function update(UpdateUserRequest $request, Int $id)
   {
     try {
@@ -97,6 +187,33 @@ class UserController extends BaseController
     }
   }
 
+  /**
+   * @OA\Post(
+   *     path="/api/user-management/users/bulk-change-password",
+   *     summary="Bulk change user passwords",
+   *     description="Change passwords for multiple users at once",
+   *     tags={"User Management"},
+   *     security={{"sanctum":{}}},
+   *     @OA\RequestBody(
+   *         required=true,
+   *         @OA\JsonContent(
+   *             required={"ids"},
+   *             @OA\Property(property="ids", type="array", @OA\Items(type="integer"), example={1,2,3})
+   *         )
+   *     ),
+   *     @OA\Response(
+   *         response=200,
+   *         description="Passwords changed successfully",
+   *         @OA\JsonContent(
+   *             @OA\Property(property="message", type="string", example="Passwords have been changed successfully.")
+   *         )
+   *     ),
+   *     @OA\Response(
+   *         response=422,
+   *         description="Validation error"
+   *     )
+   * )
+   */
   public function bulkChangePassword(Request $request) 
   {
     try {
@@ -119,6 +236,34 @@ class UserController extends BaseController
     }
   }
 
+  /**
+   * @OA\Post(
+   *     path="/api/user-management/users/bulk-change-role",
+   *     summary="Bulk change user roles",
+   *     description="Change roles for multiple users at once",
+   *     tags={"User Management"},
+   *     security={{"sanctum":{}}},
+   *     @OA\RequestBody(
+   *         required=true,
+   *         @OA\JsonContent(
+   *             required={"ids","role"},
+   *             @OA\Property(property="ids", type="array", @OA\Items(type="integer"), example={1,2,3}),
+   *             @OA\Property(property="role", type="integer", example=2, description="New role ID")
+   *         )
+   *     ),
+   *     @OA\Response(
+   *         response=200,
+   *         description="Roles changed successfully",
+   *         @OA\JsonContent(
+   *             @OA\Property(property="message", type="string", example="Roles have been changed successfully.")
+   *         )
+   *     ),
+   *     @OA\Response(
+   *         response=422,
+   *         description="Validation error"
+   *     )
+   * )
+   */
   public function bulkChangeRole(Request $request) 
   {
     try {
@@ -134,6 +279,38 @@ class UserController extends BaseController
     }
   }
 
+  /**
+   * @OA\Put(
+   *     path="/api/user-management/profile",
+   *     summary="Update user profile",
+   *     description="Update the authenticated user's profile information",
+   *     tags={"User Management"},
+   *     security={{"sanctum":{}}},
+   *     @OA\RequestBody(
+   *         required=true,
+   *         @OA\JsonContent(
+   *             required={"user_login","user_email"},
+   *             @OA\Property(property="user_login", type="string", example="updated_username"),
+   *             @OA\Property(property="user_email", type="string", format="email", example="updated@example.com"),
+   *             @OA\Property(property="user_pass", type="string", format="password", example="newpassword123"),
+   *             @OA\Property(property="first_name", type="string", example="Updated First Name"),
+   *             @OA\Property(property="last_name", type="string", example="Updated Last Name")
+   *         )
+   *     ),
+   *     @OA\Response(
+   *         response=200,
+   *         description="Profile updated successfully",
+   *         @OA\JsonContent(
+   *             @OA\Property(property="message", type="string", example="Profile has been updated successfully."),
+   *             @OA\Property(property="user", type="object")
+   *         )
+   *     ),
+   *     @OA\Response(
+   *         response=422,
+   *         description="Validation error"
+   *     )
+   * )
+   */
   public function updateProfile(ProfileRequest $request) 
   {
     try {
@@ -169,6 +346,33 @@ class UserController extends BaseController
     }
   }
 
+  /**
+   * @OA\Get(
+   *     path="/api/user-management/user",
+   *     summary="Get current user",
+   *     description="Retrieve the authenticated user's information",
+   *     tags={"User Management"},
+   *     security={{"sanctum":{}}},
+   *     @OA\Response(
+   *         response=200,
+   *         description="User information retrieved successfully",
+   *         @OA\JsonContent(
+   *             @OA\Property(property="id", type="integer", example=1),
+   *             @OA\Property(property="user_login", type="string", example="john_doe"),
+   *             @OA\Property(property="user_email", type="string", example="john@example.com"),
+   *             @OA\Property(property="user_status", type="integer", example=1),
+   *             @OA\Property(property="user_role", type="object"),
+   *             @OA\Property(property="user_details", type="object"),
+   *             @OA\Property(property="created_at", type="string", format="date-time"),
+   *             @OA\Property(property="updated_at", type="string", format="date-time")
+   *         )
+   *     ),
+   *     @OA\Response(
+   *         response=401,
+   *         description="Unauthenticated"
+   *     )
+   * )
+   */
   public function getUser(Request $request) 
   {
     try {
@@ -190,6 +394,30 @@ class UserController extends BaseController
     }
   }
 
+  /**
+   * @OA\Get(
+   *     path="/api/options/users",
+   *     summary="Get users for dropdown",
+   *     description="Retrieve a list of active users for dropdown/select options",
+   *     tags={"User Management"},
+   *     security={{"sanctum":{}}},
+   *     @OA\Response(
+   *         response=200,
+   *         description="Users retrieved successfully",
+   *         @OA\JsonContent(
+   *             @OA\Property(property="users", type="array", @OA\Items(
+   *                 @OA\Property(property="id", type="integer", example=1),
+   *                 @OA\Property(property="user_login", type="string", example="john_doe"),
+   *                 @OA\Property(property="user_email", type="string", example="john@example.com")
+   *             ))
+   *         )
+   *     ),
+   *     @OA\Response(
+   *         response=401,
+   *         description="Unauthenticated"
+   *     )
+   * )
+   */
   public function getUsersForDropdown()
   {
     try {
