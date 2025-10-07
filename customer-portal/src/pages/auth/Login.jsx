@@ -21,6 +21,7 @@ export default function Login() {
   const onSubmit = (ev) => {
     ev.preventDefault();
     setIsLoading(true);
+    setErrors({}); // Clear previous errors
 
     const payload = {
       email: emailRef.current.value,
@@ -28,7 +29,7 @@ export default function Login() {
     };
 
     login(payload.email, payload.password)
-      .then(() => {
+      .then((data) => {
         navigate('/dashboard');
       })
       .catch((error) => {

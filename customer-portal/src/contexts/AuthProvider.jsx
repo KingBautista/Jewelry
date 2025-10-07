@@ -37,7 +37,14 @@ export const ContextProvider = ({ children }) => {
         setUser(data.user);
         localStorage.setItem('CUSTOMER_TOKEN', data.token);
         axiosClient.defaults.headers.common['Authorization'] = `Bearer ${data.token}`;
-        return data;
+        
+        // Return a promise that resolves after state updates
+        return new Promise((resolve) => {
+          // Use setTimeout to ensure state updates are processed
+          setTimeout(() => {
+            resolve(data);
+          }, 0);
+        });
       });
   };
 

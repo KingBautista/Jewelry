@@ -104,7 +104,7 @@ const Invoices = () => {
                 </div>
                 <div className="col-md-3">
                   <select
-                    className="form-select"
+                    className="form-select form-control"
                     value={statusFilter}
                     onChange={handleStatusFilter}
                   >
@@ -117,7 +117,8 @@ const Invoices = () => {
                 </div>
                 <div className="col-md-3">
                   <button 
-                    className="btn btn-outline-secondary w-100"
+                    className="btn btn-primary w-100"
+                    style={{ height: '38px' }}
                     onClick={() => {
                       setSearchTerm('');
                       setStatusFilter('all');

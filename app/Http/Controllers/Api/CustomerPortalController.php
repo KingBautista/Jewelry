@@ -137,18 +137,46 @@ class CustomerPortalController extends Controller
 
             $user->update(['user_pass' => $password]);
 
-            // Send email with new password
-            \Illuminate\Support\Facades\Mail::to($user->user_email)->send(
-                new \App\Mail\CustomerPasswordReset($user, $new_password)
-            );
+            // Try to send email with better error handling
+            try {
+                \Illuminate\Support\Facades\Mail::to($user->user_email)->send(
+                    new \App\Mail\CustomerPasswordReset($user, $new_password)
+                );
 
-            return response([
-                'message' => 'Your temporary password has been sent to your registered email.'
-            ]);
+                return response([
+                    'message' => 'Your temporary password has been sent to your registered email.',
+                    'status' => 'success'
+                ]);
+            } catch (\Exception $e) {
+                // Log the email error for debugging
+                \Log::error('Failed to send password reset email: ' . $e->getMessage(), [
+                    'user_email' => $user->user_email,
+                    'error' => $e->getMessage(),
+                    'trace' => $e->getTraceAsString()
+                ]);
+
+                // Return the password in response if email fails (for development/testing)
+                if (config('app.debug') || config('app.env') === 'local') {
+                    return response([
+                        'message' => 'Password reset successful, but email could not be sent. Your new temporary password is: ' . $new_password,
+                        'temporary_password' => $new_password,
+                        'status' => 'warning',
+                        'email_error' => 'Email service temporarily unavailable'
+                    ]);
+                } else {
+                    // In production, don't expose the password
+                    return response([
+                        'message' => 'Password has been reset, but we encountered an issue sending the email. Please contact support.',
+                        'status' => 'warning',
+                        'email_error' => 'Email service temporarily unavailable'
+                    ], 200);
+                }
+            }
         }
 
         return response([
-            'message' => 'If the email exists, a password reset link has been sent.'
+            'message' => 'If the email exists, a password reset link has been sent.',
+            'status' => 'info'
         ]);
     }
 
