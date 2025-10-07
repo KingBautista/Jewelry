@@ -14,14 +14,6 @@ class NavigationSeeder extends Seeder
 
         // Create parent navigations first
         $parents = [
-            'user_management' => Navigation::create([
-                'name' => 'User Management',
-                'slug' => 'user-management',
-                'icon' => 'users',
-                'parent_id' => null,
-                'active' => 1,
-                'show_in_menu' => 1
-            ]),
             'invoice_management' => Navigation::create([
                 'name' => 'Invoice Management',
                 'slug' => 'invoice-management',
@@ -50,6 +42,14 @@ class NavigationSeeder extends Seeder
                 'name' => 'Financial Management',
                 'slug' => 'financial-management',
                 'icon' => 'chartLine',
+                'parent_id' => null,
+                'active' => 1,
+                'show_in_menu' => 1
+            ]),
+            'user_management' => Navigation::create([
+                'name' => 'User Management',
+                'slug' => 'user-management',
+                'icon' => 'users',
                 'parent_id' => null,
                 'active' => 1,
                 'show_in_menu' => 1

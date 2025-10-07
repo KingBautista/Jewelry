@@ -108,16 +108,16 @@ export default function Sidebar() {
       return null;
     }),
     // Add About page at the end
-    <li className="nav-group" key="about">
-      <div className="nav-group-header">
-        <Link to="/information" className={`nav-link ${isPathActive('/information') ? "active" : ""}`}>
-          <div className="nav-icon">
-            <FontAwesomeIcon icon={solidIconMap.info} />
-          </div>
-          <span className="nav-text">About</span>
-        </Link>
-      </div>
-    </li>
+    // <li className="nav-group" key="about">
+    //   <div className="nav-group-header">
+    //     <Link to="/information" className={`nav-link ${isPathActive('/information') ? "active" : ""}`}>
+    //       <div className="nav-icon">
+    //         <FontAwesomeIcon icon={solidIconMap.info} />
+    //       </div>
+    //       <span className="nav-text">About</span>
+    //     </Link>
+    //   </div>
+    // </li>
   ];
 
   return (
