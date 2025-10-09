@@ -46,30 +46,23 @@ export default function ForgotPassword() {
 	}, {}) : {};
 
 	return (
-		<div className="col-lg-9">
-			<div className="row g-0 rounded-4 overflow-hidden shadow-xl" style={{ 
-				backgroundColor: 'var(--surface-color)', 
-				border: '1px solid var(--border-color)',
-				boxShadow: '0 10px 25px rgba(0,0,0,0.1)'
-			}}>
+		<div className="col-lg-9 auth-page">
+			<div className="row g-0 rounded-4 overflow-hidden shadow-xl auth-surface auth-border auth-card-shadow">
 				{/* Forgot Password Form - Left Side */}
 				<div className="col-lg-6">
 					<div className="h-100 d-flex flex-column justify-content-center">
 						<div className="p-5">
 							{/* Header Section */}
 							<div className="text-center mb-5">
-								<FontAwesomeIcon icon={solidIconMap.key} className="fs-1 mb-4" style={{ 
-									filter: 'drop-shadow(0 4px 8px rgba(0,0,0,0.3))',
-									color: 'var(--text-color)'
+								<FontAwesomeIcon icon={solidIconMap.key} className="fs-1 mb-4 auth-text" style={{ 
+									filter: 'drop-shadow(0 4px 8px rgba(0,0,0,0.3))'
 								}} />
-								<h1 className="fw-bold mb-2" style={{ 
+								<h1 className="fw-bold mb-2 auth-text" style={{ 
 									fontSize: '2.5rem', 
-									letterSpacing: '-0.5px',
-									color: 'var(--text-color)'
+									letterSpacing: '-0.5px'
 								}}>Forgot Password?</h1>
-								<p className="mb-0 fs-5" style={{ 
-									opacity: 0.8,
-									color: 'var(--text-color-muted)'
+								<p className="mb-0 fs-5 auth-text-muted" style={{ 
+									opacity: 0.8
 								}}>Enter your email to reset your password</p>
 							</div>
 
@@ -107,30 +100,22 @@ export default function ForgotPassword() {
 								
 								{/* Email Input */}
 								<div className="mb-4">
-									<label htmlFor="email" className="form-label fw-semibold mb-2" style={{ 
-										fontSize: '1.1rem',
-										color: 'var(--text-color)'
+									<label htmlFor="email" className="form-label fw-semibold mb-2 auth-text" style={{ 
+										fontSize: '1.1rem'
 									}}>Email Address</label>
 									<div className="input-group input-group-lg shadow-sm">
-										<span className="input-group-text border-end-0 border-2" style={{ 
-											borderColor: 'var(--border-color)', 
-											color: 'var(--text-color-muted)',
-											backgroundColor: 'var(--surface-color-secondary)'
-										}}>
+										<span className="input-group-text border-end-0 border-2 auth-input-group-text auth-border">
 											<FontAwesomeIcon icon={solidIconMap.envelope} />
 										</span>
 										<input 
 											id="email"
 											ref={emailRef}
-											className={`form-control border-start-0 border-2 ${errors && errors.email ? 'is-invalid' : ''}`}
+											className={`form-control border-start-0 border-2 auth-input auth-border ${errors && errors.email ? 'is-invalid' : ''}`}
 											type="email"
 											placeholder="Enter your email"
 											required
 											style={{ 
-												fontSize: '1rem', 
-												borderColor: 'var(--border-color)',
-												backgroundColor: 'var(--surface-color)',
-												color: 'var(--text-color)'
+												fontSize: '1rem'
 											}}
 										/>
 										{errors && errors.email && (
@@ -144,18 +129,13 @@ export default function ForgotPassword() {
 								{/* Submit Button */}
 								<div className="mb-4">
 									<button 
-										className="btn w-100 fw-bold" 
+										className="btn w-100 fw-bold auth-primary auth-shadow" 
 										type="submit"
 										disabled={isLoading}
 										style={{ 
 											padding: '0.8rem 1.5rem',
 											fontSize: '1.1rem',
-											borderRadius: '0.75rem',
-											backgroundColor: 'var(--primary-color)',
-											borderColor: 'var(--primary-color)',
-											color: 'black',
-											boxShadow: '0 4px 15px rgba(0, 0, 0, 0.1)',
-											border: '1px solid var(--primary-color)'
+											borderRadius: '0.75rem'
 										}}
 									>
 										{isLoading ? (
@@ -174,10 +154,9 @@ export default function ForgotPassword() {
 								
 								{/* Back to Login Link */}
 								<div className="text-center">
-									<Link to="/login" className="text-decoration-none fw-semibold" style={{ 
+									<Link to="/login" className="text-decoration-none fw-semibold auth-link" style={{ 
 										fontSize: '1rem', 
-										transition: 'all 0.3s ease',
-										color: 'var(--text-color)'
+										transition: 'all 0.3s ease'
 									}}>
 										<FontAwesomeIcon icon={solidIconMap.arrowLeft} className="me-2" />
 										Back to Login
@@ -191,9 +170,8 @@ export default function ForgotPassword() {
 				{/* Content Section - Right Side */}
 				<div className="col-lg-6 position-relative">
 					<div 
-						className="h-100 d-flex align-items-center justify-content-center"
+						className="h-100 d-flex align-items-center justify-content-center auth-surface-secondary"
 						style={{ 
-							background: 'var(--surface-color-secondary)',
 							minHeight: '500px'
 						}}
 					>
@@ -210,29 +188,26 @@ export default function ForgotPassword() {
 						<div className="text-center position-relative">
 							{/* Icon */}
 							<div className="mb-5">
-								<FontAwesomeIcon icon={solidIconMap.shieldAlt} style={{ 
+								<FontAwesomeIcon icon={solidIconMap.shieldAlt} className="auth-text" style={{ 
 									fontSize: '4rem', 
-									filter: 'drop-shadow(0 8px 16px rgba(0,0,0,0.3))',
-									color: 'var(--text-color)'
+									filter: 'drop-shadow(0 8px 16px rgba(0,0,0,0.3))'
 								}} />
 							</div>
 							
 							{/* Welcome Text */}
-							<h2 className="fw-bold mb-4" style={{ 
+							<h2 className="fw-bold mb-4 auth-text" style={{ 
 								fontSize: '2.8rem', 
 								letterSpacing: '-1px', 
-								textShadow: '0 4px 8px rgba(0,0,0,0.3)',
-								color: 'var(--text-color)'
+								textShadow: '0 4px 8px rgba(0,0,0,0.3)'
 							}}>
 								Password Recovery
 							</h2>
 							
-							<p className="fs-4" style={{ 
+							<p className="fs-4 auth-text-muted" style={{ 
 								maxWidth: '450px', 
 								margin: '0 auto', 
 								opacity: 0.95, 
-								lineHeight: '1.6',
-								color: 'var(--text-color-muted)'
+								lineHeight: '1.6'
 							}}>
 								Secure password reset process to protect your account
 							</p>
@@ -240,55 +215,43 @@ export default function ForgotPassword() {
 							{/* Features List */}
 							<div className="row g-4 text-start" style={{ maxWidth: '380px', margin: '0 auto' }}>
 								<div className="col-12">
-									<div className="d-flex align-items-center p-3 rounded" style={{ 
-										backgroundColor: 'var(--surface-color)', 
-										backdropFilter: 'blur(10px)', 
-										border: '1px solid var(--border-color)' 
+									<div className="d-flex align-items-center p-3 rounded auth-feature-item auth-border" style={{ 
+										backdropFilter: 'blur(10px)'
 									}}>
-										<FontAwesomeIcon icon={solidIconMap.check} className="me-3" style={{ 
-											fontSize: '1.3rem',
-											color: 'var(--text-color)'
+										<FontAwesomeIcon icon={solidIconMap.check} className="me-3 auth-feature-icon" style={{ 
+											fontSize: '1.3rem'
 										}} />
-										<span className="fw-medium" style={{ color: 'var(--text-color)' }}>Secure email verification</span>
+										<span className="fw-medium auth-feature-text">Secure email verification</span>
 									</div>
 								</div>
 								<div className="col-12">
-									<div className="d-flex align-items-center p-3 rounded" style={{ 
-										backgroundColor: 'var(--surface-color)', 
-										backdropFilter: 'blur(10px)', 
-										border: '1px solid var(--border-color)' 
+									<div className="d-flex align-items-center p-3 rounded auth-feature-item auth-border" style={{ 
+										backdropFilter: 'blur(10px)'
 									}}>
-										<FontAwesomeIcon icon={solidIconMap.check} className="me-3" style={{ 
-											fontSize: '1.3rem',
-											color: 'var(--text-color)'
+										<FontAwesomeIcon icon={solidIconMap.check} className="me-3 auth-feature-icon" style={{ 
+											fontSize: '1.3rem'
 										}} />
-										<span className="fw-medium" style={{ color: 'var(--text-color)' }}>Quick password reset</span>
+										<span className="fw-medium auth-feature-text">Quick password reset</span>
 									</div>
 								</div>
 								<div className="col-12">
-									<div className="d-flex align-items-center p-3 rounded" style={{ 
-										backgroundColor: 'var(--surface-color)', 
-										backdropFilter: 'blur(10px)', 
-										border: '1px solid var(--border-color)' 
+									<div className="d-flex align-items-center p-3 rounded auth-feature-item auth-border" style={{ 
+										backdropFilter: 'blur(10px)'
 									}}>
-										<FontAwesomeIcon icon={solidIconMap.check} className="me-3" style={{ 
-											fontSize: '1.3rem',
-											color: 'var(--text-color)'
+										<FontAwesomeIcon icon={solidIconMap.check} className="me-3 auth-feature-icon" style={{ 
+											fontSize: '1.3rem'
 										}} />
-										<span className="fw-medium" style={{ color: 'var(--text-color)' }}>Account security protection</span>
+										<span className="fw-medium auth-feature-text">Account security protection</span>
 									</div>
 								</div>
 								<div className="col-12">
-									<div className="d-flex align-items-center p-3 rounded" style={{ 
-										backgroundColor: 'var(--surface-color)', 
-										backdropFilter: 'blur(10px)', 
-										border: '1px solid var(--border-color)' 
+									<div className="d-flex align-items-center p-3 rounded auth-feature-item auth-border" style={{ 
+										backdropFilter: 'blur(10px)'
 									}}>
-										<FontAwesomeIcon icon={solidIconMap.check} className="me-3" style={{ 
-											fontSize: '1.3rem',
-											color: 'var(--text-color)'
+										<FontAwesomeIcon icon={solidIconMap.check} className="me-3 auth-feature-icon" style={{ 
+											fontSize: '1.3rem'
 										}} />
-										<span className="fw-medium" style={{ color: 'var(--text-color)' }}>Easy access restoration</span>
+										<span className="fw-medium auth-feature-text">Easy access restoration</span>
 									</div>
 								</div>
 							</div>

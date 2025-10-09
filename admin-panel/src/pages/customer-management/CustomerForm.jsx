@@ -29,7 +29,6 @@ export default function CustomerForm() {
     postal_code: '',
     country: '',
     date_of_birth: '',
-    gender: '',
     notes: '',
     active: true
   });
@@ -299,24 +298,6 @@ export default function CustomerForm() {
                 value={customer.date_of_birth || ''}
                 onChange={ev => setCustomer({ ...customer, date_of_birth: ev.target.value })}
               />
-            }
-            labelClass="col-sm-12 col-md-3"
-            inputClass="col-sm-12 col-md-9"
-          />
-          {/* Gender Field */}
-          <Field
-            label="Gender"
-            inputComponent={
-              <select
-                className="form-select"
-                value={customer.gender || ''}
-                onChange={ev => setCustomer({ ...customer, gender: ev.target.value })}
-              >
-                <option value="">Select Gender</option>
-                <option value="male">Male</option>
-                <option value="female">Female</option>
-                <option value="other">Other</option>
-              </select>
             }
             labelClass="col-sm-12 col-md-3"
             inputClass="col-sm-12 col-md-9"

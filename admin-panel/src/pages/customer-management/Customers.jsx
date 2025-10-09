@@ -29,7 +29,6 @@ export default function Customers() {
       full_name: { name: "Name", withSort: true },
       user_email: { name: "Email", withSort: true },
       phone: { name: "Phone", withSort: true },
-      gender: { name: "Gender", withSort: false },
       user_status: {
         name: "Status",
         withSort: true,
@@ -55,7 +54,6 @@ export default function Customers() {
   const [showFilterModal, setShowFilterModal] = useState(false);
   const [collapsedSections, setCollapsedSections] = useState({
     status: false,
-    gender: false,
     search: false,
   });
 
@@ -132,7 +130,6 @@ export default function Customers() {
     setParams({
       search: '',
       user_status: '',
-      gender: '',
     });
     // Clear search input
     if (searchRef.current) {
@@ -279,84 +276,6 @@ export default function Customers() {
                     )}
                   </div>
 
-                  {/* Gender Filter */}
-                  <div className="mb-4">
-                    <div 
-                      className="d-flex justify-content-between align-items-center cursor-pointer" 
-                      onClick={() => toggleSection('gender')}
-                      style={{ cursor: 'pointer' }}>
-                      <h6 className="fw-bold mb-0" style={{ color: '#3b82f6' }}>Gender</h6>
-                      <span style={{ color: '#9ca3af' }}>
-                        <img 
-                          src={collapsedSections.gender ? "/assets/new-icons/icons-bold/fi-br-angle-small-down.svg" : "/assets/new-icons/icons-bold/fi-br-angle-small-up.svg"} 
-                          alt="Toggle" 
-                          style={{ width: '12px', height: '12px' }} 
-                        />
-                      </span>
-                    </div>
-                    {!collapsedSections.gender && (
-                      <div className="mt-3">
-                        <div className="border rounded p-3" style={{ borderColor: '#404040', backgroundColor: 'rgba(0,0,0,0.2)' }}>
-                          <div className="form-check">
-                            <input 
-                              className="form-check-input" 
-                              type="radio" 
-                              name="gender" 
-                              id="gender-all"
-                              value=""
-                              checked={params.gender === ''}
-                              onChange={e => handleFilterChange('gender', e.target.value)}
-                            />
-                            <label className="form-check-label" htmlFor="gender-all" style={{ color: 'white' }}>
-                              All Genders
-                            </label>
-                          </div>
-                          <div className="form-check">
-                            <input 
-                              className="form-check-input" 
-                              type="radio" 
-                              name="gender" 
-                              id="gender-male"
-                              value="male"
-                              checked={params.gender === 'male'}
-                              onChange={e => handleFilterChange('gender', e.target.value)}
-                            />
-                            <label className="form-check-label" htmlFor="gender-male" style={{ color: 'white' }}>
-                              Male
-                            </label>
-                          </div>
-                          <div className="form-check">
-                            <input 
-                              className="form-check-input" 
-                              type="radio" 
-                              name="gender" 
-                              id="gender-female"
-                              value="female"
-                              checked={params.gender === 'female'}
-                              onChange={e => handleFilterChange('gender', e.target.value)}
-                            />
-                            <label className="form-check-label" htmlFor="gender-female" style={{ color: 'white' }}>
-                              Female
-                            </label>
-                          </div>
-                          <div className="form-check">
-                            <input 
-                              className="form-check-input" 
-                              type="radio" 
-                              name="gender" 
-                              id="gender-other"
-                              value="other"
-                              checked={params.gender === 'other'}
-                              onChange={e => handleFilterChange('gender', e.target.value)}
-                            />
-                            <label className="form-check-label" htmlFor="gender-other" style={{ color: 'white' }}>
-                              Other
-                            </label>
-                          </div>
-                        </div>
-                      </div>
-                    )}
-                  </div>
 
                   {/* Search Filter */}
                   <div className="mb-4">

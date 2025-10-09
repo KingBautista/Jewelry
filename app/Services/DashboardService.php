@@ -99,22 +99,33 @@ class DashboardService
         $customers = User::select(
                 'users.id',
                 'users.user_email',
-                DB::raw('COALESCE(um.meta_value, users.user_email) as customer_name'),
+                DB::raw('COALESCE(
+                    TRIM(CONCAT(
+                        COALESCE(um_first.meta_value, ""), 
+                        " ", 
+                        COALESCE(um_last.meta_value, "")
+                    )), 
+                    users.user_email
+                ) as customer_name'),
                 DB::raw('COUNT(i.id) as invoice_count'),
                 DB::raw('SUM(i.total_amount) as total_amount'),
                 DB::raw('SUM(i.total_paid_amount) as total_paid'),
                 DB::raw('SUM(i.remaining_balance) as remaining_balance')
             )
-            ->leftJoin('user_meta as um', function ($join) {
-                $join->on('users.id', '=', 'um.user_id')
-                     ->where('um.meta_key', '=', 'full_name');
+            ->leftJoin('user_meta as um_first', function ($join) {
+                $join->on('users.id', '=', 'um_first.user_id')
+                     ->where('um_first.meta_key', '=', 'first_name');
+            })
+            ->leftJoin('user_meta as um_last', function ($join) {
+                $join->on('users.id', '=', 'um_last.user_id')
+                     ->where('um_last.meta_key', '=', 'last_name');
             })
             ->leftJoin('invoices as i', function ($join) {
                 $join->on('users.id', '=', 'i.customer_id')
                      ->whereNull('i.deleted_at');
             })
             ->whereNull('users.deleted_at')
-            ->groupBy('users.id', 'users.user_email', 'um.meta_value')
+            ->groupBy('users.id', 'users.user_email', 'um_first.meta_value', 'um_last.meta_value')
             ->having('invoice_count', '>', 0)
             ->orderBy('total_amount', 'desc')
             ->limit(6)
@@ -125,6 +136,7 @@ class DashboardService
                 return [
                     'id' => $customer->id,
                     'name' => $customer->customer_name,
+                    'full_name' => $customer->customer_name, // Add full_name for frontend compatibility
                     'email' => $customer->user_email,
                     'invoice_count' => (int) $customer->invoice_count,
                     'total_amount' => (float) $customer->total_amount,
@@ -215,7 +227,7 @@ class DashboardService
                 return [
                     'id' => $invoice->id,
                     'invoice_number' => $invoice->invoice_number,
-                    'customer_name' => $invoice->customer->user_email ?? 'Unknown',
+                    'customer_name' => $invoice->customer->full_name ?? $invoice->customer->user_email ?? 'Unknown',
                     'total_amount' => (float) $invoice->total_amount,
                     'payment_status' => $invoice->payment_status,
                     'item_status' => $invoice->item_status,

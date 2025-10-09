@@ -32,8 +32,9 @@ export default function PaymentForm() {
   const [isLoading, setIsLoading] = useState(false);
   const [selectedReceiptFiles, setSelectedReceiptFiles] = useState([]);
   
-  // Check if form should be read-only
-  const isReadOnly = payment.status === 'confirmed';
+  // Check if form should be read-only - only disable if status was already confirmed when loaded
+  const [originalStatus, setOriginalStatus] = useState(null);
+  const isReadOnly = originalStatus === 'confirmed';
   
   // Searchable invoice dropdown states
   const [invoiceSearchResults, setInvoiceSearchResults] = useState([]);
@@ -254,6 +255,9 @@ export default function PaymentForm() {
           }
           
           setPayment(paymentData);
+          
+          // Store the original status to determine if form should be read-only
+          setOriginalStatus(paymentData.status);
           
           // Handle receipt images if they exist
           if (paymentData.receipt_images && paymentData.receipt_images.length > 0) {
@@ -924,7 +928,7 @@ export default function PaymentForm() {
                 <div className="mb-3">
                   <input
                     type="file"
-                    className="form-control"
+                    className="form-control file-input-theme"
                     multiple
                     accept="image/*"
                     onChange={handleReceiptFileSelect}

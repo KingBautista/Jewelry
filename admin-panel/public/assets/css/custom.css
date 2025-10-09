@@ -714,21 +714,40 @@ a.image-wrap-icon {
   word-break: break-word;
 }
 
-/* Color Theme Variables - Light Theme (Default) */
+/* Color Theme Variables - Dark Theme (Default) */
 :root {
-  --primary-color: #3b82f6;
-  --secondary-color: #64748b;
-  --accent-color: #0ea5e9;
-  --surface-color: #f8fafc;
-  --surface-color-secondary: #ffffff;
-  --text-color: #0f172a;
-  --text-color-secondary: #475569;
-  --text-color-muted: #64748b;
-  --success-color: #10b981;
-  --warning-color: #f59e0b;
-  --error-color: #ef4444;
-  --border-color: #e2e8f0;
-  --shadow-color: rgba(0, 0, 0, 0.1);
+  /* Champagne Elegance Color Palette - Default Dark Theme */
+  --champagne-deep-charcoal: #2C2C2C;
+  --champagne-gold: #F7E7CE;
+  --champagne-cream: #FAF9F6;
+  --champagne-charcoal-light: #3A3A3A;
+  --champagne-charcoal-dark: #1A1A1A;
+  --champagne-gold-light: #FDF5E6;
+  --champagne-gold-dark: #E6D3B7;
+  
+  /* Dark theme variables as default */
+  --primary-color: #F7E7CE;
+  --secondary-color: #E6D3B7;
+  --accent-color: #F7E7CE;
+  --surface-color: #2C2C2C;
+  --surface-color-secondary: #3A3A3A;
+  --text-color: #F7E7CE;
+  --text-color-secondary: #FDF5E6;
+  --text-color-muted: #E6D3B7;
+  --success-color: #34d399;
+  --warning-color: #fbbf24;
+  --error-color: #f87171;
+  --border-color: #3A3A3A;
+  --shadow-color: rgba(0, 0, 0, 0.3);
+}
+
+/* Default to Dark Theme */
+html[data-coreui-theme="dark"] {
+  /* Dark theme is default */
+}
+
+body[data-coreui-theme="dark"] {
+  /* Dark theme is default */
 }
 
 /* Global Sharp Text Rendering */
@@ -758,7 +777,54 @@ svg, img, .icon, [class*="icon"], [class*="Icon"] {
   font-variant-ligatures: none !important;
 }
 
-/* Dark Theme Variables - Champagne Elegance */
+/* Light Theme Override */
+[data-coreui-theme="light"] {
+  --primary-color: #3b82f6;
+  --secondary-color: #64748b;
+  --accent-color: #0ea5e9;
+  --surface-color: #f8fafc;
+  --surface-color-secondary: #ffffff;
+  --text-color: #0f172a;
+  --text-color-secondary: #475569;
+  --text-color-muted: #64748b;
+  --success-color: #10b981;
+  --warning-color: #f59e0b;
+  --error-color: #ef4444;
+  --border-color: #e2e8f0;
+  --shadow-color: rgba(0, 0, 0, 0.1);
+}
+
+/* File Input Button Theme Styling */
+.file-input-theme::file-selector-button {
+  color: var(--bs-body-color);
+  background-color: var(--bs-secondary-bg);
+  border: 1px solid var(--bs-border-color);
+  border-radius: 0.375rem;
+  padding: 0.375rem 0.75rem;
+  margin-right: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s ease-in-out;
+}
+
+.file-input-theme::file-selector-button:hover {
+  background-color: var(--bs-tertiary-bg);
+  border-color: var(--bs-border-color-translucent);
+}
+
+[data-coreui-theme="dark"] .file-input-theme::file-selector-button {
+  color: #F7E7CE;
+  background-color: var(--bs-secondary-bg);
+  border-color: var(--bs-border-color);
+}
+
+[data-coreui-theme="dark"] .file-input-theme::file-selector-button:hover {
+  background-color: var(--bs-tertiary-bg);
+  color: #F7E7CE;
+}
+
+/* Dark Theme Variables - Champagne Elegance (Default) */
 [data-coreui-theme="dark"] {
   /* Champagne Elegance Color Palette */
   --champagne-deep-charcoal: #2C2C2C;
@@ -775,7 +841,7 @@ svg, img, .icon, [class*="icon"], [class*="Icon"] {
   --accent-color: #F7E7CE;
   --surface-color: #2C2C2C;
   --surface-color-secondary: #3A3A3A;
-  --text-color: #2C2C2C;
+  --text-color: #F7E7CE;
   --text-color-secondary: #FDF5E6;
   --text-color-muted: #E6D3B7;
   --success-color: #34d399;
@@ -6213,6 +6279,157 @@ hr {
 
 [data-coreui-theme="light"] .dashboard-metrics .table-modern td {
   color: #0f172a !important;
+}
+
+/* Authentication Pages - Specific styling to prevent global theme interference */
+.auth-page {
+  /* Light Theme Colors - Match existing theme */
+  --auth-primary-color: #3b82f6;
+  --auth-secondary-color: #64748b;
+  --auth-accent-color: #0ea5e9;
+  --auth-surface-color: #ffffff;
+  --auth-surface-color-secondary: #f8fafc;
+  --auth-text-color: #0f172a;
+  --auth-text-color-secondary: #475569;
+  --auth-text-color-muted: #64748b;
+  --auth-success-color: #10b981;
+  --auth-warning-color: #f59e0b;
+  --auth-error-color: #ef4444;
+  --auth-border-color: #e2e8f0;
+  --auth-shadow-color: rgba(0, 0, 0, 0.1);
+}
+
+[data-coreui-theme="dark"] .auth-page {
+  /* Dark Theme Colors - Champagne Elegance - Match existing theme */
+  --auth-primary-color: #F7E7CE;
+  --auth-secondary-color: #E6D3B7;
+  --auth-accent-color: #F7E7CE;
+  --auth-surface-color: #2C2C2C;
+  --auth-surface-color-secondary: #3A3A3A;
+  --auth-text-color: #F7E7CE;
+  --auth-text-color-secondary: #FDF5E6;
+  --auth-text-color-muted: #E6D3B7;
+  --auth-success-color: #34d399;
+  --auth-warning-color: #fbbf24;
+  --auth-error-color: #f87171;
+  --auth-border-color: #3A3A3A;
+  --auth-shadow-color: rgba(0, 0, 0, 0.3);
+}
+
+.auth-page .auth-text {
+  color: var(--auth-text-color) !important;
+}
+
+.auth-page .auth-text-muted {
+  color: var(--auth-text-color-muted) !important;
+}
+
+.auth-page .auth-surface {
+  background-color: var(--auth-surface-color) !important;
+}
+
+.auth-page .auth-surface-secondary {
+  background-color: var(--auth-surface-color-secondary) !important;
+}
+
+.auth-page .auth-border {
+  border-color: var(--auth-border-color) !important;
+}
+
+.auth-page .auth-primary {
+  background-color: var(--auth-primary-color) !important;
+  border-color: var(--auth-primary-color) !important;
+  color: #ffffff !important;
+}
+
+.auth-page .auth-primary:hover {
+  background-color: var(--auth-primary-color) !important;
+  border-color: var(--auth-primary-color) !important;
+  opacity: 0.9;
+  color: #ffffff !important;
+}
+
+/* Dark theme button text color override */
+[data-coreui-theme="dark"] .auth-page .auth-primary {
+  color: #2C2C2C !important;
+}
+
+[data-coreui-theme="dark"] .auth-page .auth-primary:hover {
+  color: #2C2C2C !important;
+}
+
+.auth-page .auth-input {
+  background-color: var(--auth-surface-color) !important;
+  color: var(--auth-text-color) !important;
+  border-color: var(--auth-border-color) !important;
+}
+
+.auth-page .auth-input:focus {
+  background-color: var(--auth-surface-color) !important;
+  color: var(--auth-text-color) !important;
+  border-color: var(--auth-primary-color) !important;
+  box-shadow: 0 0 0 0.2rem rgba(59, 130, 246, 0.25) !important;
+}
+
+.auth-page .auth-input-group-text {
+  background-color: var(--auth-surface-color-secondary) !important;
+  color: var(--auth-text-color-muted) !important;
+  border-color: var(--auth-border-color) !important;
+}
+
+.auth-page .auth-feature-item {
+  background-color: var(--auth-surface-color) !important;
+  border-color: var(--auth-border-color) !important;
+}
+
+.auth-page .auth-feature-text {
+  color: var(--auth-text-color) !important;
+}
+
+.auth-page .auth-feature-icon {
+  color: var(--auth-text-color) !important;
+}
+
+.auth-page .auth-link {
+  color: var(--auth-text-color) !important;
+}
+
+.auth-page .auth-link:hover {
+  color: var(--auth-primary-color) !important;
+}
+
+/* Additional auth page styling for better theme integration */
+.auth-page .auth-shadow {
+  box-shadow: 0 4px 15px var(--auth-shadow-color) !important;
+}
+
+.auth-page .auth-card-shadow {
+  box-shadow: 0 10px 25px var(--auth-shadow-color) !important;
+}
+
+/* Success and error message styling */
+.auth-page .alert-success {
+  background-color: rgba(16, 185, 129, 0.1) !important;
+  border-color: rgba(16, 185, 129, 0.3) !important;
+  color: #065f46 !important;
+}
+
+[data-coreui-theme="dark"] .auth-page .alert-success {
+  background-color: rgba(52, 211, 153, 0.1) !important;
+  border-color: rgba(52, 211, 153, 0.3) !important;
+  color: #34d399 !important;
+}
+
+.auth-page .alert-danger {
+  background-color: rgba(239, 68, 68, 0.1) !important;
+  border-color: rgba(239, 68, 68, 0.3) !important;
+  color: #991b1b !important;
+}
+
+[data-coreui-theme="dark"] .auth-page .alert-danger {
+  background-color: rgba(248, 113, 113, 0.1) !important;
+  border-color: rgba(248, 113, 113, 0.3) !important;
+  color: #f87171 !important;
 }
 
 [data-coreui-theme="dark"] .toast-message {

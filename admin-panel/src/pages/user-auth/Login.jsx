@@ -78,34 +78,27 @@ export default function Login() {
 
 	useEffect(() => {
     localStorage.clear();
-    localStorage.setItem('theme', 'light');
+    localStorage.setItem('theme', 'dark');
   }, []);
 
 	return (
-		<div className="col-lg-9">
-			<div className="row g-0 rounded-4 overflow-hidden shadow-xl" style={{ 
-				backgroundColor: 'var(--surface-color)', 
-				border: '1px solid var(--border-color)',
-				boxShadow: '0 10px 25px rgba(0,0,0,0.1)'
-			}}>
+		<div className="col-lg-9 auth-page">
+			<div className="row g-0 rounded-4 overflow-hidden shadow-xl auth-surface auth-border auth-card-shadow">
 				{/* Login Form - Left Side */}
 				<div className="col-lg-6">
 					<div className="h-100 d-flex flex-column justify-content-center">
 						<div className="p-5">
 							{/* Header Section */}
 							<div className="text-center mb-5">
-								<FontAwesomeIcon icon={solidIconMap.user} className="fs-1 mb-4" style={{ 
-									filter: 'drop-shadow(0 4px 8px rgba(0,0,0,0.3))',
-									color: 'var(--text-color)'
+								<FontAwesomeIcon icon={solidIconMap.user} className="fs-1 mb-4 auth-text" style={{ 
+									filter: 'drop-shadow(0 4px 8px rgba(0,0,0,0.3))'
 								}} />
-								<h1 className="fw-bold mb-2" style={{ 
+								<h1 className="fw-bold mb-2 auth-text" style={{ 
 									fontSize: '2.5rem', 
-									letterSpacing: '-0.5px',
-									color: 'var(--text-color)'
+									letterSpacing: '-0.5px'
 								}}>Welcome Back</h1>
-								<p className="mb-0 fs-5" style={{ 
-									opacity: 0.8,
-									color: 'var(--text-color-muted)'
+								<p className="mb-0 fs-5 auth-text-muted" style={{ 
+									opacity: 0.8
 								}}>Sign in to continue to your account</p>
 							</div>
 
@@ -143,30 +136,22 @@ export default function Login() {
 								
 								{/* Email Input */}
 								<div className="mb-4">
-									<label htmlFor="email" className="form-label fw-semibold mb-2" style={{ 
-										fontSize: '1.1rem',
-										color: 'var(--text-color)'
+									<label htmlFor="email" className="form-label fw-semibold mb-2 auth-text" style={{ 
+										fontSize: '1.1rem'
 									}}>Email Address</label>
 									<div className="input-group input-group-lg shadow-sm">
-										<span className="input-group-text border-end-0 border-2" style={{ 
-											borderColor: 'var(--border-color)', 
-											color: 'var(--text-color-muted)',
-											backgroundColor: 'var(--surface-color-secondary)'
-										}}>
+										<span className="input-group-text border-end-0 border-2 auth-input-group-text auth-border">
 											<FontAwesomeIcon icon={solidIconMap.user} />
 										</span>
 										<input 
 											id="email"
 											ref={emailRef} 
-											className="form-control border-start-0 border-2" 
+											className="form-control border-start-0 border-2 auth-input auth-border" 
 											type="email" 
 											placeholder="Enter your email" 
 											required
 											style={{ 
-												fontSize: '1rem', 
-												borderColor: 'var(--border-color)',
-												backgroundColor: 'var(--surface-color)',
-												color: 'var(--text-color)'
+												fontSize: '1rem'
 											}}
 										/>
 									</div>
@@ -174,30 +159,22 @@ export default function Login() {
 								
 								{/* Password Input */}
 								<div className="mb-4">
-									<label htmlFor="password" className="form-label fw-semibold mb-2" style={{ 
-										fontSize: '1.1rem',
-										color: 'var(--text-color)'
+									<label htmlFor="password" className="form-label fw-semibold mb-2 auth-text" style={{ 
+										fontSize: '1.1rem'
 									}}>Password</label>
 									<div className="input-group input-group-lg shadow-sm">
-										<span className="input-group-text border-end-0 border-2" style={{ 
-											borderColor: 'var(--border-color)', 
-											color: 'var(--text-color-muted)',
-											backgroundColor: 'var(--surface-color-secondary)'
-										}}>
+										<span className="input-group-text border-end-0 border-2 auth-input-group-text auth-border">
 											<FontAwesomeIcon icon={solidIconMap.lock} />
 										</span>
 										<input
 											id="password"
 											ref={passwordRef}
-											className="form-control border-start-0 border-2"
+											className="form-control border-start-0 border-2 auth-input auth-border"
 											type={showPassword ? "text" : "password"}
 											placeholder="Enter your password"
 											required
 											style={{ 
-												fontSize: '1rem', 
-												borderColor: 'var(--border-color)',
-												backgroundColor: 'var(--surface-color)',
-												color: 'var(--text-color)'
+												fontSize: '1rem'
 											}}
 										/>
 									</div>
@@ -218,9 +195,8 @@ export default function Login() {
 												accentColor: '#6b7280'
 											}}
 										/>
-										<label htmlFor="showPassword" className="form-check-label fw-semibold" style={{ 
-											fontSize: '1rem',
-											color: 'var(--text-color)'
+										<label htmlFor="showPassword" className="form-check-label fw-semibold auth-text" style={{ 
+											fontSize: '1rem'
 										}}>
 											Show password
 										</label>
@@ -230,18 +206,13 @@ export default function Login() {
 								{/* Submit Button */}
 								<div className="mb-4">
 									<button 
-										className="btn w-100 fw-bold" 
+										className="btn w-100 fw-bold auth-primary auth-shadow" 
 										type="submit"
 										disabled={isLoading}
 										style={{ 
 											padding: '0.8rem 1.5rem',
 											fontSize: '1.1rem',
-											borderRadius: '0.75rem',
-											backgroundColor: 'var(--primary-color)',
-											borderColor: 'var(--primary-color)',
-											color: 'black',
-											boxShadow: '0 4px 15px rgba(0, 0, 0, 0.1)',
-											border: '1px solid var(--primary-color)'
+											borderRadius: '0.75rem'
 										}}
 									>
 										{isLoading ? (
@@ -260,10 +231,9 @@ export default function Login() {
 								
 								{/* Forgot Password Link */}
 								<div className="text-center">
-									<Link to="/forgot-password" className="text-decoration-none fw-semibold" style={{ 
+									<Link to="/forgot-password" className="text-decoration-none fw-semibold auth-link" style={{ 
 										fontSize: '1rem', 
-										transition: 'all 0.3s ease',
-										color: 'var(--text-color)'
+										transition: 'all 0.3s ease'
 									}}>
 										Forgot your password?
 									</Link>
@@ -276,9 +246,8 @@ export default function Login() {
 				{/* Content Section - Right Side */}
 				<div className="col-lg-6 position-relative">
 					<div 
-						className="h-100 d-flex align-items-center justify-content-center"
+						className="h-100 d-flex align-items-center justify-content-center auth-surface-secondary"
 						style={{ 
-							background: 'var(--surface-color-secondary)',
 							minHeight: '500px'
 						}}
 					>
@@ -295,29 +264,26 @@ export default function Login() {
 						<div className="text-center position-relative">
 							{/* Icon */}
 							<div className="mb-5">
-								<FontAwesomeIcon icon={solidIconMap.gem} style={{ 
+								<FontAwesomeIcon icon={solidIconMap.gem} className="auth-text" style={{ 
 									fontSize: '4rem', 
-									filter: 'drop-shadow(0 8px 16px rgba(0,0,0,0.3))',
-									color: 'var(--text-color)'
+									filter: 'drop-shadow(0 8px 16px rgba(0,0,0,0.3))'
 								}} />
 							</div>
 							
 							{/* Welcome Text */}
-							<h2 className="fw-bold mb-4" style={{ 
+							<h2 className="fw-bold mb-4 auth-text" style={{ 
 								fontSize: '2.8rem', 
 								letterSpacing: '-1px', 
-								textShadow: '0 4px 8px rgba(0,0,0,0.3)',
-								color: 'var(--text-color)'
+								textShadow: '0 4px 8px rgba(0,0,0,0.3)'
 							}}>
 								Invoice & Payment Management System
 							</h2>
 							
-							<p className="fs-4" style={{ 
+							<p className="fs-4 auth-text-muted" style={{ 
 								maxWidth: '450px', 
 								margin: '0 auto', 
 								opacity: 0.95, 
-								lineHeight: '1.6',
-								color: 'var(--text-color-muted)'
+								lineHeight: '1.6'
 							}}>
 								Comprehensive invoice and payment management for modern businesses
 							</p>
@@ -325,55 +291,43 @@ export default function Login() {
 							{/* Features List */}
 							<div className="row g-4 text-start" style={{ maxWidth: '380px', margin: '0 auto' }}>
 								<div className="col-12">
-									<div className="d-flex align-items-center p-3 rounded" style={{ 
-										backgroundColor: 'var(--surface-color)', 
-										backdropFilter: 'blur(10px)', 
-										border: '1px solid var(--border-color)' 
+									<div className="d-flex align-items-center p-3 rounded auth-feature-item auth-border" style={{ 
+										backdropFilter: 'blur(10px)'
 									}}>
-										<FontAwesomeIcon icon={solidIconMap.check} className="me-3" style={{ 
-											fontSize: '1.3rem',
-											color: 'var(--text-color)'
+										<FontAwesomeIcon icon={solidIconMap.check} className="me-3 auth-feature-icon" style={{ 
+											fontSize: '1.3rem'
 										}} />
-										<span className="fw-medium" style={{ color: 'var(--text-color)' }}>Advanced invoice management</span>
+										<span className="fw-medium auth-feature-text">Advanced invoice management</span>
 									</div>
 								</div>
 								<div className="col-12">
-									<div className="d-flex align-items-center p-3 rounded" style={{ 
-										backgroundColor: 'var(--surface-color)', 
-										backdropFilter: 'blur(10px)', 
-										border: '1px solid var(--border-color)' 
+									<div className="d-flex align-items-center p-3 rounded auth-feature-item auth-border" style={{ 
+										backdropFilter: 'blur(10px)'
 									}}>
-										<FontAwesomeIcon icon={solidIconMap.check} className="me-3" style={{ 
-											fontSize: '1.3rem',
-											color: 'var(--text-color)'
+										<FontAwesomeIcon icon={solidIconMap.check} className="me-3 auth-feature-icon" style={{ 
+											fontSize: '1.3rem'
 										}} />
-										<span className="fw-medium" style={{ color: 'var(--text-color)' }}>Secure payment processing</span>
+										<span className="fw-medium auth-feature-text">Secure payment processing</span>
 									</div>
 								</div>
 								<div className="col-12">
-									<div className="d-flex align-items-center p-3 rounded" style={{ 
-										backgroundColor: 'var(--surface-color)', 
-										backdropFilter: 'blur(10px)', 
-										border: '1px solid var(--border-color)' 
+									<div className="d-flex align-items-center p-3 rounded auth-feature-item auth-border" style={{ 
+										backdropFilter: 'blur(10px)'
 									}}>
-										<FontAwesomeIcon icon={solidIconMap.check} className="me-3" style={{ 
-											fontSize: '1.3rem',
-											color: 'var(--text-color)'
+										<FontAwesomeIcon icon={solidIconMap.check} className="me-3 auth-feature-icon" style={{ 
+											fontSize: '1.3rem'
 										}} />
-										<span className="fw-medium" style={{ color: 'var(--text-color)' }}>Customer relationship tools</span>
+										<span className="fw-medium auth-feature-text">Customer relationship tools</span>
 									</div>
 								</div>
 								<div className="col-12">
-									<div className="d-flex align-items-center p-3 rounded" style={{ 
-										backgroundColor: 'var(--surface-color)', 
-										backdropFilter: 'blur(10px)', 
-										border: '1px solid var(--border-color)' 
+									<div className="d-flex align-items-center p-3 rounded auth-feature-item auth-border" style={{ 
+										backdropFilter: 'blur(10px)'
 									}}>
-										<FontAwesomeIcon icon={solidIconMap.check} className="me-3" style={{ 
-											fontSize: '1.3rem',
-											color: 'var(--text-color)'
+										<FontAwesomeIcon icon={solidIconMap.check} className="me-3 auth-feature-icon" style={{ 
+											fontSize: '1.3rem'
 										}} />
-										<span className="fw-medium" style={{ color: 'var(--text-color)' }}>Modern admin interface</span>
+										<span className="fw-medium auth-feature-text">Modern admin interface</span>
 									</div>
 								</div>
 							</div>

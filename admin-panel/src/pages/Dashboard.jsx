@@ -90,14 +90,14 @@ export default function Dashboard() {
 					details: paymentBreakdown.payment_breakdown || {}
 				},
 				customerSummary: customers.top_customers?.map(customer => ({
-					username: customer.name || customer.email,
+					username: customer.full_name || customer.name || customer.email,
 					items: customer.invoice_count,
 					paid: customer.total_paid,
 					pending: customer.remaining_balance,
 					total: customer.total_amount
 				})) || [],
 				topCustomers: customers.top_customers?.map(customer => ({
-					username: customer.name || customer.email,
+					username: customer.full_name || customer.name || customer.email,
 					items: customer.invoice_count,
 					totalAmount: customer.total_amount
 				})) || [],

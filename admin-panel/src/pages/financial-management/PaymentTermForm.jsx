@@ -49,6 +49,14 @@ export default function PaymentTermForm() {
 
   // Add new schedule
   const addSchedule = () => {
+    const termMonths = parseInt(paymentTerm.term_months) || 0;
+    const currentSchedules = schedules.length;
+    
+    if (currentSchedules >= termMonths) {
+      toastAction.current.showToast(`Cannot add more months. Maximum allowed is ${termMonths} months based on the term.`, 'warning');
+      return;
+    }
+    
     const newSchedule = {
       month_number: schedules.length + 1,
       percentage: '',
@@ -72,6 +80,12 @@ export default function PaymentTermForm() {
   const generateDefaultSchedule = () => {
     const termMonths = parseInt(paymentTerm.term_months) || 1;
     const remainingPercentage = parseFloat(paymentTerm.remaining_percentage) || 0;
+    
+    if (termMonths <= 0) {
+      toastAction.current.showToast('Please enter a valid term months value first', 'warning');
+      return;
+    }
+    
     const equalPercentage = remainingPercentage / termMonths;
     
     const newSchedules = [];
@@ -134,6 +148,12 @@ export default function PaymentTermForm() {
 
     // Validate schedules
     if (schedules.length > 0) {
+      // Validate that number of schedules doesn't exceed term months
+      if (schedules.length > termMonths) {
+        toastAction.current.showToast(`Number of payment schedules (${schedules.length}) cannot exceed term months (${termMonths})`, 'warning');
+        return;
+      }
+
       const totalSchedulePercentage = calculateRemainingPercentage();
       if (Math.abs(totalSchedulePercentage - remaining) > 0.01) {
         toastAction.current.showToast(`Schedule percentages (${totalSchedulePercentage.toFixed(2)}%) must equal remaining percentage (${remaining.toFixed(2)}%)`, 'warning');
@@ -377,6 +397,8 @@ export default function PaymentTermForm() {
                       type="button" 
                       className="btn btn-sm btn-outline-primary me-2"
                       onClick={addSchedule}
+                      disabled={schedules.length >= (parseInt(paymentTerm.term_months) || 0)}
+                      title={schedules.length >= (parseInt(paymentTerm.term_months) || 0) ? `Maximum ${paymentTerm.term_months || 0} months allowed` : 'Add a new month to the schedule'}
                     >
                       <FontAwesomeIcon icon={solidIconMap.plus} className="me-1" />
                       Add Month
@@ -385,6 +407,8 @@ export default function PaymentTermForm() {
                       type="button" 
                       className="btn btn-sm btn-outline-secondary"
                       onClick={generateDefaultSchedule}
+                      disabled={!paymentTerm.term_months || parseInt(paymentTerm.term_months) <= 0}
+                      title={!paymentTerm.term_months || parseInt(paymentTerm.term_months) <= 0 ? 'Please enter valid term months first' : 'Generate equal monthly payments'}
                     >
                       <FontAwesomeIcon icon={solidIconMap.magic} className="me-1" />
                       Auto Generate
@@ -464,7 +488,7 @@ export default function PaymentTermForm() {
                         <div className="col-md-6">
                           <strong style={{ color: 'white' }}>Schedule Summary:</strong>
                           <ul className="list-unstyled mt-2 mb-0" style={{ color: 'white' }}>
-                            <li>Total Months: {schedules.length}</li>
+                            <li>Total Months: <span className={schedules.length > (parseInt(paymentTerm.term_months) || 0) ? 'text-danger' : 'text-success'}>{schedules.length}</span> / {paymentTerm.term_months || 0}</li>
                             <li>Total Percentage: <span className={Math.abs(calculateRemainingPercentage() - (parseFloat(paymentTerm.remaining_percentage) || 0)) > 0.01 ? 'text-danger' : 'text-success'}>{calculateRemainingPercentage().toFixed(2)}%</span></li>
                             <li>Remaining Target: {paymentTerm.remaining_percentage || 0}%</li>
                           </ul>
@@ -472,7 +496,12 @@ export default function PaymentTermForm() {
                         <div className="col-md-6">
                           <strong style={{ color: 'white' }}>Validation:</strong>
                           <div className="mt-2">
-                            {Math.abs(calculateRemainingPercentage() - (parseFloat(paymentTerm.remaining_percentage) || 0)) <= 0.01 ? (
+                            {schedules.length > (parseInt(paymentTerm.term_months) || 0) ? (
+                              <span className="text-danger">
+                                <FontAwesomeIcon icon={solidIconMap.exclamation} className="me-1" />
+                                Too many months! Maximum allowed is {paymentTerm.term_months || 0}
+                              </span>
+                            ) : Math.abs(calculateRemainingPercentage() - (parseFloat(paymentTerm.remaining_percentage) || 0)) <= 0.01 ? (
                               <span className="text-success">
                                 <FontAwesomeIcon icon={solidIconMap.check} className="me-1" />
                                 Schedule percentages match remaining amount

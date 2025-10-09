@@ -689,7 +689,7 @@ export default function InvoiceForm() {
                           <strong>{product.product_name || 'Unnamed Product'}</strong>
                         </td>
                         <td className="text-start">
-                          <small className="text-dark">
+                          <small>
                             {product.description ? 
                               (product.description.length > 50 ? 
                                 `${product.description.substring(0, 50)}...` : 
@@ -700,7 +700,7 @@ export default function InvoiceForm() {
                           </small>
                         </td>
                         <td className="text-start">
-                          <strong>₱{parseFloat(product.price || 0).toFixed(2)}</strong>
+                          <strong>₱{parseFloat(product.price || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</strong>
                         </td>
                         <td className="text-start">
                           <div className="d-flex flex-wrap gap-1">
@@ -727,7 +727,7 @@ export default function InvoiceForm() {
                                 )}
                               </>
                             ) : (
-                              <span className="text-dark small">No images</span>
+                              <span className="small">No images</span>
                             )}
                           </div>
                         </td>
@@ -762,42 +762,42 @@ export default function InvoiceForm() {
                         <strong>Subtotal:</strong>
                       </td>
                       <td className="text-start">
-                        <strong>₱{Number(calculateSubtotal() || 0).toFixed(2)}</strong>
+                        <strong>₱{Number(calculateSubtotal() || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</strong>
                       </td>
                     </tr>
                     {invoice.tax_id && (
                       <tr>
                         <td colSpan="4" className="text-end">
-                          <small className="text-dark">
+                          <small>
                             Tax ({taxes.find(tax => tax.id == invoice.tax_id)?.name || 'Tax'}):
                           </small>
                         </td>
                         <td className="text-start">
-                          <small className="text-dark">₱{Number(calculateTaxAmount() || 0).toFixed(2)}</small>
+                          <small>₱{Number(calculateTaxAmount() || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</small>
                         </td>
                       </tr>
                     )}
                     {invoice.fee_id && (
                       <tr>
                         <td colSpan="4" className="text-end">
-                          <small className="text-dark">
+                          <small>
                             Fee ({fees.find(fee => fee.id == invoice.fee_id)?.name || 'Fee'}):
                           </small>
                         </td>
                         <td className="text-start">
-                          <small className="text-dark">₱{Number(calculateFeeAmount() || 0).toFixed(2)}</small>
+                          <small>₱{Number(calculateFeeAmount() || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</small>
                         </td>
                       </tr>
                     )}
                     {invoice.discount_id && (
                       <tr>
                         <td colSpan="4" className="text-end">
-                          <small className="text-dark">
+                          <small>
                             Discount ({discounts.find(discount => discount.id == invoice.discount_id)?.name || 'Discount'}):
                           </small>
                         </td>
                         <td className="text-start">
-                          <small className="text-dark text-success">-₱{Number(calculateDiscountAmount() || 0).toFixed(2)}</small>
+                          <small className="text-success">-₱{Number(calculateDiscountAmount() || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</small>
                         </td>
                       </tr>
                     )}
@@ -807,7 +807,7 @@ export default function InvoiceForm() {
                       </td>
                       <td className="text-start">
                         <strong className="fs-5">
-                          ₱{Number(calculateTotal() || 0).toFixed(2)}
+                          ₱{Number(calculateTotal() || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                         </strong>
                       </td>
                     </tr>
@@ -1269,7 +1269,7 @@ export default function InvoiceForm() {
                         id="current-product-images"
                       />
                       <label htmlFor="current-product-images" className="form-label">
-                        <small className="text-dark">
+                        <small>
                           Select multiple images (JPG, PNG, GIF, WebP). Each image should be less than 2MB.
                           {currentProductFiles.length > 0 && (
                             <span className="text-info d-block mt-1">
