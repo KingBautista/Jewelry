@@ -230,35 +230,42 @@ const PaymentHistory = () => {
                         // Handle different image path formats
                         let imageUrl = image;
                         
-                        // Always ensure we have the correct storage path
-                        if (image.startsWith('payment-receipts/') || image.startsWith('receipts/')) {
-                          imageUrl = `/storage/${image}`;
-                        } else if (!image.startsWith('/storage/') && !image.startsWith('http')) {
-                          imageUrl = `/storage/${image}`;
+                        // Get the API base URL from environment variable
+                        const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || 'https://api.illussso.com';
+                        
+                        // Construct proper image URLs based on the image path format
+                        let finalImageUrl;
+                        if (image.startsWith('payment-receipts/')) {
+                          // Image is already in payment-receipts folder
+                          finalImageUrl = `${apiBaseUrl}/storage/${image}`;
+                        } else if (image.startsWith('receipts/')) {
+                          // Image is in receipts folder
+                          finalImageUrl = `${apiBaseUrl}/storage/${image}`;
+                        } else if (image.startsWith('/storage/')) {
+                          // Image already has storage path
+                          finalImageUrl = `${apiBaseUrl}${image}`;
+                        } else if (image.startsWith('http')) {
+                          // Image is already a full URL
+                          finalImageUrl = image;
+                        } else {
+                          // Default: assume it's a filename in payment-receipts folder
+                          finalImageUrl = `${apiBaseUrl}/storage/payment-receipts/${image}`;
                         }
                         
-                        // Get the API base URL from axios client and construct image URLs
-                        const apiBaseUrl = axiosClient.defaults.baseURL || 'http://127.0.0.1:8000';
-                        const baseUrl = apiBaseUrl.replace('/api', ''); // Remove /api from base URL
                         const baseUrls = [
-                          imageUrl,
-                          `${baseUrl}${imageUrl}`,
-                          `http://localhost/Jewelry/public${imageUrl}`,
-                          `http://localhost:8000${imageUrl}`,
-                          `http://127.0.0.1:8000${imageUrl}`
+                          finalImageUrl,
+                          `${apiBaseUrl}/storage/payment-receipts/${image}`,
+                          `${apiBaseUrl}/storage/receipts/${image}`,
+                          `${apiBaseUrl}/storage/${image}`,
+                          image.startsWith('http') ? image : `${apiBaseUrl}/storage/payment-receipts/${image}`
                         ];
                         
-                        console.log('Processing receipt image:', { 
-                          original: image, 
-                          processed: imageUrl,
-                          baseUrls: baseUrls 
-                        });
                         
                         return (
                           <div key={index} className="col-md-3 col-sm-6 mb-3">
                             <div className="position-relative">
                               <img 
-                                src={`${baseUrl}${imageUrl}`} 
+                                src={finalImageUrl} 
                                 alt={`Receipt ${index + 1}`}
                                 className="img-fluid rounded border shadow-sm"
                                 style={{ 
@@ -277,14 +284,9 @@ const PaymentHistory = () => {
                                   e.target.style.transform = 'scale(1)';
                                 }}
                                 onClick={() => {
-                                  window.open(`${baseUrl}${imageUrl}`, '_blank');
+                                  window.open(finalImageUrl, '_blank');
                                 }}
                                 onError={(e) => {
-                                  console.error('Failed to load image:', { 
-                                    original: image, 
-                                    url: imageUrl,
-                                    allUrls: baseUrls 
-                                  });
                                   
                                   // Try alternative URLs
                                   const currentSrc = e.target.src;
@@ -309,7 +311,7 @@ const PaymentHistory = () => {
                                   e.target.parentNode.appendChild(errorDiv);
                                 }}
                                 onLoad={() => {
-                                  console.log('Successfully loaded image:', imageUrl);
+                                  // Image loaded successfully
                                 }}
                               />
                               <small className="text-muted d-block mt-1 text-truncate" style={{ fontSize: '0.75rem' }}>
