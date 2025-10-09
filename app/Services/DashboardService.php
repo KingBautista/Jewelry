@@ -136,7 +136,7 @@ class DashboardService
                 return [
                     'id' => $customer->id,
                     'name' => $customer->customer_name,
-                    'full_name' => $customer->customer_name, // Add full_name for frontend compatibility
+                    'full_name' => $customer->customer_name,
                     'email' => $customer->user_email,
                     'invoice_count' => (int) $customer->invoice_count,
                     'total_amount' => (float) $customer->total_amount,
