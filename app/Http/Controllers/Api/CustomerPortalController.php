@@ -492,6 +492,9 @@ class CustomerPortalController extends Controller
             'notes' => $request->notes,
         ]);
 
+        // Load relationships for email notification
+        $payment->load(['invoice', 'customer']);
+
         // Send notification email to admin (if admin email is configured)
         $adminEmail = env('ADMIN_EMAIL');
         if ($adminEmail && filter_var($adminEmail, FILTER_VALIDATE_EMAIL)) {

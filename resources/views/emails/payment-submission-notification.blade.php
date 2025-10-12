@@ -134,7 +134,7 @@
                 @if($payment->receipt_images)
                     <div class="detail-row">
                         <span class="detail-label">Receipt Images:</span>
-                        <span class="detail-value">{{ count(json_decode($payment->receipt_images, true)) }} file(s)</span>
+                        <span class="detail-value">{{ count($payment->receipt_images) }} file(s)</span>
                     </div>
                 @endif
             </div>
