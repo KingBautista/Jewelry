@@ -26,6 +26,118 @@ class CustomerController extends BaseController
     }
 
     /**
+     * @OA\Get(
+     *     path="/api/customer-management/customers",
+     *     summary="Get all customers",
+     *     description="Retrieve a paginated list of all customers",
+     *     tags={"Customers"},
+     *     security={{"sanctum":{}}},
+     *     @OA\Parameter(
+     *         name="per_page",
+     *         in="query",
+     *         description="Number of items per page",
+     *         @OA\Schema(type="integer", example=10)
+     *     ),
+     *     @OA\Parameter(
+     *         name="page",
+     *         in="query",
+     *         description="Page number",
+     *         @OA\Schema(type="integer", example=1)
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Customers retrieved successfully",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="data", type="array", @OA\Items(type="object")),
+     *             @OA\Property(property="current_page", type="integer", example=1),
+     *             @OA\Property(property="per_page", type="integer", example=10),
+     *             @OA\Property(property="total", type="integer", example=100)
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Unauthenticated"
+     *     )
+     * )
+     */
+    public function index()
+    {
+        return parent::index();
+    }
+
+    /**
+     * @OA\Get(
+     *     path="/api/customer-management/customers/{id}",
+     *     summary="Get a specific customer",
+     *     description="Retrieve detailed information about a specific customer",
+     *     tags={"Customers"},
+     *     security={{"sanctum":{}}},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         description="Customer ID",
+     *         @OA\Schema(type="integer", example=1)
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Customer retrieved successfully",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="customer", type="object")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Customer not found"
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Unauthenticated"
+     *     )
+     * )
+     */
+    public function show($id)
+    {
+        return parent::show($id);
+    }
+
+    /**
+     * @OA\Delete(
+     *     path="/api/customer-management/customers/{id}",
+     *     summary="Delete a customer",
+     *     description="Move a customer to trash (soft delete)",
+     *     tags={"Customers"},
+     *     security={{"sanctum":{}}},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         description="Customer ID",
+     *         @OA\Schema(type="integer", example=1)
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Customer moved to trash successfully",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Resource has been moved to trash.")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Customer not found"
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Unauthenticated"
+     *     )
+     * )
+     */
+    public function destroy($id)
+    {
+        return parent::destroy($id);
+    }
+
+    /**
      * @OA\Post(
      *     path="/api/customer-management/customers",
      *     summary="Create a new customer",

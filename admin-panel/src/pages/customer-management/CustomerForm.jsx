@@ -29,6 +29,7 @@ export default function CustomerForm() {
     postal_code: '',
     country: '',
     date_of_birth: '',
+    gender: '',
     notes: '',
     active: true
   });
@@ -44,9 +45,34 @@ export default function CustomerForm() {
       axiosClient.get(`/customer-management/customers/${id}`)
         .then(({ data }) => {
           const customerData = data.data || data;
-          setCustomer(customerData);
+          
+          // Flatten the nested user_details structure for the form
+          const flattenedCustomer = {
+            id: customerData.id,
+            customer_code: customerData.customer_code || customerData.user_details?.customer_code || '',
+            first_name: customerData.user_details?.first_name || '',
+            last_name: customerData.user_details?.last_name || '',
+            email: customerData.user_email,
+            user_pass: '', // Don't populate password for security
+            phone: customerData.user_details?.phone || '',
+            address: customerData.user_details?.address || '',
+            city: customerData.user_details?.city || '',
+            state: customerData.user_details?.state || '',
+            postal_code: customerData.user_details?.postal_code || '',
+            country: customerData.user_details?.country || '',
+            date_of_birth: customerData.user_details?.date_of_birth || '',
+            gender: customerData.user_details?.gender || '',
+            notes: customerData.user_details?.notes || '',
+            active: customerData.user_status === 1
+          };
+          
+          // Debug: Log the loaded and flattened data
+          console.log('Loaded customer data:', customerData);
+          console.log('Flattened customer data:', flattenedCustomer);
+          
+          setCustomer(flattenedCustomer);
           setIsLoading(false);
-          setIsActive(customerData.active);
+          setIsActive(customerData.user_status === 1);
         })
         .catch((errors) => {
           toastAction.current.showError(errors.response);
@@ -79,6 +105,9 @@ export default function CustomerForm() {
       ...customer,
       active: isActive,
     };
+
+    // Debug: Log the data being submitted
+    console.log('Submitting customer data:', submitData);
 
     const request = customer.id
       ? axiosClient.put(`/customer-management/customers/${customer.id}`, submitData)
@@ -298,6 +327,24 @@ export default function CustomerForm() {
                 value={customer.date_of_birth || ''}
                 onChange={ev => setCustomer({ ...customer, date_of_birth: ev.target.value })}
               />
+            }
+            labelClass="col-sm-12 col-md-3"
+            inputClass="col-sm-12 col-md-9"
+          />
+          {/* Gender Field */}
+          <Field
+            label="Gender"
+            inputComponent={
+              <select
+                className="form-control"
+                value={customer.gender || ''}
+                onChange={ev => setCustomer({ ...customer, gender: ev.target.value })}
+              >
+                <option value="">Select Gender</option>
+                <option value="male">Male</option>
+                <option value="female">Female</option>
+                <option value="other">Other</option>
+              </select>
             }
             labelClass="col-sm-12 col-md-3"
             inputClass="col-sm-12 col-md-9"
