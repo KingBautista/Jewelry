@@ -44,7 +44,7 @@ return [
     ],
 
     'cors' => [
-        'allowed_origins' => explode(',', env('CORS_ALLOWED_ORIGINS', 'http://localhost:3000')),
+        'allowed_origins' => explode(',', env('CORS_ALLOWED_ORIGINS', 'https://admin.illussso.com,https://customer.illussso.com,http://localhost:4000,http://localhost:3001')),
         'allowed_methods' => explode(',', env('CORS_ALLOWED_METHODS', 'GET,POST,PUT,DELETE,OPTIONS')),
         'allowed_headers' => explode(',', env('CORS_ALLOWED_HEADERS', 'Content-Type,Authorization,X-Requested-With')),
         'max_age' => env('CORS_MAX_AGE', 86400),

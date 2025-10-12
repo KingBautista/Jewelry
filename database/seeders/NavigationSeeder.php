@@ -158,6 +158,14 @@ class NavigationSeeder extends Seeder
 
             // System Settings Children
             [
+                'name' => 'Email Settings',
+                'slug' => 'system-settings/email-settings',
+                'icon' => 'envelope',
+                'parent_id' => $parents['system_settings']->id,
+                'active' => 1,
+                'show_in_menu' => 1
+            ],
+            [
                 'name' => 'Navigation Settings',
                 'slug' => 'system-settings/navigation',
                 'icon' => 'list',

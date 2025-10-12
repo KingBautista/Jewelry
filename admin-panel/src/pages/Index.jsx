@@ -17,6 +17,7 @@ const MediaForm = lazy(() => import('./content-management/MediaForm'));
 const Navigations = lazy(() => import('./system-settings/Navigations'));
 const NavigationForm = lazy(() => import('./system-settings/NavigationForm'));
 const AuditTrail = lazy(() => import('./system-settings/AuditTrail'));
+const EmailSettings = lazy(() => import('./system-settings/EmailSettings'));
 
 // Financial Management Components
 const Taxes = lazy(() => import('./financial-management/Taxes'));
@@ -58,6 +59,7 @@ const routeMap = {
   '/system-settings/navigation/create': NavigationForm,
   '/system-settings/navigation/:id': NavigationForm,
   '/system-settings/audit-trail': AuditTrail,
+  '/system-settings/email-settings': EmailSettings,
   '/profile': Profile,
   // Financial Management Routes
   '/financial-management/taxes': Taxes,

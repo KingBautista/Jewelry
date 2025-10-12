@@ -18,6 +18,7 @@ use App\Http\Controllers\Api\InvoiceController;
 use App\Http\Controllers\Api\PaymentController;
 use App\Http\Controllers\Api\AuditTrailController;
 use App\Http\Controllers\Api\CustomerPortalController;
+use App\Http\Controllers\Api\EmailSettingController;
 
 /*
 |--------------------------------------------------------------------------
@@ -164,6 +165,16 @@ Route::middleware('auth:sanctum')->group(function () {
 			Route::get('/actions', [AuditTrailController::class, 'actions']);
 			Route::post('/export', [AuditTrailController::class, 'export']);
 			Route::get('/{id}', [AuditTrailController::class, 'show']);
+		});
+		
+		// Email Settings Routes
+		Route::prefix('email-settings')->group(function () {
+			Route::get('/', [EmailSettingController::class, 'index']);
+			Route::get('/{key}', [EmailSettingController::class, 'show']);
+			Route::put('/{key}', [EmailSettingController::class, 'update']);
+			Route::get('/config/all', [EmailSettingController::class, 'getEmailSettings']);
+			Route::post('/config/update', [EmailSettingController::class, 'updateEmailSettings']);
+			Route::get('/mail-config', [EmailSettingController::class, 'getMailConfig']);
 		});
 	});
 

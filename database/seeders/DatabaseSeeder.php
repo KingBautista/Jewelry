@@ -16,6 +16,7 @@ class DatabaseSeeder extends Seeder
     $this->call(PermissionSeeder::class);
     $this->call(RoleSeeder::class);
     $this->call(NavigationSeeder::class);
+    $this->call(EmailSettingSeeder::class);
     
     // Step 2: Role-Permission Relationships (Depends on Roles & Permissions)
     $this->call(RolePermissionSeeder::class);
@@ -37,5 +38,8 @@ class DatabaseSeeder extends Seeder
     
     // Step 6: Payment Management (Depends on Invoices, Users, Payment Methods)
     $this->call(PaymentSeeder::class);
+
+    // Step 6: CustomerInvoiceSeeder (Depends on Invoices, Users, Payment Methods)
+    $this->call(CustomerInvoiceSeeder::class);
   }
 }
