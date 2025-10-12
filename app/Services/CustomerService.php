@@ -3,9 +3,12 @@
 namespace App\Services;
 
 use App\Models\User;
+use App\Models\EmailSetting;
 use App\Http\Resources\UserResource;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\CustomerWelcomeEmail;
+use App\Mail\UserWelcomeEmail;
+use App\Mail\UserPasswordUpdateEmail;
 
 class CustomerService extends BaseService
 {
@@ -64,6 +67,9 @@ class CustomerService extends BaseService
         if(count($metaData))
             $user->saveUserMeta($metaData);
 
+        // Send welcome email with user information and temporary password
+        $this->sendWelcomeEmail($user, $userData['user_pass'] ?? null);
+
         return new UserResource($user);
     }
 
@@ -72,9 +78,18 @@ class CustomerService extends BaseService
      */
     public function updateWithMeta(array $userData, array $metaData, User $user)
     {
+        // Check if password is being updated
+        $passwordUpdated = isset($userData['user_pass']) && !empty($userData['user_pass']);
+        $newPassword = $passwordUpdated ? $userData['user_pass'] : null;
+        
         $user->update($userData);
         if(count($metaData))
             $user->saveUserMeta($metaData);
+
+        // Send password update email if password was changed
+        if ($passwordUpdated) {
+            $this->sendPasswordUpdateEmail($user, $newPassword);
+        }
 
         return new UserResource($user);
     }
@@ -161,6 +176,9 @@ class CustomerService extends BaseService
                 'login_url' => env('ADMIN_APP_URL') . "/login",
             ];
 
+            // Configure mail settings from database
+            $this->configureMailFromDatabase();
+            
             // Send welcome email (you can implement this mail class later)
             // Mail::to($customer->email)->send(new CustomerWelcomeEmail($customer, $options));
             
@@ -243,5 +261,71 @@ class CustomerService extends BaseService
         }
 
         return response()->json(['error' => 'Unsupported export format'], 400);
+    }
+
+    /**
+     * Send welcome email to new customer
+     */
+    public function sendWelcomeEmail($user, $password = null)
+    {
+        try {
+            $options = [
+                'login_url' => env('ADMIN_APP_URL') . "/login",
+                'password' => $password
+            ];
+
+            // Configure mail settings from database
+            $this->configureMailFromDatabase();
+
+            Mail::to($user->user_email)->send(new UserWelcomeEmail($user, $options));
+            
+            \Log::info("Welcome email sent to customer: {$user->user_email}");
+        } catch (\Exception $e) {
+            \Log::error("Failed to send welcome email to customer {$user->user_email}: " . $e->getMessage());
+        }
+    }
+
+    /**
+     * Send password update email to customer
+     */
+    public function sendPasswordUpdateEmail($user, $newPassword = null)
+    {
+        try {
+            $options = [
+                'login_url' => env('ADMIN_APP_URL') . "/login",
+                'new_password' => $newPassword
+            ];
+
+            // Configure mail settings from database
+            $this->configureMailFromDatabase();
+
+            Mail::to($user->user_email)->send(new UserPasswordUpdateEmail($user, $options));
+            
+            \Log::info("Password update email sent to customer: {$user->user_email}");
+        } catch (\Exception $e) {
+            \Log::error("Failed to send password update email to customer {$user->user_email}: " . $e->getMessage());
+        }
+    }
+
+    /**
+     * Configure mail settings from database
+     */
+    private function configureMailFromDatabase()
+    {
+        $mailConfig = EmailSetting::getMailConfig();
+        
+        // Set mail configuration dynamically
+        config([
+            'mail.from.address' => $mailConfig['from']['address'],
+            'mail.from.name' => $mailConfig['from']['name'],
+        ]);
+        
+        // Set reply-to if configured
+        if ($mailConfig['reply_to']['address']) {
+            config([
+                'mail.reply_to.address' => $mailConfig['reply_to']['address'],
+                'mail.reply_to.name' => $mailConfig['reply_to']['name'],
+            ]);
+        }
     }
 }

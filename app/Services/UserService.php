@@ -3,10 +3,13 @@
 namespace App\Services;
 
 use App\Models\User;
+use App\Models\EmailSetting;
 use App\Http\Resources\UserResource;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\ForgotPasswordEmail;
 use App\Mail\VerifyEmail;
+use App\Mail\UserWelcomeEmail;
+use App\Mail\UserPasswordUpdateEmail;
 use App\Helpers\PasswordHelper;
 
 class UserService extends BaseService
@@ -70,8 +73,8 @@ class UserService extends BaseService
     if(count($metaData))
       $user->saveUserMeta($metaData);
 
-    $user_key = $user->user_activation_key;
-    // $this->sendVerifyEmail($user, $user_key);
+    // Send welcome email with user information and temporary password
+    $this->sendWelcomeEmail($user, $data['user_pass'] ?? null);
 
     return new UserResource($user);
   }
@@ -81,11 +84,18 @@ class UserService extends BaseService
   */
   public function updateWithMeta(array $data, array $metaData, User $user)
   {
+    // Check if password is being updated
+    $passwordUpdated = isset($data['user_pass']) && !empty($data['user_pass']);
+    $newPassword = $passwordUpdated ? $data['user_pass'] : null;
+    
     $user->update($data);
     if(count($metaData))
       $user->saveUserMeta($metaData);
 
-    // $this->sendForgotPasswordEmail($user);
+    // Send password update email if password was changed
+    if ($passwordUpdated) {
+      $this->sendPasswordUpdateEmail($user, $newPassword);
+    }
 
     return new UserResource($user);
   }
@@ -139,6 +149,9 @@ class UserService extends BaseService
       'password'   => request('user_pass')
     );
 
+    // Configure mail settings from database
+    $this->configureMailFromDatabase();
+
     Mail::to($user->user_email)->send(new VerifyEmail($user, $options));
   }
 
@@ -153,7 +166,77 @@ class UserService extends BaseService
       'new_password' => $user_pass
     );
 
-    if($user_pass)
+    if($user_pass) {
+      // Configure mail settings from database
+      $this->configureMailFromDatabase();
+      
       Mail::to($user->user_email)->send(new ForgotPasswordEmail($user, $options));
+    }
+  }
+
+  /**
+   * Send welcome email to new user
+   */
+  public function sendWelcomeEmail($user, $password = null)
+  {
+    try {
+      $options = [
+        'login_url' => env('ADMIN_APP_URL') . "/login",
+        'password' => $password
+      ];
+
+      // Configure mail settings from database
+      $this->configureMailFromDatabase();
+
+      Mail::to($user->user_email)->send(new UserWelcomeEmail($user, $options));
+      
+      \Log::info("Welcome email sent to user: {$user->user_email}");
+    } catch (\Exception $e) {
+      \Log::error("Failed to send welcome email to user {$user->user_email}: " . $e->getMessage());
+    }
+  }
+
+  /**
+   * Send password update email to user
+   */
+  public function sendPasswordUpdateEmail($user, $newPassword = null)
+  {
+    try {
+      $options = [
+        'login_url' => env('ADMIN_APP_URL') . "/login",
+        'new_password' => $newPassword
+      ];
+
+      // Configure mail settings from database
+      $this->configureMailFromDatabase();
+
+      Mail::to($user->user_email)->send(new UserPasswordUpdateEmail($user, $options));
+      
+      \Log::info("Password update email sent to user: {$user->user_email}");
+    } catch (\Exception $e) {
+      \Log::error("Failed to send password update email to user {$user->user_email}: " . $e->getMessage());
+    }
+  }
+
+  /**
+   * Configure mail settings from database
+   */
+  private function configureMailFromDatabase()
+  {
+    $mailConfig = EmailSetting::getMailConfig();
+    
+    // Set mail configuration dynamically
+    config([
+      'mail.from.address' => $mailConfig['from']['address'],
+      'mail.from.name' => $mailConfig['from']['name'],
+    ]);
+    
+    // Set reply-to if configured
+    if ($mailConfig['reply_to']['address']) {
+      config([
+        'mail.reply_to.address' => $mailConfig['reply_to']['address'],
+        'mail.reply_to.name' => $mailConfig['reply_to']['name'],
+      ]);
+    }
   }
 }

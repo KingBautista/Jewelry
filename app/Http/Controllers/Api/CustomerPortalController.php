@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\Invoice;
 use App\Models\Payment;
+use App\Models\EmailSetting;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Resources\CustomerResource;
@@ -496,9 +497,12 @@ class CustomerPortalController extends Controller
         $payment->load(['invoice', 'customer']);
 
         // Send notification email to admin (if admin email is configured)
-        $adminEmail = env('ADMIN_EMAIL');
+        $adminEmail = EmailSetting::getValue('admin_email');
         if ($adminEmail && filter_var($adminEmail, FILTER_VALIDATE_EMAIL)) {
             try {
+                // Configure mail settings from database
+                $this->configureMailFromDatabase();
+                
                 \Illuminate\Support\Facades\Mail::to($adminEmail)
                     ->send(new \App\Mail\PaymentSubmissionNotification($payment));
                 \Log::info('Payment submission notification email sent to: ' . $adminEmail);
@@ -669,5 +673,27 @@ class CustomerPortalController extends Controller
             'message' => 'Profile updated successfully',
             'data' => new CustomerResource($user)
         ]);
+    }
+
+    /**
+     * Configure mail settings from database
+     */
+    private function configureMailFromDatabase()
+    {
+        $mailConfig = EmailSetting::getMailConfig();
+        
+        // Set mail configuration dynamically
+        config([
+            'mail.from.address' => $mailConfig['from']['address'],
+            'mail.from.name' => $mailConfig['from']['name'],
+        ]);
+        
+        // Set reply-to if configured
+        if ($mailConfig['reply_to']['address']) {
+            config([
+                'mail.reply_to.address' => $mailConfig['reply_to']['address'],
+                'mail.reply_to.name' => $mailConfig['reply_to']['name'],
+            ]);
+        }
     }
 }

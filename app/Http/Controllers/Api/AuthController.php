@@ -10,6 +10,7 @@ use App\Http\Requests\ForgotPasswordRequest;
 use App\Helpers\PasswordHelper;
 use App\Helpers\AuditTrailHelper;
 use App\Models\User;
+use App\Models\EmailSetting;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\VerifyEmail;
 use App\Mail\ForgotPasswordEmail;
@@ -62,6 +63,10 @@ class AuthController extends Controller
 		);
 
 		$message = '';
+		
+		// Configure mail settings from database
+		$this->configureMailFromDatabase();
+		
 		if(Mail::to($user->user_email)->send(new VerifyEmail($user, $options))) {
 			$message = 'Aww yeah, you have successfuly registered. Verification email has been sent to your registered email.';
 		}
@@ -119,6 +124,9 @@ class AuthController extends Controller
 				'new_password' => $new_password
 			);
 	
+			// Configure mail settings from database
+			$this->configureMailFromDatabase();
+			
 			if(Mail::to($user->user_email)->send(new ForgotPasswordEmail($user, $options))) {
 				$message = 'Your temporary password has been sent to your registered email.';
 			}
@@ -247,5 +255,27 @@ class AuthController extends Controller
 		}
 		
 		return response(['message' => 'Password is valid.'], 200);
+	}
+
+	/**
+	 * Configure mail settings from database
+	 */
+	private function configureMailFromDatabase()
+	{
+		$mailConfig = EmailSetting::getMailConfig();
+		
+		// Set mail configuration dynamically
+		config([
+			'mail.from.address' => $mailConfig['from']['address'],
+			'mail.from.name' => $mailConfig['from']['name'],
+		]);
+		
+		// Set reply-to if configured
+		if ($mailConfig['reply_to']['address']) {
+			config([
+				'mail.reply_to.address' => $mailConfig['reply_to']['address'],
+				'mail.reply_to.name' => $mailConfig['reply_to']['name'],
+			]);
+		}
 	}
 }
