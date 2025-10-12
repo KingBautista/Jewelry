@@ -293,7 +293,6 @@ const PaymentHistory = () => {
                                   const altIndex = baseUrls.indexOf(currentSrc);
                                   
                                   if (altIndex < baseUrls.length - 1) {
-                                    console.log('Trying alternative URL:', baseUrls[altIndex + 1]);
                                     e.target.src = baseUrls[altIndex + 1];
                                     return;
                                   }

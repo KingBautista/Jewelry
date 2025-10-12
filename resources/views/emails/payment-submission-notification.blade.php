@@ -144,7 +144,7 @@
             </div>
             
             <div style="text-align: center;">
-                <a href="{{ $adminUrl }}/payment-management/payments" class="button">Review Payment Submission</a>
+                <a href="{{ $adminUrl }}/payment-management/payments/{{ $payment->id }}" class="button">Review Payment Submission</a>
             </div>
             
             <p><strong>Next Steps:</strong></p>
