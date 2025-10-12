@@ -95,15 +95,6 @@ class CustomerService extends BaseService
     }
 
     /**
-     * Display the specified resource.
-     */
-    public function show($id)
-    {
-        $user = User::customers()->findOrFail($id);
-        return new UserResource($user);
-    }
-
-    /**
      * Get customer statistics
      */
     public function getCustomerStats()
@@ -158,7 +149,6 @@ class CustomerService extends BaseService
             ->sortBy('first_name')
             ->values();
     }
-
 
     /**
      * Send welcome email to customer
