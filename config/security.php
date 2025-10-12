@@ -44,9 +44,9 @@ return [
     ],
 
     'cors' => [
-        'allowed_origins' => explode(',', env('CORS_ALLOWED_ORIGINS', 'https://admin.illussso.com,https://customer.illussso.com,http://localhost:4000,http://localhost:3001')),
-        'allowed_methods' => explode(',', env('CORS_ALLOWED_METHODS', 'GET,POST,PUT,DELETE,OPTIONS')),
-        'allowed_headers' => explode(',', env('CORS_ALLOWED_HEADERS', 'Content-Type,Authorization,X-Requested-With')),
+        'allowed_origins' => explode(',', env('CORS_ALLOWED_ORIGINS', 'https://admin.illussso.com,https://customer.illussso.com,http://localhost:4000,http://localhost:3001,http://localhost:3000,http://127.0.0.1:4000,http://127.0.0.1:3001,http://127.0.0.1:3000')),
+        'allowed_methods' => explode(',', env('CORS_ALLOWED_METHODS', 'GET,POST,PUT,DELETE,OPTIONS,PATCH')),
+        'allowed_headers' => explode(',', env('CORS_ALLOWED_HEADERS', 'Accept,Authorization,Content-Type,X-Requested-With,X-CSRF-TOKEN,X-XSRF-TOKEN,Origin,Access-Control-Request-Method,Access-Control-Request-Headers')),
         'max_age' => env('CORS_MAX_AGE', 86400),
     ],
 

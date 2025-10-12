@@ -15,12 +15,38 @@ return [
     |
     */
 
-    'paths' => ['api/*', 'storage/*', 'docs/*'], // Adjust this to match your API routes
+    'paths' => ['api/*', 'storage/*', 'docs/*', 'sanctum/*'],
     'allowed_methods' => ['*'],
-    'allowed_origins' => ['*'], // Add your React app's URL here
+    'allowed_origins' => [
+        'https://admin.illussso.com',
+        'https://customer.illussso.com',
+        'http://localhost:4000',
+        'http://localhost:3001',
+        'http://localhost:3000',
+        'http://127.0.0.1:4000',
+        'http://127.0.0.1:3001',
+        'http://127.0.0.1:3000',
+    ],
     'allowed_origins_patterns' => [],
-    'allowed_headers' => ['*'],
-    'exposed_headers' => [],
-    'max_age' => 0,
+    'allowed_headers' => [
+        'Accept',
+        'Authorization',
+        'Content-Type',
+        'X-Requested-With',
+        'X-CSRF-TOKEN',
+        'X-XSRF-TOKEN',
+        'Origin',
+        'Access-Control-Request-Method',
+        'Access-Control-Request-Headers',
+    ],
+    'exposed_headers' => [
+        'Cache-Control',
+        'Content-Language',
+        'Content-Type',
+        'Expires',
+        'Last-Modified',
+        'Pragma',
+    ],
+    'max_age' => 86400,
     'supports_credentials' => true,
 ];

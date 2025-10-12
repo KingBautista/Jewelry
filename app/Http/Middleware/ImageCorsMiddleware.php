@@ -15,6 +15,25 @@ class ImageCorsMiddleware
      */
     public function handle(Request $request, Closure $next): Response
     {
+        // Handle preflight OPTIONS requests
+        if ($request->isMethod('OPTIONS')) {
+            $allowedOrigins = config('security.cors.allowed_origins', ['http://localhost:3000']);
+            $origin = $request->headers->get('Origin');
+            
+            $response = response('', 200);
+            
+            if (in_array($origin, $allowedOrigins)) {
+                $response->headers->set('Access-Control-Allow-Origin', $origin);
+            }
+            
+            $response->headers->set('Access-Control-Allow-Methods', implode(',', config('security.cors.allowed_methods', ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'])));
+            $response->headers->set('Access-Control-Allow-Headers', implode(',', config('security.cors.allowed_headers', ['Content-Type', 'Authorization', 'X-Requested-With'])));
+            $response->headers->set('Access-Control-Max-Age', config('security.cors.max_age', 86400));
+            $response->headers->set('Access-Control-Allow-Credentials', 'true');
+            
+            return $response;
+        }
+
         $response = $next($request);
 
         // Add CORS headers for image requests with security restrictions
@@ -23,8 +42,7 @@ class ImageCorsMiddleware
         
         if (in_array($origin, $allowedOrigins)) {
             $response->headers->set('Access-Control-Allow-Origin', $origin);
-        } else {
-            $response->headers->set('Access-Control-Allow-Origin', 'null');
+            $response->headers->set('Access-Control-Allow-Credentials', 'true');
         }
         
         $response->headers->set('Access-Control-Allow-Methods', implode(',', config('security.cors.allowed_methods', ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'])));
