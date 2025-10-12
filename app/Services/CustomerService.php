@@ -153,30 +153,22 @@ class CustomerService extends BaseService
     /**
      * Send welcome email to customer
      */
-    public function sendWelcomeEmail($customer, $password = null)
+    public function sendWelcomeEmail($user, $password = null)
     {
         try {
-            // Use provided password or generate a temporary one
-            $tempPassword = $password ?: $this->generateTempPassword();
-            
             $options = [
-                'customer_name' => $customer->full_name,
-                'customer_code' => $customer->customer_code,
-                'temp_password' => $tempPassword,
                 'login_url' => env('ADMIN_APP_URL') . "/login",
+                'password' => $password
             ];
 
             // Configure mail settings from database
             $this->configureMailFromDatabase();
+
+            Mail::to($user->user_email)->send(new UserWelcomeEmail($user, $options));
             
-            // Send welcome email (you can implement this mail class later)
-            // Mail::to($customer->email)->send(new CustomerWelcomeEmail($customer, $options));
-            
-            // For now, just log the password (in production, this should be sent via email)
-            \Log::info("Welcome email for customer {$customer->email} with password: {$tempPassword}");
-            
+            \Log::info("Welcome email sent to customer: {$user->user_email}");
         } catch (\Exception $e) {
-            \Log::error("Failed to send welcome email to customer {$customer->email}: " . $e->getMessage());
+            \Log::error("Failed to send welcome email to customer {$user->user_email}: " . $e->getMessage());
         }
     }
 
@@ -251,28 +243,6 @@ class CustomerService extends BaseService
         }
 
         return response()->json(['error' => 'Unsupported export format'], 400);
-    }
-
-    /**
-     * Send welcome email to new customer
-     */
-    public function sendWelcomeEmail($user, $password = null)
-    {
-        try {
-            $options = [
-                'login_url' => env('ADMIN_APP_URL') . "/login",
-                'password' => $password
-            ];
-
-            // Configure mail settings from database
-            $this->configureMailFromDatabase();
-
-            Mail::to($user->user_email)->send(new UserWelcomeEmail($user, $options));
-            
-            \Log::info("Welcome email sent to customer: {$user->user_email}");
-        } catch (\Exception $e) {
-            \Log::error("Failed to send welcome email to customer {$user->user_email}: " . $e->getMessage());
-        }
     }
 
     /**
