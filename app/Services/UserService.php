@@ -82,19 +82,18 @@ class UserService extends BaseService
   /**
   * Update the specified resource in storage.
   */
-  public function updateWithMeta(array $data, array $metaData, User $user)
+  public function updateWithMeta(array $data, array $metaData, User $user, $originalPassword = null)
   {
     // Check if password is being updated
     $passwordUpdated = isset($data['user_pass']) && !empty($data['user_pass']);
-    $newPassword = $passwordUpdated ? $data['user_pass'] : null;
     
     $user->update($data);
     if(count($metaData))
       $user->saveUserMeta($metaData);
 
     // Send password update email if password was changed
-    if ($passwordUpdated) {
-      $this->sendPasswordUpdateEmail($user, $newPassword);
+    if ($passwordUpdated && $originalPassword) {
+      $this->sendPasswordUpdateEmail($user, $originalPassword);
     }
 
     return new UserResource($user);
@@ -224,6 +223,9 @@ class UserService extends BaseService
   private function configureMailFromDatabase()
   {
     $mailConfig = EmailSetting::getMailConfig();
+    
+    // Force log driver for testing (since sendmail doesn't work on Windows)
+    config(['mail.default' => 'log']);
     
     // Set mail configuration dynamically
     config([

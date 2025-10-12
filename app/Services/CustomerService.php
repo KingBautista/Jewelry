@@ -76,19 +76,25 @@ class CustomerService extends BaseService
     /**
      * Update the specified resource in storage with meta data.
      */
-    public function updateWithMeta(array $userData, array $metaData, User $user)
+    public function updateWithMeta(array $userData, array $metaData, User $user, $originalPassword = null)
     {
         // Check if password is being updated
         $passwordUpdated = isset($userData['user_pass']) && !empty($userData['user_pass']);
-        $newPassword = $passwordUpdated ? $userData['user_pass'] : null;
+        
+        \Log::info("CustomerService::updateWithMeta called for user: {$user->user_email}");
+        \Log::info("Password updated: " . ($passwordUpdated ? 'YES' : 'NO'));
+        \Log::info("Original password provided: " . ($originalPassword ? 'YES' : 'NO'));
         
         $user->update($userData);
         if(count($metaData))
             $user->saveUserMeta($metaData);
 
         // Send password update email if password was changed
-        if ($passwordUpdated) {
-            $this->sendPasswordUpdateEmail($user, $newPassword);
+        if ($passwordUpdated && $originalPassword) {
+            \Log::info("Sending password update email to: {$user->user_email}");
+            $this->sendPasswordUpdateEmail($user, $originalPassword);
+        } else {
+            \Log::info("Not sending password update email - passwordUpdated: " . ($passwordUpdated ? 'true' : 'false') . ", originalPassword: " . ($originalPassword ? 'provided' : 'null'));
         }
 
         return new UserResource($user);
@@ -251,6 +257,8 @@ class CustomerService extends BaseService
     public function sendPasswordUpdateEmail($user, $newPassword = null)
     {
         try {
+            \Log::info("Attempting to send password update email to customer: {$user->user_email}");
+            
             $options = [
                 'login_url' => env('ADMIN_APP_URL') . "/login",
                 'new_password' => $newPassword
@@ -258,12 +266,15 @@ class CustomerService extends BaseService
 
             // Configure mail settings from database
             $this->configureMailFromDatabase();
+            
+            \Log::info("Mail configuration set, sending email to: {$user->user_email}");
 
             Mail::to($user->user_email)->send(new UserPasswordUpdateEmail($user, $options));
             
-            \Log::info("Password update email sent to customer: {$user->user_email}");
+            \Log::info("Password update email sent successfully to customer: {$user->user_email}");
         } catch (\Exception $e) {
             \Log::error("Failed to send password update email to customer {$user->user_email}: " . $e->getMessage());
+            \Log::error("Stack trace: " . $e->getTraceAsString());
         }
     }
 
@@ -273,6 +284,9 @@ class CustomerService extends BaseService
     private function configureMailFromDatabase()
     {
         $mailConfig = EmailSetting::getMailConfig();
+        
+        // Force log driver for testing (since sendmail doesn't work on Windows)
+        config(['mail.default' => 'log']);
         
         // Set mail configuration dynamically
         config([

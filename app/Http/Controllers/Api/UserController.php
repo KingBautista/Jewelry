@@ -279,9 +279,12 @@ class UserController extends BaseController
         $upData['user_role_id'] = $data['user_role']['id'];
       }
 
-      if (isset($data['user_pass'])) {
+      // Handle password update if provided
+      $originalPassword = null;
+      if (isset($data['user_pass']) && !empty($data['user_pass'])) {
         $salt = $user->user_salt;
         $upData['user_pass'] = PasswordHelper::generatePassword($salt, request('user_pass'));
+        $originalPassword = request('user_pass'); // Keep original password for email
       }
 
       $meta_details = [];
@@ -291,7 +294,7 @@ class UserController extends BaseController
       if(isset($request->last_name))
         $meta_details['last_name'] = $request->last_name;
 
-      $user = $this->service->updateWithMeta($upData, $meta_details, $user);
+      $user = $this->service->updateWithMeta($upData, $meta_details, $user, $originalPassword);
 
       return response($user, 200);
     } catch (\Exception $e) {

@@ -682,6 +682,9 @@ class CustomerPortalController extends Controller
     {
         $mailConfig = EmailSetting::getMailConfig();
         
+        // Force log driver for testing (since sendmail doesn't work on Windows)
+        config(['mail.default' => 'log']);
+        
         // Set mail configuration dynamically
         config([
             'mail.from.address' => $mailConfig['from']['address'],

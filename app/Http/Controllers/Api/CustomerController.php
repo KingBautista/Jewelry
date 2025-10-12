@@ -302,12 +302,18 @@ class CustomerController extends BaseController
             ];
 
             // Handle password update if provided
-            if (isset($data['user_pass'])) {
+            $originalPassword = null;
+            if (isset($data['user_pass']) && !empty($data['user_pass'])) {
+                \Log::info("CustomerController::update - Password update detected for customer: {$customer->user_email}");
                 $salt = $customer->user_salt;
                 $userData['user_pass'] = PasswordHelper::generatePassword($salt, $data['user_pass']);
+                $originalPassword = $data['user_pass']; // Keep original password for email
+                \Log::info("CustomerController::update - Original password stored for email");
+            } else {
+                \Log::info("CustomerController::update - No password update for customer: {$customer->user_email}");
             }
 
-            $customer = $this->service->updateWithMeta($userData, $customerMetaData, $customer);
+            $customer = $this->service->updateWithMeta($userData, $customerMetaData, $customer, $originalPassword);
 
             return response($customer, 200);
         } catch (\Exception $e) {
