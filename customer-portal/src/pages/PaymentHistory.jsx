@@ -286,29 +286,6 @@ const PaymentHistory = () => {
                                 onClick={() => {
                                   window.open(finalImageUrl, '_blank');
                                 }}
-                                onError={(e) => {
-                                  
-                                  // Try alternative URLs
-                                  const currentSrc = e.target.src;
-                                  const altIndex = baseUrls.indexOf(currentSrc);
-                                  
-                                  if (altIndex < baseUrls.length - 1) {
-                                    e.target.src = baseUrls[altIndex + 1];
-                                    return;
-                                  }
-                                  
-                                  // If all URLs fail, show error
-                                  e.target.style.display = 'none';
-                                  const errorDiv = document.createElement('div');
-                                  errorDiv.className = 'alert alert-warning';
-                                  errorDiv.innerHTML = `
-                                    <strong>Failed to load image:</strong><br>
-                                    <small>Original: ${image}</small><br>
-                                    <small>URL: ${imageUrl}</small><br>
-                                    <small>Try: <a href="${baseUrls[1]}" target="_blank">${baseUrls[1]}</a></small>
-                                  `;
-                                  e.target.parentNode.appendChild(errorDiv);
-                                }}
                                 onLoad={() => {
                                   // Image loaded successfully
                                 }}

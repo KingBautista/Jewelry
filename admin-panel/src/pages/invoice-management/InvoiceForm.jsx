@@ -910,9 +910,19 @@ export default function InvoiceForm() {
                   <div className="col-9">
                     <div className="card">
                       <div className="card-body">
-                        <div className="alert alert-info">
-                          <FontAwesomeIcon icon={solidIconMap.info} className="me-2" />
-                          No payment schedule defined for this payment term. The remaining balance of <strong>₱{remainingAmount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</strong> will be due according to the payment term settings.
+                        <div className="alert alert-warning border-warning">
+                          <div className="d-flex align-items-center">
+                            <FontAwesomeIcon icon={solidIconMap.exclamationTriangle} className="me-3 text-warning" style={{ fontSize: '1.5rem' }} />
+                            <div>
+                              <h6 className="alert-heading mb-2 text-dark">No Payment Schedule Defined</h6>
+                              <p className="mb-2 text-dark">
+                                This payment term does not have a detailed payment schedule configured.
+                              </p>
+                              <p className="mb-0 text-dark">
+                                The remaining balance of <strong className="text-primary">₱{remainingAmount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</strong> will be due according to the payment term settings.
+                              </p>
+                            </div>
+                          </div>
                         </div>
                       </div>
                     </div>

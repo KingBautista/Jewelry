@@ -240,7 +240,7 @@ const TableBody = forwardRef(({ options, rows, permissions, onAction, onCheckedA
                 return (
                   <td 
                     key={field} 
-                    style={{ maxWidth: columnMaxWidth, ...extraStyle, cursor: 'pointer' }} 
+                    style={{ maxWidth: columnMaxWidth, cursor: 'pointer' }} 
                     className={`${dataFields[field].className || ''} edit-link-cell`}
                     onClick={(e) => {
                       e.stopPropagation();

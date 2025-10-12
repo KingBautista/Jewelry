@@ -899,8 +899,16 @@ export default function PaymentForm() {
                         <img 
                           src={payment.receipt_image} 
                           alt="Receipt" 
-                          style={{ maxWidth: '150px', maxHeight: '150px', objectFit: 'cover' }}
+                          style={{ 
+                            maxWidth: '150px', 
+                            maxHeight: '150px', 
+                            objectFit: 'cover',
+                            cursor: 'pointer'
+                          }}
                           className="img-thumbnail"
+                          onClick={() => {
+                            window.open(payment.receipt_image, '_blank');
+                          }}
                           onLoad={() => {
                             console.log('Receipt image loaded successfully:', payment.receipt_image);
                           }}
