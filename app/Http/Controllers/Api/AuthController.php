@@ -8,6 +8,7 @@ use App\Http\Requests\SignupRequest;
 use App\Http\Requests\LoginRequest;
 use App\Http\Requests\ForgotPasswordRequest;
 use App\Helpers\PasswordHelper;
+use App\Helpers\AuditTrailHelper;
 use App\Models\User;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\VerifyEmail;
@@ -64,6 +65,14 @@ class AuthController extends Controller
 		if(Mail::to($user->user_email)->send(new VerifyEmail($user, $options))) {
 			$message = 'Aww yeah, you have successfuly registered. Verification email has been sent to your registered email.';
 		}
+
+		// Log user registration
+		AuditTrailHelper::log(
+			'USER_MANAGEMENT',
+			'CREATE',
+			['user_id' => $user->id, 'user_email' => $user->user_email],
+			$user->id
+		);
 
 		return response(compact('message'));
 		
@@ -153,6 +162,14 @@ class AuthController extends Controller
 		$user = User::where('user_email', $credentials['email'])->where('user_status', 1)->first();
 		
 		if (!$user || !Hash::check($user->user_salt.$credentials['password'].(env("PEPPER_HASH") ?: ''), $user->user_pass)) {
+			// Log failed login attempt
+			AuditTrailHelper::log(
+				'USER_MANAGEMENT',
+				'LOGIN_FAILED',
+				['email' => $credentials['email'], 'ip_address' => $request->ip()],
+				null
+			);
+			
 			return response([
 				'errors' => ['Invalid email or password.'],
 				'status' => false,
@@ -165,6 +182,14 @@ class AuthController extends Controller
 		Auth::login($user);
 		$token = $user->createToken('admin')->plainTextToken;
 		$user = new AuthResource($user);
+
+		// Log successful login
+		AuditTrailHelper::log(
+			'USER_MANAGEMENT',
+			'LOGIN',
+			['user_id' => $user->id, 'user_email' => $user->user_email],
+			$user->id
+		);
 
 		return response(compact('user', 'token'));	
 
@@ -190,6 +215,15 @@ class AuthController extends Controller
 	public function logout(Request $request) 
 	{
 		$user = $request->user();
+		
+		// Log logout before deleting token
+		AuditTrailHelper::log(
+			'USER_MANAGEMENT',
+			'LOGOUT',
+			['user_id' => $user->id, 'user_email' => $user->user_email],
+			$user->id
+		);
+		
 		$user->currentAccessToken()->delete();
 		
 		return response('', 204);

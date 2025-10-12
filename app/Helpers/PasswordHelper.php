@@ -24,4 +24,12 @@ class PasswordHelper
 		return Hash::make($salt.$password.env('PEPPER_HASH'));
     }
 
+    /* verify_password
+    *  params $salt, $password, $hash
+	*  return boolean
+    */
+    public static function verifyPassword($salt, $password, $hash) {		
+		return Hash::check($salt.$password.env('PEPPER_HASH'), $hash);
+    }
+
 }

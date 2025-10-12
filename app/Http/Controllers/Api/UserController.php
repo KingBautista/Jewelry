@@ -447,6 +447,15 @@ class UserController extends BaseController
       if(isset($request->last_name))
         $meta_details['last_name'] = $request->last_name;
 
+      if(isset($request->nickname))
+        $meta_details['nickname'] = $request->nickname;
+
+      if(isset($request->biography))
+        $meta_details['biography'] = $request->biography;
+
+      if(isset($request->theme))
+        $meta_details['theme'] = $request->theme;
+
       $user = $this->service->updateWithMeta($upData, $meta_details, $user);
 
       return response([

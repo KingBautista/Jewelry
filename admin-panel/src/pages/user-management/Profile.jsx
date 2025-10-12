@@ -5,13 +5,11 @@ import ToastMessage from "../../components/ToastMessage";
 import Field from "../../components/Field";
 import DOMPurify from 'dompurify';
 import PasswordGenerator from "../../components/PasswordGenerator";
-import AddMedia from "../../components/grid/AddMedia";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { solidIconMap } from '../../utils/solidIcons';
 
 export default function Profile() {
   const toastAction = useRef();
-  const [attachment, setAttachment] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [user, setUser] = useState({
     id: null,
@@ -22,7 +20,6 @@ export default function Profile() {
     last_name: '',
     nickname: '',
     biography: '',
-    attachment_file: '',
     theme: '',
   });
 
@@ -31,11 +28,21 @@ export default function Profile() {
     setIsLoading(true);
 
     try {
-      // Prepare the data for submission
+      // Prepare the data for submission - only include password if it's not empty
       const updatedProfile = {
-        ...user,
-        attachment_file: attachment ? JSON.stringify(attachment) : user.attachment_file
+        user_login: user.user_login,
+        user_email: user.user_email,
+        first_name: user.first_name,
+        last_name: user.last_name,
+        nickname: user.nickname,
+        biography: user.biography,
+        theme: user.theme
       };
+
+      // Only include password if it's provided and not empty
+      if (user.user_pass && user.user_pass.trim() !== '') {
+        updatedProfile.user_pass = user.user_pass;
+      }
     
       const apiUrl = '/profile';
       const method = 'post';
@@ -56,7 +63,7 @@ export default function Profile() {
           nickname: response.data.user.nickname || response.data.user.user_details?.nickname || '',
           biography: response.data.user.biography || response.data.user.user_details?.biography || '',
           theme: response.data.user.theme || response.data.user.user_details?.theme || '',
-          attachment_file: response.data.user.attachment_file || response.data.user.user_details?.attachment_file || '',
+          user_pass: '', // Clear password field after successful update
         }));
       }
   
@@ -91,19 +98,8 @@ export default function Profile() {
         last_name: userData.last_name || userData.user_details?.last_name || '',
         nickname: userData.nickname || userData.user_details?.nickname || '',
         biography: userData.biography || userData.user_details?.biography || '',
-        attachment_file: userData.attachment_file || userData.user_details?.attachment_file || '',
         theme: userData.theme || userData.user_details?.theme || '',
       });
-
-      // Set attachment if exists
-      if (userData.attachment_file || userData.attachment_metadata) {
-        try {
-          const attachmentData = JSON.parse(userData.attachment_file || userData.attachment_metadata);
-          setAttachment(attachmentData);
-        } catch (e) {
-          console.log('No valid attachment data');
-        }
-      }
     })
     .catch(error => {
       console.error('Failed to fetch user data:', error);
@@ -112,196 +108,154 @@ export default function Profile() {
   }, []); // empty array means 'run once'
 
   return (
-    <div className="container-fluid">
-      <div className="row">
-        <div className="col-12">
-          <div className="card shadow-sm border-0 profile-card">
-            <form onSubmit={onSubmit}>
-              {/* Header */}
-              <div className="card-header border-0 profile-main-header">
-                <div className="d-flex justify-content-between align-items-center">
-                  <h4 className="mb-0">
-                    <FontAwesomeIcon icon={solidIconMap.user} className="me-2" />
-                    Profile Settings
-                  </h4>
-                </div>
-              </div>
+    <>
+    <div className="card">
+      <form onSubmit={onSubmit}>
+        <div className="card-header">
+          <h4>
+            <FontAwesomeIcon icon={solidIconMap.user} className="me-2" />
+            Profile Settings
+          </h4>
+          <p className="tip-message">Update your personal information and preferences.</p>
+        </div>
+        <div className="card-body">
+          {/* Username Field */}
+          <Field
+            label="Username"
+            inputComponent={
+              <input
+                className="form-control"
+                type="text"
+                value={user.user_login}
+                onChange={ev => setUser({ ...user, user_login: DOMPurify.sanitize(ev.target.value) })}
+                disabled
+              />
+            }
+            labelClass="col-sm-12 col-md-3"
+            inputClass="col-sm-12 col-md-9"
+          />
+          
+          {/* Email Field */}
+          <Field
+            label="Email Address"
+            required={true}
+            inputComponent={
+              <input
+                className="form-control"
+                type="email"
+                value={user.user_email}
+                onChange={ev => setUser({ ...user, user_email: DOMPurify.sanitize(ev.target.value) })}
+                required
+              />
+            }
+            labelClass="col-sm-12 col-md-3"
+            inputClass="col-sm-12 col-md-9"
+          />
 
-              <div className="card-body p-4">
-                <div className="row">
-                  {/* Left Column */}
-                  <div className="col-lg-8">
-                    {/* Personal Information */}
-                    <div className="card border-0 mb-4 profile-section profile-section-card">
-                      <div className="card-header border-bottom">
-                        <h5 className="mb-0 profile-section-header">
-                          <FontAwesomeIcon icon={solidIconMap.user} className="me-2" />
-                          Personal Information
-                        </h5>
-                      </div>
-                      <div className="card-body">
-                        <div className="row g-3">
-                          {/* Username Field */}
-                          <div className="col-md-6">
-                            <label className="form-label fw-bold">Username</label>
-                            <input
-                              className="form-control profile-form-control"
-                              type="text"
-                              value={user.user_login}
-                              onChange={ev => setUser({ ...user, user_login: DOMPurify.sanitize(ev.target.value) })}
-                              disabled
-                            />
-                            <small className="text-dark">Usernames cannot be changed.</small>
-                          </div>
-                          
-                          {/* Email Field */}
-                          <div className="col-md-6">
-                            <label className="form-label fw-bold">Email Address</label>
-                            <input
-                              className="form-control profile-form-control"
-                              type="email"
-                              value={user.user_email}
-                              onChange={ev => setUser({ ...user, user_email: DOMPurify.sanitize(ev.target.value) })}
-                              required
-                            />
-                            <small className="text-dark">If you change this, an email will be sent to confirm it.</small>
-                          </div>
+          {/* First Name Field */}
+          <Field
+            label="First Name"
+            inputComponent={
+              <input
+                className="form-control"
+                type="text"
+                value={user.first_name}
+                onChange={ev => setUser({ ...user, first_name: DOMPurify.sanitize(ev.target.value) })}
+                placeholder="Enter your first name"
+              />
+            }
+            labelClass="col-sm-12 col-md-3"
+            inputClass="col-sm-12 col-md-9"
+          />
 
-                          {/* First Name Field */}
-                          <div className="col-md-6">
-                            <label className="form-label fw-bold">First Name</label>
-                            <input
-                              className="form-control"
-                              type="text"
-                              value={user.first_name}
-                              onChange={ev => setUser({ ...user, first_name: DOMPurify.sanitize(ev.target.value) })}
-                              placeholder="Enter your first name"
-                            />
-                          </div>
+          {/* Last Name Field */}
+          <Field
+            label="Last Name"
+            inputComponent={
+              <input
+                className="form-control"
+                type="text"
+                value={user.last_name}
+                onChange={ev => setUser({ ...user, last_name: DOMPurify.sanitize(ev.target.value) })}
+                placeholder="Enter your last name"
+              />
+            }
+            labelClass="col-sm-12 col-md-3"
+            inputClass="col-sm-12 col-md-9"
+          />
 
-                          {/* Last Name Field */}
-                          <div className="col-md-6">
-                            <label className="form-label fw-bold">Last Name</label>
-                            <input
-                              className="form-control"
-                              type="text"
-                              value={user.last_name}
-                              onChange={ev => setUser({ ...user, last_name: DOMPurify.sanitize(ev.target.value) })}
-                              placeholder="Enter your last name"
-                            />
-                          </div>
+          {/* Nickname Field */}
+          <Field
+            label="Nickname"
+            inputComponent={
+              <input
+                className="form-control"
+                type="text"
+                value={user.nickname}
+                onChange={ev => setUser({ ...user, nickname: DOMPurify.sanitize(ev.target.value) })}
+                placeholder="Enter your nickname"
+              />
+            }
+            labelClass="col-sm-12 col-md-3"
+            inputClass="col-sm-12 col-md-9"
+          />
 
-                          {/* Nickname Field */}
-                          <div className="col-md-6">
-                            <label className="form-label fw-bold">Nickname</label>
-                            <input
-                              className="form-control"
-                              type="text"
-                              value={user.nickname}
-                              onChange={ev => setUser({ ...user, nickname: DOMPurify.sanitize(ev.target.value) })}
-                              placeholder="Enter your nickname"
-                            />
-                          </div>
+          {/* Theme Field */}
+          <Field
+            label="Theme Preference"
+            inputComponent={
+              <select 
+                className="form-select" 
+                value={user?.theme} 
+                onChange={ev => handleSelectedTheme(ev.target.value)}
+              >
+                <option value="">Select Theme</option>
+                <option value="light">Light Theme</option>
+                <option value="dark">Dark Theme</option>
+              </select>
+            }
+            labelClass="col-sm-12 col-md-3"
+            inputClass="col-sm-12 col-md-9"
+          />
 
-                          {/* Theme Field */}
-                          <div className="col-md-6">
-                            <label className="form-label fw-bold">Theme Preference</label>
-                            <select 
-                              className="form-select profile-form-control" 
-                              value={user?.theme} 
-                              onChange={ev => handleSelectedTheme(ev.target.value)}
-                            >
-                              <option value="">Select Theme</option>
-                              <option value="light">Light Theme</option>
-                              <option value="dark">Dark Theme</option>
-                            </select>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
+          {/* Biography Field */}
+          <Field
+            label="Biography"
+            inputComponent={
+              <textarea 
+                className="form-control" 
+                rows={4} 
+                value={user.biography || ''} 
+                onChange={ev => setUser({...user, biography: ev.target.value})}
+                placeholder="Share a little biographical information to fill out your profile..."
+              />
+            }
+            labelClass="col-sm-12 col-md-3"
+            inputClass="col-sm-12 col-md-9"
+          />
 
-                    {/* About Yourself */}
-                    <div className="card border-0 mb-4 profile-section profile-section-card">
-                      <div className="card-header border-bottom">
-                        <h5 className="mb-0 profile-section-header">
-                          <FontAwesomeIcon icon={solidIconMap.info} className="me-2" />
-                          About Yourself
-                        </h5>
-                      </div>
-                      <div className="card-body">
-                        <div className="mb-3">
-                          <label className="form-label fw-bold">Biographical Information</label>
-                          <textarea 
-                            className="form-control profile-form-control" 
-                            rows={4} 
-                            value={user.biography || ''} 
-                            onChange={ev => setUser({...user, biography: ev.target.value})}
-                            placeholder="Share a little biographical information to fill out your profile..."
-                          />
-                          <small className="text-dark">This may be shown publicly.</small>
-                        </div>
-                      </div>
-                    </div>
+          {/* Password Field - Not Required */}
+          <PasswordGenerator 
+            label="New Password"
+            setUser={setUser} 
+            user={user}
+            labelClass="col-sm-12 col-md-3"
+            inputClass="col-sm-12 col-md-9"
+          />
 
-                    {/* Password Section */}
-                    <div className="card border-0 profile-section profile-section-card">
-                      <div className="card-header border-bottom">
-                        <h5 className="mb-0 profile-section-header">
-                          <FontAwesomeIcon icon={solidIconMap.lock} className="me-2" />
-                          Security Settings
-                        </h5>
-                      </div>
-                      <div className="card-body">
-                        <PasswordGenerator 
-                          label="New Password"
-                          setUser={setUser} 
-                          user={user}
-                          labelClass="col-12 col-md-3"
-                          inputClass="col-12 col-md-9"
-                        />
-                        <small className="text-dark">Leave blank to keep your current password.</small>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Right Column */}
-                  <div className="col-lg-4">
-                    {/* Profile Picture */}
-                    <div className="card border-0 profile-section profile-section-card">
-                      <div className="card-header border-bottom">
-                        <h5 className="mb-0 profile-section-header">
-                          <FontAwesomeIcon icon={solidIconMap.image} className="me-2" />
-                          Profile Picture
-                        </h5>
-                      </div>
-                      <div className="card-body">
-                        <AddMedia onChange={setAttachment} value={user.attachment_metadata} />
-                        <small className="text-dark">Upload a profile picture to personalize your account.</small>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Footer */}
-              <div className="card-footer border-0">
-                <div className="d-flex justify-content-between align-items-center">
-                  <button 
-                    type="submit" 
-                    className="btn btn-secondary profile-submit-btn"
-                    disabled={isLoading}
-                  >
-                    <FontAwesomeIcon icon={solidIconMap.save} className="me-2" />
-                    {isLoading ? 'Saving Changes...' : 'Save Profile'}
-                    {isLoading && <span className="spinner-border spinner-border-sm ms-2" role="status"></span>}
-                  </button>
-                </div>
-              </div>
-            </form>
+        </div>
+        <div className="card-footer d-flex justify-content-between">
+          <div>
+            <button type="submit" className="btn btn-secondary">
+              <FontAwesomeIcon icon={solidIconMap.save} className="me-2" />
+              {isLoading ? 'Saving Changes...' : 'Save Profile'} &nbsp;
+              {isLoading && <span className="spinner-border spinner-border-sm ml-1" role="status"></span>}
+            </button>
           </div>
         </div>
-      </div>
-      <ToastMessage ref={toastAction} />
+      </form>
     </div>
+    <ToastMessage ref={toastAction} />
+    </>
   );
 }

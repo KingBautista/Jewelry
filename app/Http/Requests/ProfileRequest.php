@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Auth;
 
 class ProfileRequest extends FormRequest
 {
@@ -22,8 +23,9 @@ class ProfileRequest extends FormRequest
 	public function rules(): array
 	{
 		return [
-			"user_email" => "required|email|unique:users,user_email,".$this->id,
+			"user_email" => "required|email|unique:users,user_email,".Auth::id(),
 			"user_pass" => [
+				'nullable',
 				'string',
 				'min:8',              // must be at least 8 characters in length
 				'regex:/[a-z]/',      // must contain at least one lowercase letter
@@ -46,6 +48,7 @@ class ProfileRequest extends FormRequest
 			'user_email.unique' => 'This email address is already registered.',
 			'user_pass.min' => 'The password must be at least 8 characters.',
 			'user_pass.regex' => 'The password must contain at least one uppercase letter, one lowercase letter, one number, and one special character.',
+			'user_pass.nullable' => 'The password field is optional.',
 			'first_name.regex' => 'The first name can only contain letters, numbers, and special characters (, & - _).',
 			'last_name.regex' => 'The last name can only contain letters, numbers, and special characters (, & - _).',
 			'nickname.regex' => 'The nickname can only contain letters, numbers, and special characters (, & - _).',

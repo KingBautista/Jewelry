@@ -34,6 +34,7 @@ Route::middleware('auth:sanctum')->group(function () {
 	// Validate password for current authenticated user
 	Route::post('/validate-password', [AuthController::class, 'validatePassword']);
 	Route::get('/user', [UserController::class, 'getUser']);
+	Route::post('/profile', [UserController::class, 'updateProfile']);
 	Route::post('/logout', [AuthController::class, 'logout']);
 
 	/*
