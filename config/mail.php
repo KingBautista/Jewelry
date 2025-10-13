@@ -48,6 +48,7 @@ return [
                     'allow_self_signed' => true,
                     'verify_peer' => false,
                     'verify_peer_name' => false,
+                    'crypto_method' => STREAM_CRYPTO_METHOD_TLS_CLIENT,
                 ],
             ],
         ],
@@ -117,6 +118,9 @@ return [
             'allow_self_signed' => true,
             'verify_peer' => false,
             'verify_peer_name' => false,
+            'crypto_method' => STREAM_CRYPTO_METHOD_TLS_CLIENT,
+            'disable_compression' => true,
+            'peer_name' => env('MAIL_HOST', 'smtpout.secureserver.net'),
         ],
     ],
 
