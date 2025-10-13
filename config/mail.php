@@ -98,6 +98,24 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Stream Options (for GoDaddy fix)
+    |--------------------------------------------------------------------------
+    |
+    | This disables TLS certificate checks and prevents Laravel from trying
+    | to negotiate STARTTLS with localhost (GoDaddy internal relay).
+    |
+    */
+
+    'stream' => [
+        'ssl' => [
+            'allow_self_signed' => true,
+            'verify_peer' => false,
+            'verify_peer_name' => false,
+        ],
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
     | Global "From" Address
     |--------------------------------------------------------------------------
     |
