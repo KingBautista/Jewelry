@@ -60,3 +60,9 @@ Route::get('/test-invoices', function () {
     }
 });
 
+Route::get('/mail-test', function () {
+    Mail::raw('Test email from Laravel on GoDaddy!', function ($message) {
+        $message->to('yourpersonalemail@gmail.com')->subject('Laravel GoDaddy Mail Test');
+    });
+    return 'Mail sent!';
+});
