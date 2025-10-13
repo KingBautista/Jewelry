@@ -66,3 +66,12 @@ Route::get('/mail-test', function () {
     });
     return 'Mail sent!';
 });
+
+Route::get('/env-check', function () {
+    return [
+        'mailer' => config('mail.default'),
+        'host' => config('mail.mailers.smtp.host'),
+        'port' => config('mail.mailers.smtp.port'),
+        'from' => config('mail.from'),
+    ];
+});
