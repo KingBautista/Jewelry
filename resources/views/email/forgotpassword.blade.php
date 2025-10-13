@@ -22,10 +22,10 @@
             overflow: hidden;
         }
         .header {
-            background: linear-gradient(135deg, #dc3545 0%, #e74c3c 50%, #c0392b 100%);
+            background: linear-gradient(135deg, #D4AF37 0%, #F7E7CE 50%, #FFF8DC 100%);
             padding: 30px;
             text-align: center;
-            color: white;
+            color: #2C2C2C;
         }
         .header h1 {
             margin: 0;
@@ -37,7 +37,7 @@
         }
         .password-box {
             background: #f8f9fa;
-            border: 2px solid #dc3545;
+            border: 2px solid #D4AF37;
             border-radius: 8px;
             padding: 20px;
             text-align: center;
@@ -46,14 +46,14 @@
         .password {
             font-size: 24px;
             font-weight: bold;
-            color: #dc3545;
+            color: #D4AF37;
             font-family: monospace;
             letter-spacing: 2px;
         }
         .button {
             display: inline-block;
-            background: linear-gradient(135deg, #dc3545 0%, #e74c3c 50%, #c0392b 100%);
-            color: white;
+            background: linear-gradient(135deg, #D4AF37 0%, #F7E7CE 50%, #FFF8DC 100%);
+            color: #2C2C2C;
             padding: 12px 30px;
             text-decoration: none;
             border-radius: 6px;
