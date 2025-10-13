@@ -92,7 +92,7 @@
         </div>
         
         <div class="content">
-            <h2>Hello {{ $user->user_login }},</h2>
+            <h2>Hello {{ $member->user_login }},</h2>
             
             <p>We received a request to reset your password for your {{ config('app.name') }} account. Your account has been updated with a new temporary password.</p>
             
@@ -118,8 +118,8 @@
             
             <div class="info-box">
                 <strong>📧 Account Information:</strong><br>
-                <strong>Username:</strong> {{ $user->user_login }}<br>
-                <strong>Email:</strong> {{ $user->user_email }}<br>
+                <strong>Username:</strong> {{ $member->user_login }}<br>
+                <strong>Email:</strong> {{ $member->user_email }}<br>
                 <strong>Reset Time:</strong> {{ now()->format('F j, Y \a\t g:i A') }}
             </div>
             
