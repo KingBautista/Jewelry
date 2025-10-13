@@ -224,8 +224,10 @@ class UserService extends BaseService
   {
     $mailConfig = EmailSetting::getMailConfig();
     
-    // Force log driver for testing (since sendmail doesn't work on Windows)
-    config(['mail.default' => 'log']);
+    // Only force log driver if no proper SMTP is configured
+    if (env('MAIL_MAILER') === 'sendmail' && !env('MAIL_HOST')) {
+      config(['mail.default' => 'log']);
+    }
     
     // Set mail configuration dynamically
     config([

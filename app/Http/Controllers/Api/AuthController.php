@@ -125,7 +125,7 @@ class AuthController extends Controller
 			);
 	
 			// Configure mail settings from database
-			//$this->configureMailFromDatabase();
+			$this->configureMailFromDatabase();
 			
 			if(Mail::to($user->user_email)->send(new ForgotPasswordEmail($user, $options))) {
 				$message = 'Your temporary password has been sent to your registered email.';
@@ -264,8 +264,10 @@ class AuthController extends Controller
 	{
 		$mailConfig = EmailSetting::getMailConfig();
 		
-		// Force log driver for testing (since sendmail doesn't work on Windows)
-		config(['mail.default' => 'log']);
+		// Only force log driver if no proper SMTP is configured
+		if (env('MAIL_MAILER') === 'sendmail' && !env('MAIL_HOST')) {
+			config(['mail.default' => 'log']);
+		}
 		
 		// Set mail configuration dynamically
 		config([
