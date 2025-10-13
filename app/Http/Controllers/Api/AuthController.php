@@ -125,7 +125,7 @@ class AuthController extends Controller
 			);
 	
 			// Configure mail settings from database
-			$this->configureMailFromDatabase();
+			//$this->configureMailFromDatabase();
 			
 			if(Mail::to($user->user_email)->send(new ForgotPasswordEmail($user, $options))) {
 				$message = 'Your temporary password has been sent to your registered email.';
