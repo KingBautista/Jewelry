@@ -61,12 +61,16 @@ Route::get('/test-invoices', function () {
 });
 
 Route::get('/mail-test', function () {
-    Mail::raw('Test email from Laravel on GoDaddy!', function ($message) {
-        $message->to('bautistael23@gmail.com')->subject('Laravel GoDaddy Mail Test');
-    });
-    return 'Mail sent!';
-    
+    try {
+        \Mail::raw('Test email from Laravel via relay-hosting.secureserver.net', function ($m) {
+            $m->to('yourpersonalemail@gmail.com')->subject('Laravel SMTP Test');
+        });
+        return 'Mail sent! Check your inbox or spam folder.';
+    } catch (\Exception $e) {
+        return 'Error: ' . $e->getMessage();
+    }
 });
+
 
 Route::get('/env-check', function () {
     return [
