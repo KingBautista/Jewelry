@@ -63,7 +63,7 @@ Route::get('/test-invoices', function () {
 Route::get('/mail-test', function () {
     try {
         \Mail::raw('Test email from Laravel via relay-hosting.secureserver.net', function ($m) {
-            $m->to('yourpersonalemail@gmail.com')->subject('Laravel SMTP Test');
+            $m->to('bautistael23@gmail.com')->subject('Laravel SMTP Test');
         });
         return 'Mail sent! Check your inbox or spam folder.';
     } catch (\Exception $e) {
