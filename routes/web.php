@@ -65,6 +65,7 @@ Route::get('/mail-test', function () {
         $message->to('bautistael23@gmail.com')->subject('Laravel GoDaddy Mail Test');
     });
     return 'Mail sent!';
+    
 });
 
 Route::get('/env-check', function () {
