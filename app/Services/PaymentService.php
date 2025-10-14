@@ -289,8 +289,7 @@ class PaymentService extends BaseService
                 'remainingBalance' => $remainingBalance,
                 'receiptImages' => $receiptImages
             ], function ($message) use ($invoice, $pdf) {
-                // $emailTo = $invoice->customer->user_email ?? $invoice->customer->email;
-                $emailTo = 'bautistael23@gmail.com';
+                $emailTo = $invoice->customer->user_email ?? $invoice->customer->email;
 
                 $message->to($emailTo)
                     ->subject('Updated Invoice - ' . $invoice->invoice_number)
