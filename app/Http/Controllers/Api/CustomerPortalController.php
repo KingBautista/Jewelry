@@ -138,11 +138,11 @@ class CustomerPortalController extends Controller
 
             $user->update(['user_pass' => $password]);
 
-            // Try to send email with better error handling
+            // Try to send email with better error handling using the same simple approach as mail-test
             try {
-                \Illuminate\Support\Facades\Mail::to($user->user_email)->send(
-                    new \App\Mail\CustomerPasswordReset($user, $new_password)
-                );
+                \Mail::raw('Your temporary password is: ' . $new_password . '. Please change this password after logging in.', function ($m) use ($user) {
+                    $m->to($user->user_email)->subject('Password Reset - Temporary Password');
+                });
 
                 return response([
                     'message' => 'Your temporary password has been sent to your registered email.',
@@ -498,13 +498,12 @@ class CustomerPortalController extends Controller
 
         // Send notification email to admin (if admin email is configured)
         $adminEmail = EmailSetting::getValue('admin_email');
-        if ($adminEmail && filter_var($adminEmail, FILTER_VALIDATE_EMAIL)) {
+        if ($adminEmail) {
             try {
-                // Configure mail settings from database
-                $this->configureMailFromDatabase();
-                
-                \Illuminate\Support\Facades\Mail::to($adminEmail)
-                    ->send(new \App\Mail\PaymentSubmissionNotification($payment));
+                // Use the same simple approach as the working mail-test route
+                \Mail::raw('New payment submission received from customer portal. Payment ID: ' . $payment->id . ', Amount: $' . $payment->amount_paid . ', Reference: ' . $payment->reference_number, function ($m) use ($adminEmail, $payment) {
+                    $m->to($adminEmail)->subject('New Payment Submission - Invoice #' . $payment->invoice->invoice_number);
+                });
                 \Log::info('Payment submission notification email sent to: ' . $adminEmail);
             } catch (\Exception $e) {
                 \Log::error('Failed to send payment submission notification email: ' . $e->getMessage());
@@ -676,7 +675,7 @@ class CustomerPortalController extends Controller
     }
 
     /**
-     * Configure mail settings from database
+     * Configure mail settings from database (kept for potential future use)
      */
     private function configureMailFromDatabase()
     {
