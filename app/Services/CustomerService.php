@@ -63,7 +63,9 @@ class CustomerService extends BaseService
      */
     public function storeWithMeta(array $userData, array $metaData)
     {
-        $user = parent::store($userData);
+        // Create the user model directly instead of using parent::store()
+        $user = $this->model::create($userData);
+        
         if(count($metaData))
             $user->saveUserMeta($metaData);
 
