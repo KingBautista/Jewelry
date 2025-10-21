@@ -20,7 +20,7 @@ class UserWelcomeEmail extends Mailable
     /**
      * Create a new message instance.
      */
-    public function __construct(User $user, $options = null)
+    public function __construct($user, $options = null)
     {
         $this->user = $user;
         $this->options = $options;
