@@ -350,7 +350,7 @@ class CustomerPortalController extends Controller
         $user = $request->user();
         
         $invoice = Invoice::where('customer_id', $user->id)
-            ->with(['customer', 'paymentTerm', 'tax', 'fee', 'discount', 'items'])
+            ->with(['customer', 'paymentTerm', 'tax', 'fee', 'discount', 'items', 'paymentSchedules'])
             ->findOrFail($id);
 
         return response([

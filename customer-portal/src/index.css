@@ -334,6 +334,10 @@ a:hover {
   border-radius: 0.5rem;
   margin: 0.25rem 0.5rem;
   transition: var(--transition-fast);
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  min-height: 2.5rem;
 }
 
 .sidebar .nav-link:hover,
@@ -359,6 +363,19 @@ a:hover {
   
   .table-responsive {
     font-size: 0.875rem;
+  }
+  
+  .sidebar {
+    width: 100% !important;
+    position: fixed;
+    top: 0;
+    left: -100%;
+    z-index: 1000;
+    transition: var(--transition-normal);
+  }
+  
+  .sidebar.show {
+    left: 0;
   }
 }
 

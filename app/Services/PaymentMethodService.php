@@ -48,12 +48,74 @@ class PaymentMethodService extends BaseService
     }
 
     /**
+     * Store a newly created payment method with QR code handling
+     */
+    public function store(array $data)
+    {
+        // Handle QR code image upload
+        if (isset($data['qr_code_image']) && $data['qr_code_image']) {
+            $data['qr_code_image'] = $this->handleQrCodeUpload($data['qr_code_image']);
+        }
+
+        $paymentMethod = PaymentMethod::create($data);
+        return PaymentMethodResource::make($paymentMethod);
+    }
+
+    /**
+     * Update payment method with QR code handling
+     */
+    public function update(array $data, int $id)
+    {
+        $paymentMethod = PaymentMethod::findOrFail($id);
+
+        // Handle QR code image upload
+        if (isset($data['qr_code_image']) && $data['qr_code_image']) {
+            // Delete old QR code image if exists
+            if ($paymentMethod->qr_code_image) {
+                $this->deleteQrCodeImage($paymentMethod->qr_code_image);
+            }
+            $data['qr_code_image'] = $this->handleQrCodeUpload($data['qr_code_image']);
+        }
+
+        $paymentMethod->update($data);
+        return PaymentMethodResource::make($paymentMethod);
+    }
+
+    /**
+     * Handle QR code image upload
+     */
+    private function handleQrCodeUpload($file)
+    {
+        if ($file && $file->isValid()) {
+            // Generate unique filename
+            $filename = 'qr_codes/' . time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
+            
+            // Store the file in storage/app/public/qr_codes/
+            $file->storeAs('public', $filename);
+            
+            return $filename;
+        }
+        return null;
+    }
+
+    /**
+     * Delete QR code image from storage
+     */
+    private function deleteQrCodeImage($filename)
+    {
+        $filePath = storage_path('app/public/' . $filename);
+        if (file_exists($filePath)) {
+            unlink($filePath);
+        }
+    }
+
+    /**
      * Get active payment methods for dropdown
      */
     public function getActivePaymentMethods()
     {
         return PaymentMethod::active()
-            ->select('id', 'bank_name', 'account_name', 'account_number')
+            ->select('id', 'bank_name', 'account_name', 'account_number', 'qr_code_image', 'description')
             ->orderBy('bank_name')
             ->get();
     }

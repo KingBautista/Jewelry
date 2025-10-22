@@ -20,7 +20,7 @@ class PaymentMethodSeeder extends Seeder
                 'account_name' => 'Illussso BPI Account.',
                 'account_number' => '1234567890',
                 'description' => 'BPI Business Savings Account for jewelry payments and transactions',
-                'qr_code_image' => null,
+                'qr_code_image' => 'qr_codes/bpi_qr_code.png',
                 'active' => true,
             ],
             [
@@ -28,7 +28,7 @@ class PaymentMethodSeeder extends Seeder
                 'account_name' => 'Illussso GCash Account.',
                 'account_number' => '09171234567',
                 'description' => 'GCash Business Account for mobile wallet payments',
-                'qr_code_image' => null,
+                'qr_code_image' => 'qr_codes/gcash_qr_code.png',
                 'active' => true,
             ],
         ];

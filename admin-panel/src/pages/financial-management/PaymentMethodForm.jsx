@@ -38,8 +38,8 @@ export default function PaymentMethodForm() {
           setPaymentMethod(paymentMethodData);
           setIsLoading(false);
           setIsActive(paymentMethodData.active);
-          if (paymentMethodData.qr_code_image) {
-            setQrCodePreview(paymentMethodData.qr_code_image);
+          if (paymentMethodData.qr_code_url) {
+            setQrCodePreview(paymentMethodData.qr_code_url);
           }
         })
         .catch((errors) => {

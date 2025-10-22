@@ -267,7 +267,19 @@ class PaymentMethodController extends BaseController
     {
         try {
             $paymentMethods = $this->service->getActivePaymentMethods();
-            return response()->json($paymentMethods);
+            // Transform the data to include QR code URL accessor
+            $transformedMethods = $paymentMethods->map(function ($method) {
+                return [
+                    'id' => $method->id,
+                    'bank_name' => $method->bank_name,
+                    'account_name' => $method->account_name,
+                    'account_number' => $method->account_number,
+                    'description' => $method->description,
+                    'qr_code_image' => $method->qr_code_image,
+                    'qr_code_url' => $method->qr_code_url, // This will use the accessor
+                ];
+            });
+            return response()->json($transformedMethods);
         } catch (\Exception $e) {
             return response()->json(['error' => 'Failed to fetch payment methods'], 500);
         }

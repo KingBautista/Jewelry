@@ -120,6 +120,19 @@ class InvoiceResource extends JsonResource
                     ];
                 });
             }),
+            'payment_schedules' => $this->whenLoaded('paymentSchedules', function () {
+                return $this->paymentSchedules->map(function ($schedule) {
+                    return [
+                        'id' => $schedule->id,
+                        'payment_order' => $schedule->payment_order,
+                        'payment_type' => $schedule->payment_type,
+                        'due_date' => $schedule->due_date?->format('Y-m-d'),
+                        'amount' => $schedule->expected_amount,
+                        'paid_amount' => $schedule->paid_amount,
+                        'status' => $schedule->status,
+                    ];
+                });
+            }),
         ];
     }
 }

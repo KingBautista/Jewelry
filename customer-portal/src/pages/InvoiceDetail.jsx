@@ -182,6 +182,85 @@ const InvoiceDetail = () => {
                 </div>
               )}
 
+              {/* Payment Schedule History */}
+              {invoice.payment_schedules && invoice.payment_schedules.length > 0 && (
+                <div className="mt-4">
+                  <h6 className="fw-semibold">Payment Schedule</h6>
+                  <div className="table-responsive">
+                    <table className="table table-bordered table-hover">
+                      <thead className="table-light">
+                        <tr>
+                          <th>Payment</th>
+                          <th>Type</th>
+                          <th>Due Date</th>
+                          <th>Expected Amount</th>
+                          <th>Paid Amount</th>
+                          <th>Status</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {invoice.payment_schedules
+                          .sort((a, b) => a.payment_order - b.payment_order)
+                          .map((schedule, index) => (
+                          <tr key={schedule.id} className={schedule.status === 'paid' ? 'table-success' : schedule.status === 'overdue' ? 'table-danger' : ''}>
+                            <td>
+                              <strong>Payment {schedule.payment_order}</strong>
+                            </td>
+                            <td>
+                              <span className="badge bg-primary">{schedule.payment_type}</span>
+                            </td>
+                            <td>
+                              {schedule.due_date ? new Date(schedule.due_date).toLocaleDateString() : 'N/A'}
+                            </td>
+                            <td>
+                              <strong>{formatCurrency(schedule.amount || 0)}</strong>
+                            </td>
+                            <td>
+                              <strong className={schedule.paid_amount > 0 ? 'text-success' : 'text-muted'}>
+                                {formatCurrency(schedule.paid_amount || 0)}
+                              </strong>
+                            </td>
+                            <td>
+                              <span className={`badge ${
+                                schedule.status === 'paid' ? 'bg-success' : 
+                                schedule.status === 'overdue' ? 'bg-danger' : 'bg-warning'
+                              }`}>
+                                {schedule.status === 'paid' ? 'Paid' : 
+                                 schedule.status === 'overdue' ? 'Overdue' : 'Pending'}
+                              </span>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                  
+                  {/* Payment Schedule Summary */}
+                  <div className="row mt-3">
+                    <div className="col-md-6">
+                      <div className="card border-success">
+                        <div className="card-body">
+                          <h6 className="card-title text-success">Total Expected</h6>
+                          <p className="card-text h5 mb-0">
+                            {formatCurrency(invoice.payment_schedules.reduce((sum, schedule) => sum + parseFloat(schedule.amount || 0), 0))}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="col-md-6">
+                      <div className="card border-info">
+                        <div className="card-body">
+                          <h6 className="card-title text-info">Total Paid</h6>
+                          <p className="card-text h5 mb-0">
+                            {formatCurrency(invoice.payment_schedules.reduce((sum, schedule) => sum + parseFloat(schedule.paid_amount || 0), 0))}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+
               {/* Notes */}
               {invoice.notes && (
                 <div className="mt-4">

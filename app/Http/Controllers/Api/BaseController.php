@@ -37,7 +37,7 @@ class BaseController extends Controller
   {
     try {
       $item = $this->service->show($id);
-      return $item;
+      return response(['data' => $item]);
     } catch (\Exception $e) {
       return $this->messageService->responseError();
     }

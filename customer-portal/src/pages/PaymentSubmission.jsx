@@ -16,10 +16,9 @@ const PaymentSubmission = () => {
   const [selectedInvoice, setSelectedInvoice] = useState(null);
   const [paymentSchedules, setPaymentSchedules] = useState([]);
   const [selectedSchedules, setSelectedSchedules] = useState([]);
+  const [paymentMethods, setPaymentMethods] = useState([]);
   const [formData, setFormData] = useState({
     invoice_id: invoiceId || '',
-    amount_paid: '',
-    expected_amount: '',
     reference_number: '',
     payment_method: '',
     receipt_images: [],
@@ -29,6 +28,7 @@ const PaymentSubmission = () => {
 
   useEffect(() => {
     fetchInvoices();
+    fetchPaymentMethods();
     if (invoiceId) {
       fetchInvoiceDetails(invoiceId);
     }
@@ -40,9 +40,11 @@ const PaymentSubmission = () => {
       const response = await axiosClient.get('/customer/invoices');
       console.log('Invoices response:', response.data);
       const allInvoices = response.data.data || [];
-      // Filter for unpaid and partially paid invoices
+      // Filter for unpaid, partially paid, and overdue invoices
       const filteredInvoices = allInvoices.filter(invoice => 
-        invoice.payment_status === 'unpaid' || invoice.payment_status === 'partially_paid'
+        invoice.payment_status === 'unpaid' || 
+        invoice.payment_status === 'partially_paid' || 
+        invoice.payment_status === 'overdue'
       );
       console.log('Filtered invoices:', filteredInvoices);
       setInvoices(filteredInvoices);
@@ -51,14 +53,29 @@ const PaymentSubmission = () => {
     }
   };
 
+  const fetchPaymentMethods = async () => {
+    try {
+      console.log('Fetching payment methods...');
+      const response = await axiosClient.get('/options/payment-methods');
+      console.log('Payment methods response:', response.data);
+      setPaymentMethods(response.data || []);
+    } catch (error) {
+      console.error('Error fetching payment methods:', error);
+    }
+  };
+
   const fetchPaymentSchedules = async (invoiceId) => {
     try {
       console.log('Fetching payment schedules for invoice:', invoiceId);
-      const response = await axiosClient.get(`/customer/invoices/${invoiceId}/payment-schedules`);
-      console.log('Payment schedules response:', response.data);
-      setPaymentSchedules(response.data || []);
+      // Payment schedules are now included in the main invoice response
+      // No need for separate API call
+      if (selectedInvoice && selectedInvoice.payment_schedules) {
+        setPaymentSchedules(selectedInvoice.payment_schedules);
+      } else {
+        setPaymentSchedules([]);
+      }
     } catch (error) {
-      console.error('Error fetching payment schedules:', error);
+      console.error('Error processing payment schedules:', error);
       setPaymentSchedules([]);
     }
   };
@@ -72,13 +89,16 @@ const PaymentSubmission = () => {
       setSelectedInvoice(invoice);
       setFormData(prev => ({
         ...prev,
-        invoice_id: id,
-        expected_amount: invoice.remaining_balance
+        invoice_id: id
       }));
       console.log('Selected invoice set:', invoice);
       
-      // Fetch payment schedules for this invoice
-      await fetchPaymentSchedules(id);
+      // Payment schedules are now included in the invoice response
+      if (invoice.payment_schedules) {
+        setPaymentSchedules(invoice.payment_schedules);
+      } else {
+        setPaymentSchedules([]);
+      }
     } catch (error) {
       console.error('Error fetching invoice details:', error);
     }
@@ -94,10 +114,6 @@ const PaymentSubmission = () => {
     // If invoice selection changed, fetch invoice details and reset selections
     if (name === 'invoice_id' && value) {
       setSelectedSchedules([]);
-      setFormData(prev => ({
-        ...prev,
-        amount_paid: ''
-      }));
       fetchInvoiceDetails(value);
     }
     
@@ -132,10 +148,27 @@ const PaymentSubmission = () => {
       .filter(schedule => updatedSelectedSchedules.includes(schedule.id))
       .reduce((sum, schedule) => sum + parseFloat(schedule.amount || 0), 0);
     
-    setFormData(prev => ({
-      ...prev,
-      amount_paid: totalAmount.toFixed(2)
-    }));
+    // No need to update formData since we removed amount_paid field
+  };
+
+  const handleSelectAll = (isChecked) => {
+    if (isChecked) {
+      // Select all non-paid schedules
+      const availableSchedules = paymentSchedules
+        .filter(schedule => schedule.status !== 'paid')
+        .map(schedule => schedule.id);
+      setSelectedSchedules(availableSchedules);
+      
+      // Auto-compute amount for all selected
+      const totalAmount = paymentSchedules
+        .filter(schedule => availableSchedules.includes(schedule.id))
+        .reduce((sum, schedule) => sum + parseFloat(schedule.amount || 0), 0);
+      
+      // No need to update formData since we removed amount_paid field
+    } else {
+      // Deselect all
+      setSelectedSchedules([]);
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -143,11 +176,23 @@ const PaymentSubmission = () => {
     setSubmitting(true);
     setErrors({});
 
+    // Validate payment term selection
+    if (selectedSchedules.length === 0) {
+      setErrors({ payment_terms: ['Please select at least one payment term to pay.'] });
+      setSubmitting(false);
+      return;
+    }
+
     try {
+      // Calculate amount from selected schedules
+      const selectedAmount = paymentSchedules
+        .filter(schedule => selectedSchedules.includes(schedule.id))
+        .reduce((sum, schedule) => sum + parseFloat(schedule.amount || 0), 0);
+
       const formDataToSend = new FormData();
       formDataToSend.append('invoice_id', formData.invoice_id);
-      formDataToSend.append('amount_paid', formData.amount_paid);
-      formDataToSend.append('expected_amount', formData.expected_amount);
+      formDataToSend.append('amount_paid', selectedAmount.toFixed(2));
+      formDataToSend.append('expected_amount', selectedAmount.toFixed(2));
       formDataToSend.append('reference_number', formData.reference_number);
       formDataToSend.append('payment_method', formData.payment_method);
       formDataToSend.append('notes', formData.notes);
@@ -254,12 +299,12 @@ const PaymentSubmission = () => {
                         </option>
                       ))
                     ) : (
-                      <option value="" disabled>No unpaid invoices available</option>
+                      <option value="" disabled>No invoices available for payment</option>
                     )}
                   </select>
                   {invoices.length === 0 && (
                     <div className="form-text text-warning">
-                      No unpaid or partially paid invoices found.
+                      No unpaid, partially paid, or overdue invoices found.
                     </div>
                   )}
                 </div>
@@ -292,54 +337,271 @@ const PaymentSubmission = () => {
                   </div>
                 )}
 
-                {/* Payment Amount */}
-                <div className="row mb-4">
-                  <div className="col-md-6">
-                    <label htmlFor="amount_paid" className="form-label fw-semibold">
-                      Amount Paid *
+                {/* Payment Schedules Selection */}
+                {selectedInvoice && paymentSchedules.length > 0 && (
+                  <div className="mb-4">
+                    <label className="form-label fw-semibold">
+                      Select Payment Terms to Pay *
                     </label>
-                    <div className="input-group">
-                      <span className="input-group-text">₱</span>
-                      <input
-                        type="number"
-                        id="amount_paid"
-                        name="amount_paid"
-                        className="form-control"
-                        value={formData.amount_paid}
-                        onChange={handleInputChange}
-                        step="0.01"
-                        min="0.01"
-                        required
-                        readOnly={selectedSchedules.length > 0}
-                      />
+                    <div className="alert alert-info">
+                      <FontAwesomeIcon icon={solidIconMap.infoCircle} className="me-2" />
+                      <strong>Flexible Payment:</strong> You can select multiple payment terms to pay at once. 
+                      Paid schedules are automatically excluded from selection.
                     </div>
-                    {selectedSchedules.length > 0 && (
-                      <div className="form-text text-info">
-                        <FontAwesomeIcon icon={solidIconMap.infoCircle} className="me-1" />
-                        Amount is auto-calculated based on selected payment schedules
+                    <div className="table-responsive">
+                      <table className="table table-bordered table-hover">
+                        <thead className="table-light">
+                          <tr>
+                            <th width="50">
+                              <input
+                                type="checkbox"
+                                className="form-check-input"
+                                checked={selectedSchedules.length === paymentSchedules.filter(s => s.status !== 'paid').length && paymentSchedules.filter(s => s.status !== 'paid').length > 0}
+                                onChange={(e) => handleSelectAll(e.target.checked)}
+                              />
+                            </th>
+                            <th>Payment Term</th>
+                            <th>Type</th>
+                            <th>Due Date</th>
+                            <th>Amount</th>
+                            <th>Status</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {paymentSchedules
+                            .sort((a, b) => a.payment_order - b.payment_order)
+                            .map((schedule, index) => (
+                            <tr key={schedule.id} className={schedule.status === 'paid' ? 'table-success' : schedule.status === 'overdue' ? 'table-danger' : ''}>
+                              <td>
+                                <input
+                                  type="checkbox"
+                                  className="form-check-input"
+                                  checked={selectedSchedules.includes(schedule.id)}
+                                  disabled={schedule.status === 'paid'}
+                                  onChange={(e) => handleScheduleSelection(schedule.id, e.target.checked)}
+                                />
+                              </td>
+                              <td>
+                                <strong>Payment {schedule.payment_order}</strong>
+                                {schedule.payment_type && (
+                                  <div className="text-muted small">
+                                    <FontAwesomeIcon icon={solidIconMap.calendar} className="me-1" />
+                                    {schedule.payment_type}
+                                  </div>
+                                )}
+                              </td>
+                              <td>
+                                <span className="badge bg-primary">{schedule.payment_type}</span>
+                              </td>
+                              <td>
+                                {schedule.due_date ? (
+                                  <div>
+                                    <div>{new Date(schedule.due_date).toLocaleDateString()}</div>
+                                    <div className="text-muted small">
+                                      {new Date(schedule.due_date).toLocaleDateString('en-US', { 
+                                        weekday: 'short', 
+                                        month: 'short', 
+                                        day: 'numeric' 
+                                      })}
+                                    </div>
+                                  </div>
+                                ) : 'N/A'}
+                              </td>
+                              <td>
+                                <strong className="text-primary">{formatCurrency(schedule.amount || 0)}</strong>
+                                {schedule.paid_amount > 0 && (
+                                  <div className="text-success small">
+                                    Paid: {formatCurrency(schedule.paid_amount)}
+                                  </div>
+                                )}
+                              </td>
+                              <td>
+                                <span className={`badge ${
+                                  schedule.status === 'paid' ? 'bg-success' : 
+                                  schedule.status === 'overdue' ? 'bg-danger' : 'bg-warning'
+                                }`}>
+                                  {schedule.status === 'paid' ? 'Paid' : 
+                                   schedule.status === 'overdue' ? 'Overdue' : 'Pending'}
+                                </span>
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                    
+                    {/* Selection Summary */}
+                    <div className="row mt-3">
+                      <div className="col-md-6">
+                        <div className="card border-primary">
+                          <div className="card-body">
+                            <h6 className="card-title text-primary">
+                              <FontAwesomeIcon icon={solidIconMap.calculator} className="me-2" />
+                              Selected Amount
+                            </h6>
+                            <p className="card-text h5 mb-0">
+                              {formatCurrency(
+                                paymentSchedules
+                                  .filter(schedule => selectedSchedules.includes(schedule.id))
+                                  .reduce((sum, schedule) => sum + parseFloat(schedule.amount || 0), 0)
+                              )}
+                            </p>
+                          </div>
+                        </div>
                       </div>
-                    )}
-                  </div>
-                  <div className="col-md-6">
-                    <label htmlFor="expected_amount" className="form-label fw-semibold">
-                      Expected Amount *
-                    </label>
-                    <div className="input-group">
-                      <span className="input-group-text">₱</span>
-                      <input
-                        type="number"
-                        id="expected_amount"
-                        name="expected_amount"
-                        className="form-control"
-                        value={formData.expected_amount}
-                        onChange={handleInputChange}
-                        step="0.01"
-                        min="0.01"
-                        required
-                      />
+                      <div className="col-md-6">
+                        <div className="card border-info">
+                          <div className="card-body">
+                            <h6 className="card-title text-info">
+                              <FontAwesomeIcon icon={solidIconMap.list} className="me-2" />
+                              Selection Summary
+                            </h6>
+                            <p className="card-text mb-0">
+                              <strong>{selectedSchedules.length}</strong> payment term(s) selected
+                            </p>
+                          </div>
+                        </div>
+                      </div>
                     </div>
                   </div>
+                )}
+
+                {/* Payment Method */}
+                <div className="mb-4">
+                  <label htmlFor="payment_method" className="form-label fw-semibold">
+                    Payment Method *
+                  </label>
+                  <select
+                    id="payment_method"
+                    name="payment_method"
+                    className="form-select"
+                    value={formData.payment_method}
+                    onChange={handleInputChange}
+                    required
+                  >
+                    <option value="">Select payment method...</option>
+                    {paymentMethods.length > 0 ? (
+                      paymentMethods.map(paymentMethod => (
+                        <option key={paymentMethod.id} value={paymentMethod.id}>
+                          {paymentMethod.bank_name} - {paymentMethod.account_name}
+                          {paymentMethod.account_number && ` (${paymentMethod.account_number})`}
+                        </option>
+                      ))
+                    ) : (
+                      <>
+                        <option value="bank_transfer">Bank Transfer</option>
+                        <option value="credit_card">Credit Card</option>
+                        <option value="debit_card">Debit Card</option>
+                        <option value="paypal">PayPal</option>
+                        <option value="cash">Cash</option>
+                        <option value="check">Check</option>
+                        <option value="other">Other</option>
+                      </>
+                    )}
+                  </select>
+                  {paymentMethods.length === 0 && (
+                    <div className="form-text text-warning">
+                      <FontAwesomeIcon icon={solidIconMap.exclamationTriangle} className="me-1" />
+                      No payment methods available. Using default options.
+                    </div>
+                  )}
                 </div>
+
+                {/* Payment Method Details */}
+                {formData.payment_method && paymentMethods.length > 0 && (
+                  <div className="mb-4">
+                    {(() => {
+                      const selectedPaymentMethod = paymentMethods.find(pm => pm.id == formData.payment_method);
+                      return selectedPaymentMethod ? (
+                        <div className="card border-primary">
+                          <div className="card-header bg-primary text-white">
+                            <h6 className="mb-0">
+                              <FontAwesomeIcon icon={solidIconMap.creditCard} className="me-2" />
+                              Selected Payment Method
+                            </h6>
+                          </div>
+                          <div className="card-body">
+                            <div className="row">
+                              {/* Payment Method Information */}
+                              <div className="col-md-6">
+                                <h6 className="fw-semibold text-primary mb-3">Payment Details</h6>
+                                <div className="mb-2">
+                                  <strong>Bank:</strong> {selectedPaymentMethod.bank_name}
+                                </div>
+                                <div className="mb-2">
+                                  <strong>Account Name:</strong> {selectedPaymentMethod.account_name}
+                                </div>
+                                {selectedPaymentMethod.account_number && (
+                                  <div className="mb-2">
+                                    <strong>Account Number:</strong> {selectedPaymentMethod.account_number}
+                                  </div>
+                                )}
+                                {selectedPaymentMethod.description && (
+                                  <div className="mb-2">
+                                    <strong>Description:</strong> {selectedPaymentMethod.description}
+                                  </div>
+                                )}
+                                <div className="mt-3">
+                                  <span className="badge bg-success">
+                                    <FontAwesomeIcon icon={solidIconMap.checkCircle} className="me-1" />
+                                    Active Payment Method
+                                  </span>
+                                </div>
+                              </div>
+                              
+                              {/* QR Code Section */}
+                              <div className="col-md-6">
+                                {selectedPaymentMethod.qr_code_url ? (
+                                  <div>
+                                    <h6 className="fw-semibold text-primary mb-3">
+                                      <FontAwesomeIcon icon={solidIconMap.qrcode} className="me-2" />
+                                      QR Code Payment
+                                    </h6>
+                                    <div className="text-center">
+                                      <p className="text-muted mb-3">
+                                        Scan this QR code to make payment directly
+                                      </p>
+                                      <img
+                                        src={selectedPaymentMethod.qr_code_url}
+                                        alt="Payment QR Code"
+                                        className="img-thumbnail border-2"
+                                        style={{ 
+                                          maxWidth: '200px', 
+                                          maxHeight: '200px',
+                                          borderColor: '#0d6efd !important'
+                                        }}
+                                      />
+                                      <div className="mt-3">
+                                        <small className="text-success">
+                                          <FontAwesomeIcon icon={solidIconMap.mobile} className="me-1" />
+                                          Mobile Payment Ready
+                                        </small>
+                                      </div>
+                                    </div>
+                                  </div>
+                                ) : (
+                                  <div className="text-center">
+                                    <h6 className="fw-semibold text-muted mb-3">
+                                      <FontAwesomeIcon icon={solidIconMap.creditCard} className="me-2" />
+                                      Manual Payment
+                                    </h6>
+                                    <p className="text-muted">
+                                      Use the account details above to make your payment manually.
+                                    </p>
+                                    <div className="alert alert-info">
+                                      <FontAwesomeIcon icon={solidIconMap.infoCircle} className="me-2" />
+                                      <strong>Note:</strong> Please include your reference number when making the payment.
+                                    </div>
+                                  </div>
+                                )}
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      ) : null;
+                    })()}
+                  </div>
+                )}
 
                 {/* Reference Number */}
                 <div className="mb-4">
@@ -357,95 +619,6 @@ const PaymentSubmission = () => {
                     required
                   />
                 </div>
-
-                {/* Payment Method */}
-                <div className="mb-4">
-                  <label htmlFor="payment_method" className="form-label fw-semibold">
-                    Payment Method *
-                  </label>
-                  <select
-                    id="payment_method"
-                    name="payment_method"
-                    className="form-select"
-                    value={formData.payment_method}
-                    onChange={handleInputChange}
-                    required
-                  >
-                    <option value="">Select payment method...</option>
-                    <option value="bank_transfer">Bank Transfer</option>
-                    <option value="credit_card">Credit Card</option>
-                    <option value="debit_card">Debit Card</option>
-                    <option value="paypal">PayPal</option>
-                    <option value="cash">Cash</option>
-                    <option value="check">Check</option>
-                    <option value="other">Other</option>
-                  </select>
-                </div>
-
-                {/* Payment Schedules Selection */}
-                {selectedInvoice && paymentSchedules.length > 0 && (
-                  <div className="mb-4">
-                    <label className="form-label fw-semibold">
-                      Select Payment Schedules *
-                    </label>
-                    <div className="table-responsive">
-                      <table className="table table-bordered table-hover">
-                        <thead className="table-light">
-                          <tr>
-                            <th width="50">Select</th>
-                            <th>Schedule</th>
-                            <th>Due Date</th>
-                            <th>Amount</th>
-                            <th>Status</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {paymentSchedules.map((schedule, index) => (
-                            <tr key={schedule.id} className={schedule.status === 'paid' ? 'table-success' : ''}>
-                              <td>
-                                <input
-                                  type="checkbox"
-                                  className="form-check-input"
-                                  checked={selectedSchedules.includes(schedule.id)}
-                                  disabled={schedule.status === 'paid'}
-                                  onChange={(e) => handleScheduleSelection(schedule.id, e.target.checked)}
-                                />
-                              </td>
-                              <td>
-                                <strong>Payment {schedule.payment_order || index + 1}</strong>
-                                {schedule.payment_type && (
-                                  <div className="text-muted small">{schedule.payment_type}</div>
-                                )}
-                              </td>
-                              <td>
-                                {schedule.due_date ? new Date(schedule.due_date).toLocaleDateString() : 'N/A'}
-                              </td>
-                              <td>
-                                <strong>{formatCurrency(schedule.amount || 0)}</strong>
-                              </td>
-                              <td>
-                                <span className={`badge ${
-                                  schedule.status === 'paid' ? 'bg-success' : 
-                                  schedule.status === 'overdue' ? 'bg-danger' : 'bg-warning'
-                                }`}>
-                                  {schedule.status === 'paid' ? 'Paid' : 
-                                   schedule.status === 'overdue' ? 'Overdue' : 'Pending'}
-                                </span>
-                              </td>
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
-                    </div>
-                    <div className="form-text">
-                      <strong>Total Selected:</strong> {formatCurrency(
-                        paymentSchedules
-                          .filter(schedule => selectedSchedules.includes(schedule.id))
-                          .reduce((sum, schedule) => sum + parseFloat(schedule.amount || 0), 0)
-                      )}
-                    </div>
-                  </div>
-                )}
 
                 {/* Receipt Images */}
                 <div className="mb-4">
@@ -526,11 +699,13 @@ const PaymentSubmission = () => {
             <div className="card-body">
               <ol className="mb-0">
                 <li>Select the invoice you want to pay</li>
-                <li>Choose payment schedules to pay (checkboxes)</li>
-                <li>Amount will be auto-calculated</li>
+                <li><strong>Choose payment terms:</strong> Select one or multiple payment terms using checkboxes</li>
+                <li><strong>Flexible selection:</strong> You can pay multiple terms at once (e.g., 2 months together)</li>
+                <li><strong>Amount is auto-calculated:</strong> Based on your selected payment terms</li>
                 <li>Provide your payment reference number</li>
-                <li>Select your payment method</li>
-                <li>Upload receipt images as proof</li>
+                <li><strong>Select payment method:</strong> Choose from available payment methods or use default options</li>
+                <li><strong>QR Code payment:</strong> If available, scan the QR code to make payment directly</li>
+                <li>Upload receipt images as proof of payment</li>
                 <li>Add any additional notes if needed</li>
                 <li>Submit for admin review</li>
               </ol>

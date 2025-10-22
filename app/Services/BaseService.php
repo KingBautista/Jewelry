@@ -48,9 +48,7 @@ class BaseService
   public function show(int $id) 
   {
     $model = $this->findModelById($id);
-    return $model;
-    // NOT USING RESOURCE BECAUSE IT'S RE-CREATING ARRAY
-    // return $this->resource::make($model);
+    return $this->resource::make($model);
   }
 
   // Update the specified resource in storage.

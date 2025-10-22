@@ -27,7 +27,7 @@ const Sidebar = () => {
   ];
 
   return (
-    <nav className="sidebar d-flex flex-column" style={{ width: '250px', minHeight: '100vh' }}>
+    <nav className="sidebar d-flex flex-column" style={{ width: '280px', minHeight: '100vh' }}>
       <div className="p-3">
         <div className="d-flex align-items-center mb-4">
           <FontAwesomeIcon icon={solidIconMap.gem} className="text-champagne me-2" style={{ fontSize: '1.5rem' }} />
