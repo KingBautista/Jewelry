@@ -88,7 +88,7 @@ const Invoices = () => {
           <div className="card shadow-sm">
             <div className="card-body">
               <div className="row g-3">
-                <div className="col-md-6">
+                <div className="col-12 col-md-6">
                   <div className="input-group">
                     <span className="input-group-text">
                       <FontAwesomeIcon icon={solidIconMap.search} />
@@ -102,7 +102,7 @@ const Invoices = () => {
                     />
                   </div>
                 </div>
-                <div className="col-md-3">
+                <div className="col-12 col-md-3">
                   <select
                     className="form-select form-control"
                     value={statusFilter}
@@ -115,7 +115,7 @@ const Invoices = () => {
                     <option value="overdue">Overdue</option>
                   </select>
                 </div>
-                <div className="col-md-3">
+                <div className="col-12 col-md-3">
                   <button 
                     className="btn btn-primary w-100"
                     style={{ height: '38px' }}
@@ -126,7 +126,8 @@ const Invoices = () => {
                     }}
                   >
                     <FontAwesomeIcon icon={solidIconMap.times} className="me-2" />
-                    Clear Filters
+                    <span className="d-none d-sm-inline">Clear Filters</span>
+                    <span className="d-sm-none">Clear</span>
                   </button>
                 </div>
               </div>
@@ -143,7 +144,7 @@ const Invoices = () => {
               {invoices.length > 0 ? (
                 <div className="table-responsive">
                   <table className="table table-hover mb-0">
-                    <thead>
+                    <thead className="d-none d-md-table-header-group">
                       <tr>
                         <th>Invoice #</th>
                         <th>Issue Date</th>
@@ -158,16 +159,73 @@ const Invoices = () => {
                     <tbody>
                       {invoices.map((invoice) => (
                         <tr key={invoice.id}>
-                          <td className="fw-semibold">{invoice.invoice_number}</td>
-                          <td>{new Date(invoice.issue_date).toLocaleDateString()}</td>
-                          <td>
+                          {/* Mobile card layout */}
+                          <td className="d-md-none">
+                            <div className="card border-0 bg-light">
+                              <div className="card-body p-3">
+                                <div className="d-flex justify-content-between align-items-start mb-2">
+                                  <div>
+                                    <div className="fw-semibold">{invoice.invoice_number}</div>
+                                    <div className="text-muted small">
+                                      Issue: {new Date(invoice.issue_date).toLocaleDateString()}
+                                    </div>
+                                    {invoice.due_date && (
+                                      <div className="text-muted small">
+                                        Due: {new Date(invoice.due_date).toLocaleDateString()}
+                                      </div>
+                                    )}
+                                  </div>
+                                  <div className="text-end">
+                                    {getStatusBadge(invoice.payment_status)}
+                                  </div>
+                                </div>
+                                <div className="row g-2 mb-3">
+                                  <div className="col-4">
+                                    <div className="text-muted small">Total</div>
+                                    <div className="fw-semibold">{formatCurrency(invoice.total_amount)}</div>
+                                  </div>
+                                  <div className="col-4">
+                                    <div className="text-muted small">Paid</div>
+                                    <div className="text-success">{formatCurrency(invoice.total_paid_amount)}</div>
+                                  </div>
+                                  <div className="col-4">
+                                    <div className="text-muted small">Remaining</div>
+                                    <div className="fw-semibold">{formatCurrency(invoice.remaining_balance)}</div>
+                                  </div>
+                                </div>
+                                <div className="d-flex gap-2">
+                                  <Link 
+                                    to={`/invoices/${invoice.id}`} 
+                                    className="btn btn-sm btn-outline-primary flex-fill"
+                                  >
+                                    <FontAwesomeIcon icon={solidIconMap.eye} className="me-1" />
+                                    View
+                                  </Link>
+                                  {invoice.payment_status !== 'fully_paid' && (
+                                    <Link 
+                                      to={`/payment-submission?invoice=${invoice.id}`} 
+                                      className="btn btn-sm btn-outline-success flex-fill"
+                                    >
+                                      <FontAwesomeIcon icon={solidIconMap.creditCard} className="me-1" />
+                                      Pay
+                                    </Link>
+                                  )}
+                                </div>
+                              </div>
+                            </div>
+                          </td>
+                          
+                          {/* Desktop table layout */}
+                          <td className="d-none d-md-table-cell fw-semibold">{invoice.invoice_number}</td>
+                          <td className="d-none d-md-table-cell">{new Date(invoice.issue_date).toLocaleDateString()}</td>
+                          <td className="d-none d-md-table-cell">
                             {invoice.due_date ? new Date(invoice.due_date).toLocaleDateString() : 'N/A'}
                           </td>
-                          <td className="fw-semibold">{formatCurrency(invoice.total_amount)}</td>
-                          <td className="text-success">{formatCurrency(invoice.total_paid_amount)}</td>
-                          <td className="fw-semibold">{formatCurrency(invoice.remaining_balance)}</td>
-                          <td>{getStatusBadge(invoice.payment_status)}</td>
-                          <td>
+                          <td className="d-none d-md-table-cell fw-semibold">{formatCurrency(invoice.total_amount)}</td>
+                          <td className="d-none d-md-table-cell text-success">{formatCurrency(invoice.total_paid_amount)}</td>
+                          <td className="d-none d-md-table-cell fw-semibold">{formatCurrency(invoice.remaining_balance)}</td>
+                          <td className="d-none d-md-table-cell">{getStatusBadge(invoice.payment_status)}</td>
+                          <td className="d-none d-md-table-cell">
                             <div className="btn-group" role="group">
                               <Link 
                                 to={`/invoices/${invoice.id}`} 

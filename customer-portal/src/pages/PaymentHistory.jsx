@@ -103,7 +103,7 @@ const PaymentHistory = () => {
               {submissions.length > 0 ? (
                 <div className="table-responsive">
                   <table className="table table-hover mb-0">
-                    <thead>
+                    <thead className="d-none d-md-table-header-group">
                       <tr>
                         <th>Invoice #</th>
                         <th>Amount Paid</th>
@@ -117,15 +117,59 @@ const PaymentHistory = () => {
                     <tbody>
                       {submissions.map((submission) => (
                         <tr key={submission.id}>
-                          <td className="fw-semibold">{submission.invoice_number}</td>
-                          <td className="fw-semibold">{formatCurrency(submission.amount_paid)}</td>
-                          <td className="font-monospace">{submission.reference_number}</td>
-                          <td>{getStatusBadge(submission.status)}</td>
-                          <td>{formatDate(submission.submitted_at)}</td>
-                          <td>
+                          {/* Mobile card layout */}
+                          <td className="d-md-none">
+                            <div className="card border-0 bg-light">
+                              <div className="card-body p-3">
+                                <div className="d-flex justify-content-between align-items-start mb-2">
+                                  <div>
+                                    <div className="fw-semibold">{submission.invoice_number}</div>
+                                    <div className="text-muted small font-monospace">
+                                      Ref: {submission.reference_number}
+                                    </div>
+                                  </div>
+                                  <div className="text-end">
+                                    {getStatusBadge(submission.status)}
+                                  </div>
+                                </div>
+                                <div className="row g-2 mb-3">
+                                  <div className="col-6">
+                                    <div className="text-muted small">Amount Paid</div>
+                                    <div className="fw-semibold text-success">{formatCurrency(submission.amount_paid)}</div>
+                                  </div>
+                                  <div className="col-6">
+                                    <div className="text-muted small">Submitted</div>
+                                    <div className="small">{formatDate(submission.submitted_at)}</div>
+                                  </div>
+                                </div>
+                                {submission.reviewed_at && (
+                                  <div className="mb-2">
+                                    <div className="text-muted small">Reviewed</div>
+                                    <div className="small">{formatDate(submission.reviewed_at)}</div>
+                                  </div>
+                                )}
+                                <button 
+                                  className="btn btn-sm btn-outline-primary w-100"
+                                  data-bs-toggle="modal"
+                                  data-bs-target={`#submissionModal${submission.id}`}
+                                >
+                                  <FontAwesomeIcon icon={solidIconMap.eye} className="me-1" />
+                                  View Details
+                                </button>
+                              </div>
+                            </div>
+                          </td>
+                          
+                          {/* Desktop table layout */}
+                          <td className="d-none d-md-table-cell fw-semibold">{submission.invoice_number}</td>
+                          <td className="d-none d-md-table-cell fw-semibold">{formatCurrency(submission.amount_paid)}</td>
+                          <td className="d-none d-md-table-cell font-monospace">{submission.reference_number}</td>
+                          <td className="d-none d-md-table-cell">{getStatusBadge(submission.status)}</td>
+                          <td className="d-none d-md-table-cell">{formatDate(submission.submitted_at)}</td>
+                          <td className="d-none d-md-table-cell">
                             {submission.reviewed_at ? formatDate(submission.reviewed_at) : '-'}
                           </td>
-                          <td>
+                          <td className="d-none d-md-table-cell">
                             <button 
                               className="btn btn-sm btn-outline-primary"
                               data-bs-toggle="modal"
@@ -201,23 +245,46 @@ const PaymentHistory = () => {
             <div className="modal-content">
               <div className="modal-header bg-champagne">
                 <h5 className="modal-title">
-                  Payment Submission Details - {submission.invoice_number}
+                  <span className="d-none d-sm-inline">Payment Submission Details - </span>
+                  {submission.invoice_number}
                 </h5>
                 <button type="button" className="btn-close" data-bs-dismiss="modal"></button>
               </div>
               <div className="modal-body">
-                <div className="row">
-                  <div className="col-md-6">
+                <div className="row g-3">
+                  <div className="col-12 col-md-6">
                     <h6 className="fw-semibold">Payment Information</h6>
-                    <p className="mb-1"><strong>Amount Paid:</strong> {formatCurrency(submission.amount_paid)}</p>
-                    <p className="mb-1"><strong>Expected Amount:</strong> {formatCurrency(submission.expected_amount)}</p>
-                    <p className="mb-1"><strong>Reference Number:</strong> {submission.reference_number}</p>
-                    <p className="mb-1"><strong>Status:</strong> {getStatusBadge(submission.status)}</p>
+                    <div className="d-flex flex-column gap-2">
+                      <div className="d-flex justify-content-between">
+                        <span><strong>Amount Paid:</strong></span>
+                        <span className="text-end fw-bold text-success">{formatCurrency(submission.amount_paid)}</span>
+                      </div>
+                      <div className="d-flex justify-content-between">
+                        <span><strong>Expected Amount:</strong></span>
+                        <span className="text-end">{formatCurrency(submission.expected_amount)}</span>
+                      </div>
+                      <div className="d-flex justify-content-between">
+                        <span><strong>Reference Number:</strong></span>
+                        <span className="text-end font-monospace">{submission.reference_number}</span>
+                      </div>
+                      <div className="d-flex justify-content-between align-items-center">
+                        <span><strong>Status:</strong></span>
+                        <span>{getStatusBadge(submission.status)}</span>
+                      </div>
+                    </div>
                   </div>
-                  <div className="col-md-6">
+                  <div className="col-12 col-md-6">
                     <h6 className="fw-semibold">Timeline</h6>
-                    <p className="mb-1"><strong>Submitted:</strong> {formatDate(submission.submitted_at)}</p>
-                    <p className="mb-1"><strong>Reviewed:</strong> {submission.reviewed_at ? formatDate(submission.reviewed_at) : 'Not yet reviewed'}</p>
+                    <div className="d-flex flex-column gap-2">
+                      <div className="d-flex justify-content-between">
+                        <span><strong>Submitted:</strong></span>
+                        <span className="text-end">{formatDate(submission.submitted_at)}</span>
+                      </div>
+                      <div className="d-flex justify-content-between">
+                        <span><strong>Reviewed:</strong></span>
+                        <span className="text-end">{submission.reviewed_at ? formatDate(submission.reviewed_at) : 'Not yet reviewed'}</span>
+                      </div>
+                    </div>
                   </div>
                 </div>
 
@@ -262,7 +329,7 @@ const PaymentHistory = () => {
                         
                         
                         return (
-                          <div key={index} className="col-md-3 col-sm-6 mb-3">
+                          <div key={index} className="col-6 col-md-3 mb-3">
                             <div className="position-relative">
                               <img 
                                 src={finalImageUrl} 

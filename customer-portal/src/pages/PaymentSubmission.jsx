@@ -350,7 +350,7 @@ const PaymentSubmission = () => {
                     </div>
                     <div className="table-responsive">
                       <table className="table table-bordered table-hover">
-                        <thead className="table-light">
+                        <thead className="table-light d-none d-md-table-header-group">
                           <tr>
                             <th width="50">
                               <input
@@ -372,7 +372,55 @@ const PaymentSubmission = () => {
                             .sort((a, b) => a.payment_order - b.payment_order)
                             .map((schedule, index) => (
                             <tr key={schedule.id} className={schedule.status === 'paid' ? 'table-success' : schedule.status === 'overdue' ? 'table-danger' : ''}>
-                              <td>
+                              {/* Mobile card layout */}
+                              <td className="d-md-none">
+                                <div className="card border-0 bg-light">
+                                  <div className="card-body p-3">
+                                    <div className="d-flex justify-content-between align-items-start mb-2">
+                                      <div className="form-check">
+                                        <input
+                                          type="checkbox"
+                                          className="form-check-input"
+                                          checked={selectedSchedules.includes(schedule.id)}
+                                          disabled={schedule.status === 'paid'}
+                                          onChange={(e) => handleScheduleSelection(schedule.id, e.target.checked)}
+                                        />
+                                        <label className="form-check-label fw-semibold">
+                                          Payment {schedule.payment_order}
+                                        </label>
+                                      </div>
+                                      <span className={`badge ${
+                                        schedule.status === 'paid' ? 'bg-success' : 
+                                        schedule.status === 'overdue' ? 'bg-danger' : 'bg-warning'
+                                      }`}>
+                                        {schedule.status === 'paid' ? 'Paid' : 
+                                         schedule.status === 'overdue' ? 'Overdue' : 'Pending'}
+                                      </span>
+                                    </div>
+                                    <div className="d-flex justify-content-between align-items-center mb-2">
+                                      <div>
+                                        <span className="badge bg-primary">{schedule.payment_type}</span>
+                                        {schedule.due_date && (
+                                          <div className="text-muted small mt-1">
+                                            Due: {new Date(schedule.due_date).toLocaleDateString()}
+                                          </div>
+                                        )}
+                                      </div>
+                                      <div className="text-end">
+                                        <div className="fw-semibold text-primary">{formatCurrency(schedule.amount || 0)}</div>
+                                        {schedule.paid_amount > 0 && (
+                                          <div className="text-success small">
+                                            Paid: {formatCurrency(schedule.paid_amount)}
+                                          </div>
+                                        )}
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                              </td>
+                              
+                              {/* Desktop table layout */}
+                              <td className="d-none d-md-table-cell">
                                 <input
                                   type="checkbox"
                                   className="form-check-input"
@@ -381,7 +429,7 @@ const PaymentSubmission = () => {
                                   onChange={(e) => handleScheduleSelection(schedule.id, e.target.checked)}
                                 />
                               </td>
-                              <td>
+                              <td className="d-none d-md-table-cell">
                                 <strong>Payment {schedule.payment_order}</strong>
                                 {schedule.payment_type && (
                                   <div className="text-muted small">
@@ -390,10 +438,10 @@ const PaymentSubmission = () => {
                                   </div>
                                 )}
                               </td>
-                              <td>
+                              <td className="d-none d-md-table-cell">
                                 <span className="badge bg-primary">{schedule.payment_type}</span>
                               </td>
-                              <td>
+                              <td className="d-none d-md-table-cell">
                                 {schedule.due_date ? (
                                   <div>
                                     <div>{new Date(schedule.due_date).toLocaleDateString()}</div>
@@ -407,7 +455,7 @@ const PaymentSubmission = () => {
                                   </div>
                                 ) : 'N/A'}
                               </td>
-                              <td>
+                              <td className="d-none d-md-table-cell">
                                 <strong className="text-primary">{formatCurrency(schedule.amount || 0)}</strong>
                                 {schedule.paid_amount > 0 && (
                                   <div className="text-success small">
@@ -415,7 +463,7 @@ const PaymentSubmission = () => {
                                   </div>
                                 )}
                               </td>
-                              <td>
+                              <td className="d-none d-md-table-cell">
                                 <span className={`badge ${
                                   schedule.status === 'paid' ? 'bg-success' : 
                                   schedule.status === 'overdue' ? 'bg-danger' : 'bg-warning'

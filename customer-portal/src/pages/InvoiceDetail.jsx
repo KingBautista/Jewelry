@@ -84,21 +84,22 @@ const InvoiceDetail = () => {
     <div className="container-fluid">
       <div className="row">
         <div className="col-12">
-          <div className="d-flex justify-content-between align-items-center mb-4">
-            <div>
+          <div className="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4">
+            <div className="mb-3 mb-md-0">
               <h1 className="h3 mb-0" style={{ color: 'var(--text-color)' }}>
                 <FontAwesomeIcon icon={solidIconMap.fileInvoice} className="me-2 text-champagne" />
                 Invoice #{invoice.invoice_number}
               </h1>
               <p className="text-muted mb-0">Issue Date: {new Date(invoice.issue_date).toLocaleDateString()}</p>
             </div>
-            <div className="d-flex gap-2">
+            <div className="d-flex flex-column flex-sm-row gap-2 w-100 w-md-auto">
               <button 
                 className="btn btn-outline-primary"
                 onClick={downloadPdf}
               >
                 <FontAwesomeIcon icon={solidIconMap.download} className="me-2" />
-                Download PDF
+                <span className="d-none d-sm-inline">Download PDF</span>
+                <span className="d-sm-none">PDF</span>
               </button>
               {invoice.payment_status !== 'fully_paid' && (
                 <Link 
@@ -106,7 +107,8 @@ const InvoiceDetail = () => {
                   className="btn btn-primary"
                 >
                   <FontAwesomeIcon icon={solidIconMap.creditCard} className="me-2" />
-                  Submit Payment
+                  <span className="d-none d-sm-inline">Submit Payment</span>
+                  <span className="d-sm-none">Pay</span>
                 </Link>
               )}
             </div>
@@ -123,21 +125,51 @@ const InvoiceDetail = () => {
             </div>
             <div className="card-body">
               <div className="row mb-4">
-                <div className="col-md-6">
+                <div className="col-12 col-md-6 mb-3 mb-md-0">
                   <h6 className="fw-semibold">Invoice Information</h6>
-                  <p className="mb-1"><strong>Invoice Number:</strong> {invoice.invoice_number}</p>
-                  <p className="mb-1"><strong>Issue Date:</strong> {new Date(invoice.issue_date).toLocaleDateString()}</p>
-                  <p className="mb-1"><strong>Due Date:</strong> {invoice.due_date ? new Date(invoice.due_date).toLocaleDateString() : 'N/A'}</p>
-                  <p className="mb-1"><strong>Status:</strong> {getStatusBadge(invoice.payment_status)}</p>
+                  <div className="d-flex flex-column gap-2">
+                    <div className="d-flex justify-content-between">
+                      <span><strong>Invoice Number:</strong></span>
+                      <span className="text-end">{invoice.invoice_number}</span>
+                    </div>
+                    <div className="d-flex justify-content-between">
+                      <span><strong>Issue Date:</strong></span>
+                      <span className="text-end">{new Date(invoice.issue_date).toLocaleDateString()}</span>
+                    </div>
+                    <div className="d-flex justify-content-between">
+                      <span><strong>Due Date:</strong></span>
+                      <span className="text-end">{invoice.due_date ? new Date(invoice.due_date).toLocaleDateString() : 'N/A'}</span>
+                    </div>
+                    <div className="d-flex justify-content-between align-items-center">
+                      <span><strong>Status:</strong></span>
+                      <span>{getStatusBadge(invoice.payment_status)}</span>
+                    </div>
+                  </div>
                 </div>
-                <div className="col-md-6">
+                <div className="col-12 col-md-6">
                   <h6 className="fw-semibold">Payment Information</h6>
-                  <p className="mb-1"><strong>Total Amount:</strong> {formatCurrency(invoice.total_amount)}</p>
-                  <p className="mb-1"><strong>Paid Amount:</strong> {formatCurrency(invoice.total_paid_amount)}</p>
-                  <p className="mb-1"><strong>Remaining Balance:</strong> {formatCurrency(invoice.remaining_balance)}</p>
-                  {invoice.payment_term && (
-                    <p className="mb-1"><strong>Payment Terms:</strong> {invoice.payment_term.name}</p>
-                  )}
+                  <div className="d-flex flex-column gap-2">
+                    <div className="d-flex justify-content-between">
+                      <span><strong>Total Amount:</strong></span>
+                      <span className="text-end fw-bold">{formatCurrency(invoice.total_amount)}</span>
+                    </div>
+                    <div className="d-flex justify-content-between">
+                      <span><strong>Paid Amount:</strong></span>
+                      <span className="text-end text-success">{formatCurrency(invoice.total_paid_amount)}</span>
+                    </div>
+                    <div className="d-flex justify-content-between">
+                      <span><strong>Remaining Balance:</strong></span>
+                      <span className={`text-end fw-bold ${invoice.remaining_balance > 0 ? 'text-danger' : 'text-success'}`}>
+                        {formatCurrency(invoice.remaining_balance)}
+                      </span>
+                    </div>
+                    {invoice.payment_term && (
+                      <div className="d-flex justify-content-between">
+                        <span><strong>Payment Terms:</strong></span>
+                        <span className="text-end">{invoice.payment_term.name}</span>
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
 
@@ -188,7 +220,7 @@ const InvoiceDetail = () => {
                   <h6 className="fw-semibold">Payment Schedule</h6>
                   <div className="table-responsive">
                     <table className="table table-bordered table-hover">
-                      <thead className="table-light">
+                      <thead className="table-light d-none d-md-table-header-group">
                         <tr>
                           <th>Payment</th>
                           <th>Type</th>
@@ -203,24 +235,59 @@ const InvoiceDetail = () => {
                           .sort((a, b) => a.payment_order - b.payment_order)
                           .map((schedule, index) => (
                           <tr key={schedule.id} className={schedule.status === 'paid' ? 'table-success' : schedule.status === 'overdue' ? 'table-danger' : ''}>
-                            <td>
+                            {/* Mobile card layout */}
+                            <td className="d-md-none">
+                              <div className="card border-0 bg-light">
+                                <div className="card-body p-3">
+                                  <div className="d-flex justify-content-between align-items-start mb-2">
+                                    <div>
+                                      <div className="fw-semibold">Payment {schedule.payment_order}</div>
+                                      <span className="badge bg-primary">{schedule.payment_type}</span>
+                                    </div>
+                                    <span className={`badge ${
+                                      schedule.status === 'paid' ? 'bg-success' : 
+                                      schedule.status === 'overdue' ? 'bg-danger' : 'bg-warning'
+                                    }`}>
+                                      {schedule.status === 'paid' ? 'Paid' : 
+                                       schedule.status === 'overdue' ? 'Overdue' : 'Pending'}
+                                    </span>
+                                  </div>
+                                  <div className="d-flex justify-content-between align-items-center">
+                                    <div>
+                                      <div className="text-muted small">
+                                        Due: {schedule.due_date ? new Date(schedule.due_date).toLocaleDateString() : 'N/A'}
+                                      </div>
+                                    </div>
+                                    <div className="text-end">
+                                      <div className="fw-semibold text-primary">{formatCurrency(schedule.amount || 0)}</div>
+                                      <div className={`small ${schedule.paid_amount > 0 ? 'text-success' : 'text-muted'}`}>
+                                        Paid: {formatCurrency(schedule.paid_amount || 0)}
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            </td>
+                            
+                            {/* Desktop table layout */}
+                            <td className="d-none d-md-table-cell">
                               <strong>Payment {schedule.payment_order}</strong>
                             </td>
-                            <td>
+                            <td className="d-none d-md-table-cell">
                               <span className="badge bg-primary">{schedule.payment_type}</span>
                             </td>
-                            <td>
+                            <td className="d-none d-md-table-cell">
                               {schedule.due_date ? new Date(schedule.due_date).toLocaleDateString() : 'N/A'}
                             </td>
-                            <td>
+                            <td className="d-none d-md-table-cell">
                               <strong>{formatCurrency(schedule.amount || 0)}</strong>
                             </td>
-                            <td>
+                            <td className="d-none d-md-table-cell">
                               <strong className={schedule.paid_amount > 0 ? 'text-success' : 'text-muted'}>
                                 {formatCurrency(schedule.paid_amount || 0)}
                               </strong>
                             </td>
-                            <td>
+                            <td className="d-none d-md-table-cell">
                               <span className={`badge ${
                                 schedule.status === 'paid' ? 'bg-success' : 
                                 schedule.status === 'overdue' ? 'bg-danger' : 'bg-warning'
@@ -236,10 +303,10 @@ const InvoiceDetail = () => {
                   </div>
                   
                   {/* Payment Schedule Summary */}
-                  <div className="row mt-3">
-                    <div className="col-md-6">
+                  <div className="row g-3 mt-3">
+                    <div className="col-12 col-md-6">
                       <div className="card border-success">
-                        <div className="card-body">
+                        <div className="card-body text-center">
                           <h6 className="card-title text-success">Total Expected</h6>
                           <p className="card-text h5 mb-0">
                             {formatCurrency(invoice.payment_schedules.reduce((sum, schedule) => sum + parseFloat(schedule.amount || 0), 0))}
@@ -247,9 +314,9 @@ const InvoiceDetail = () => {
                         </div>
                       </div>
                     </div>
-                    <div className="col-md-6">
+                    <div className="col-12 col-md-6">
                       <div className="card border-info">
-                        <div className="card-body">
+                        <div className="card-body text-center">
                           <h6 className="card-title text-info">Total Paid</h6>
                           <p className="card-text h5 mb-0">
                             {formatCurrency(invoice.payment_schedules.reduce((sum, schedule) => sum + parseFloat(schedule.paid_amount || 0), 0))}
@@ -273,7 +340,7 @@ const InvoiceDetail = () => {
         </div>
 
         {/* Payment Summary */}
-        <div className="col-lg-4">
+        <div className="col-12 col-lg-4">
           <div className="card shadow-sm">
             <div className="card-header bg-champagne">
               <h5 className="mb-0">Payment Summary</h5>
@@ -281,39 +348,39 @@ const InvoiceDetail = () => {
             <div className="card-body">
               <div className="d-flex justify-content-between mb-2">
                 <span>Subtotal:</span>
-                <span>{formatCurrency(invoice.subtotal)}</span>
+                <span className="text-end">{formatCurrency(invoice.subtotal)}</span>
               </div>
               {invoice.tax_amount > 0 && (
                 <div className="d-flex justify-content-between mb-2">
                   <span>Tax:</span>
-                  <span>{formatCurrency(invoice.tax_amount)}</span>
+                  <span className="text-end">{formatCurrency(invoice.tax_amount)}</span>
                 </div>
               )}
               {invoice.fee_amount > 0 && (
                 <div className="d-flex justify-content-between mb-2">
                   <span>Fee:</span>
-                  <span>{formatCurrency(invoice.fee_amount)}</span>
+                  <span className="text-end">{formatCurrency(invoice.fee_amount)}</span>
                 </div>
               )}
               {invoice.discount_amount > 0 && (
                 <div className="d-flex justify-content-between mb-2">
                   <span>Discount:</span>
-                  <span className="text-success">-{formatCurrency(invoice.discount_amount)}</span>
+                  <span className="text-end text-success">-{formatCurrency(invoice.discount_amount)}</span>
                 </div>
               )}
               <hr />
               <div className="d-flex justify-content-between fw-bold">
                 <span>Total Amount:</span>
-                <span>{formatCurrency(invoice.total_amount)}</span>
+                <span className="text-end">{formatCurrency(invoice.total_amount)}</span>
               </div>
               <div className="d-flex justify-content-between text-success">
                 <span>Paid Amount:</span>
-                <span>{formatCurrency(invoice.total_paid_amount)}</span>
+                <span className="text-end">{formatCurrency(invoice.total_paid_amount)}</span>
               </div>
               <hr />
               <div className="d-flex justify-content-between fw-bold">
                 <span>Remaining Balance:</span>
-                <span className={invoice.remaining_balance > 0 ? 'text-danger' : 'text-success'}>
+                <span className={`text-end ${invoice.remaining_balance > 0 ? 'text-danger' : 'text-success'}`}>
                   {formatCurrency(invoice.remaining_balance)}
                 </span>
               </div>

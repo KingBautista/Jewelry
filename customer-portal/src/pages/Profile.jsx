@@ -97,8 +97,8 @@ const Profile = () => {
         </div>
       </div>
 
-      <div className="row">
-        <div className="col-lg-8">
+      <div className="row g-4">
+        <div className="col-12 col-lg-8">
           <div className="card shadow-sm">
             <div className="card-header bg-champagne">
               <h5 className="mb-0">Profile Information</h5>
@@ -193,31 +193,34 @@ const Profile = () => {
                 </div>
 
                 {/* Submit Button */}
-                <div className="d-flex gap-2">
+                <div className="d-flex flex-column flex-sm-row gap-2">
                   <button
                     type="submit"
-                    className="btn btn-primary"
+                    className="btn btn-primary flex-fill"
                     disabled={saving}
                   >
                     {saving ? (
                       <>
                         <span className="spinner-border spinner-border-sm me-2" role="status"></span>
-                        Saving...
+                        <span className="d-none d-sm-inline">Saving...</span>
+                        <span className="d-sm-none">Saving...</span>
                       </>
                     ) : (
                       <>
                         <FontAwesomeIcon icon={solidIconMap.save} className="me-2" />
-                        Save Changes
+                        <span className="d-none d-sm-inline">Save Changes</span>
+                        <span className="d-sm-none">Save</span>
                       </>
                     )}
                   </button>
                   <button
                     type="button"
-                    className="btn btn-outline-secondary"
+                    className="btn btn-outline-secondary flex-fill"
                     onClick={fetchProfile}
                   >
                     <FontAwesomeIcon icon={solidIconMap.undo} className="me-2" />
-                    Reset
+                    <span className="d-none d-sm-inline">Reset</span>
+                    <span className="d-sm-none">Reset</span>
                   </button>
                 </div>
               </form>
@@ -226,7 +229,7 @@ const Profile = () => {
         </div>
 
         {/* Account Information */}
-        <div className="col-lg-4">
+        <div className="col-12 col-lg-4">
           <div className="card shadow-sm">
             <div className="card-header bg-info text-white">
               <h5 className="mb-0">
@@ -236,10 +239,12 @@ const Profile = () => {
             </div>
             <div className="card-body">
               <div className="mb-3">
-                <h6 className="fw-semibold">Account Status</h6>
-                <span className={`badge ${user?.user_status ? 'badge-success' : 'badge-warning'}`}>
-                  {user?.user_status ? 'Active' : 'Inactive'}
-                </span>
+                <div className="d-flex justify-content-between align-items-center">
+                  <h6 className="fw-semibold mb-0">Account Status</h6>
+                  <span className={`badge ${user?.user_status ? 'badge-success' : 'badge-warning'}`}>
+                    {user?.user_status ? 'Active' : 'Inactive'}
+                  </span>
+                </div>
               </div>
               
               <div className="mb-3">
@@ -258,7 +263,7 @@ const Profile = () => {
             </div>
           </div>
 
-          <div className="card shadow-sm mt-4">
+          <div className="card shadow-sm mt-3 mt-lg-4">
             <div className="card-header bg-warning text-dark">
               <h5 className="mb-0">
                 <FontAwesomeIcon icon={solidIconMap.exclamationTriangle} className="me-2" />
@@ -266,7 +271,7 @@ const Profile = () => {
               </h5>
             </div>
             <div className="card-body">
-              <ul className="mb-0">
+              <ul className="mb-0 small">
                 <li>Keep your login credentials secure</li>
                 <li>Use a strong, unique password</li>
                 <li>Contact support if you notice any suspicious activity</li>
@@ -275,7 +280,7 @@ const Profile = () => {
             </div>
           </div>
 
-          <div className="card shadow-sm mt-4">
+          <div className="card shadow-sm mt-3 mt-lg-4">
             <div className="card-header bg-success text-white">
               <h5 className="mb-0">
                 <FontAwesomeIcon icon={solidIconMap.phone} className="me-2" />
@@ -283,8 +288,8 @@ const Profile = () => {
               </h5>
             </div>
             <div className="card-body">
-              <p className="mb-2">If you need assistance with your account:</p>
-              <ul className="mb-0">
+              <p className="mb-2 small">If you need assistance with your account:</p>
+              <ul className="mb-0 small">
                 <li>Contact customer support</li>
                 <li>Use the forgot password feature</li>
                 <li>Check your email for notifications</li>

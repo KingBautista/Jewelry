@@ -65,59 +65,67 @@ const Dashboard = () => {
       </div>
 
       {/* Overview Cards */}
-      <div className="row g-4 mb-4">
-        <div className="col-lg-3 col-md-6">
+      <div className="row g-3 g-md-4 mb-4">
+        <div className="col-6 col-lg-3">
           <div className="card h-100 shadow-sm">
-            <div className="card-body text-center">
+            <div className="card-body text-center p-3 p-md-4">
               <FontAwesomeIcon 
                 icon={solidIconMap.fileInvoice} 
-                className="text-champagne mb-3" 
-                style={{ fontSize: '2.5rem' }} 
+                className="text-champagne mb-2 mb-md-3" 
+                style={{ fontSize: 'clamp(1.5rem, 4vw, 2.5rem)' }} 
               />
-              <h3 className="fw-bold mb-1">{formatNumber(overview.total_invoices)}</h3>
-              <p className="text-muted mb-0">Total Invoices</p>
+              <h3 className="fw-bold mb-1" style={{ fontSize: 'clamp(1rem, 3vw, 1.5rem)' }}>
+                {formatNumber(overview.total_invoices)}
+              </h3>
+              <p className="text-muted mb-0 small">Total Invoices</p>
             </div>
           </div>
         </div>
         
-        <div className="col-lg-3 col-md-6">
+        <div className="col-6 col-lg-3">
           <div className="card h-100 shadow-sm">
-            <div className="card-body text-center">
+            <div className="card-body text-center p-3 p-md-4">
               <FontAwesomeIcon 
                 icon={solidIconMap.dollarSign} 
-                className="text-success mb-3" 
-                style={{ fontSize: '2.5rem' }} 
+                className="text-success mb-2 mb-md-3" 
+                style={{ fontSize: 'clamp(1.5rem, 4vw, 2.5rem)' }} 
               />
-              <h3 className="fw-bold mb-1">₱{formatNumber(overview.total_paid)}</h3>
-              <p className="text-muted mb-0">Total Paid</p>
+              <h3 className="fw-bold mb-1" style={{ fontSize: 'clamp(0.875rem, 2.5vw, 1.25rem)' }}>
+                ₱{formatNumber(overview.total_paid)}
+              </h3>
+              <p className="text-muted mb-0 small">Total Paid</p>
             </div>
           </div>
         </div>
         
-        <div className="col-lg-3 col-md-6">
+        <div className="col-6 col-lg-3">
           <div className="card h-100 shadow-sm">
-            <div className="card-body text-center">
+            <div className="card-body text-center p-3 p-md-4">
               <FontAwesomeIcon 
                 icon={solidIconMap.clock} 
-                className="text-warning mb-3" 
-                style={{ fontSize: '2.5rem' }} 
+                className="text-warning mb-2 mb-md-3" 
+                style={{ fontSize: 'clamp(1.5rem, 4vw, 2.5rem)' }} 
               />
-              <h3 className="fw-bold mb-1">₱{formatNumber(overview.outstanding_balance)}</h3>
-              <p className="text-muted mb-0">Outstanding Balance</p>
+              <h3 className="fw-bold mb-1" style={{ fontSize: 'clamp(0.875rem, 2.5vw, 1.25rem)' }}>
+                ₱{formatNumber(overview.outstanding_balance)}
+              </h3>
+              <p className="text-muted mb-0 small">Outstanding Balance</p>
             </div>
           </div>
         </div>
         
-        <div className="col-lg-3 col-md-6">
+        <div className="col-6 col-lg-3">
           <div className="card h-100 shadow-sm">
-            <div className="card-body text-center">
+            <div className="card-body text-center p-3 p-md-4">
               <FontAwesomeIcon 
                 icon={solidIconMap.exclamationTriangle} 
-                className="text-danger mb-3" 
-                style={{ fontSize: '2.5rem' }} 
+                className="text-danger mb-2 mb-md-3" 
+                style={{ fontSize: 'clamp(1.5rem, 4vw, 2.5rem)' }} 
               />
-              <h3 className="fw-bold mb-1">{formatNumber(overdueInvoices.length)}</h3>
-              <p className="text-muted mb-0">Overdue Invoices</p>
+              <h3 className="fw-bold mb-1" style={{ fontSize: 'clamp(1rem, 3vw, 1.5rem)' }}>
+                {formatNumber(overdueInvoices.length)}
+              </h3>
+              <p className="text-muted mb-0 small">Overdue Invoices</p>
             </div>
           </div>
         </div>
@@ -156,13 +164,13 @@ const Dashboard = () => {
         </div>
       )}
 
-      <div className="row g-4">
+      <div className="row g-3 g-lg-4">
         {/* Recent Invoices */}
-        <div className="col-lg-8">
+        <div className="col-12 col-lg-8">
           <div className="card shadow-sm">
             <div className="card-header bg-champagne">
-              <div className="d-flex justify-content-between align-items-center">
-                <h5 className="mb-0">
+              <div className="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center">
+                <h5 className="mb-2 mb-md-0">
                   <FontAwesomeIcon icon={solidIconMap.fileInvoice} className="me-2" />
                   Recent Invoices
                 </h5>
@@ -175,7 +183,7 @@ const Dashboard = () => {
               {recentInvoices.length > 0 ? (
                 <div className="table-responsive">
                   <table className="table table-hover mb-0">
-                    <thead>
+                    <thead className="d-none d-md-table-header-group">
                       <tr>
                         <th>Invoice #</th>
                         <th>Date</th>
@@ -187,10 +195,43 @@ const Dashboard = () => {
                     <tbody>
                       {recentInvoices.map((invoice) => (
                         <tr key={invoice.id}>
-                          <td className="fw-semibold">{invoice.invoice_number}</td>
-                          <td>{new Date(invoice.issue_date).toLocaleDateString()}</td>
-                          <td className="fw-semibold">₱{formatNumber(invoice.total_amount)}</td>
-                          <td>
+                          {/* Mobile card layout */}
+                          <td className="d-md-none">
+                            <div className="card border-0 bg-light">
+                              <div className="card-body p-3">
+                                <div className="d-flex justify-content-between align-items-start mb-2">
+                                  <div>
+                                    <div className="fw-semibold">{invoice.invoice_number}</div>
+                                    <small className="text-muted">
+                                      {new Date(invoice.issue_date).toLocaleDateString()}
+                                    </small>
+                                  </div>
+                                  <span className={`badge ${
+                                    invoice.payment_status === 'fully_paid' ? 'badge-success' :
+                                    invoice.payment_status === 'partially_paid' ? 'badge-warning' :
+                                    invoice.payment_status === 'overdue' ? 'badge-danger' : 'badge-info'
+                                  }`}>
+                                    {invoice.payment_status.replace('_', ' ').toUpperCase()}
+                                  </span>
+                                </div>
+                                <div className="d-flex justify-content-between align-items-center">
+                                  <div className="fw-semibold">₱{formatNumber(invoice.total_amount)}</div>
+                                  <Link 
+                                    to={`/invoices/${invoice.id}`} 
+                                    className="btn btn-sm btn-outline-primary"
+                                  >
+                                    View
+                                  </Link>
+                                </div>
+                              </div>
+                            </div>
+                          </td>
+                          
+                          {/* Desktop table layout */}
+                          <td className="d-none d-md-table-cell fw-semibold">{invoice.invoice_number}</td>
+                          <td className="d-none d-md-table-cell">{new Date(invoice.issue_date).toLocaleDateString()}</td>
+                          <td className="d-none d-md-table-cell fw-semibold">₱{formatNumber(invoice.total_amount)}</td>
+                          <td className="d-none d-md-table-cell">
                             <span className={`badge ${
                               invoice.payment_status === 'fully_paid' ? 'badge-success' :
                               invoice.payment_status === 'partially_paid' ? 'badge-warning' :
@@ -199,7 +240,7 @@ const Dashboard = () => {
                               {invoice.payment_status.replace('_', ' ').toUpperCase()}
                             </span>
                           </td>
-                          <td>
+                          <td className="d-none d-md-table-cell">
                             <Link 
                               to={`/invoices/${invoice.id}`} 
                               className="btn btn-sm btn-outline-primary"
@@ -223,7 +264,7 @@ const Dashboard = () => {
         </div>
 
         {/* Quick Actions */}
-        <div className="col-lg-4">
+        <div className="col-12 col-lg-4">
           <div className="card shadow-sm">
             <div className="card-header bg-champagne">
               <h5 className="mb-0">
@@ -232,7 +273,7 @@ const Dashboard = () => {
               </h5>
             </div>
             <div className="card-body">
-              <div className="d-grid gap-3">
+              <div className="d-grid gap-2 gap-md-3">
                 <Link to="/payment-submission" className="btn btn-primary">
                   <FontAwesomeIcon icon={solidIconMap.creditCard} className="me-2" />
                   Submit Payment
@@ -251,7 +292,7 @@ const Dashboard = () => {
 
           {/* Upcoming Dues */}
           {upcomingDues.length > 0 && (
-            <div className="card shadow-sm mt-4">
+            <div className="card shadow-sm mt-3 mt-md-4">
               <div className="card-header bg-warning text-dark">
                 <h5 className="mb-0">
                   <FontAwesomeIcon icon={solidIconMap.clock} className="me-2" />
@@ -262,13 +303,13 @@ const Dashboard = () => {
                 {upcomingDues.map((invoice) => (
                   <div key={invoice.id} className="d-flex justify-content-between align-items-center mb-2">
                     <div>
-                      <div className="fw-semibold">{invoice.invoice_number}</div>
+                      <div className="fw-semibold small">{invoice.invoice_number}</div>
                       <small className="text-muted">
                         Due: {new Date(invoice.due_date).toLocaleDateString()}
                       </small>
                     </div>
                     <div className="text-end">
-                      <div className="fw-semibold">₱{formatNumber(invoice.remaining_balance)}</div>
+                      <div className="fw-semibold small">₱{formatNumber(invoice.remaining_balance)}</div>
                     </div>
                   </div>
                 ))}
