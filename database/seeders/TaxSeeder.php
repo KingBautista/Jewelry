@@ -13,76 +13,187 @@ class TaxSeeder extends Seeder
      */
     public function run(): void
     {
-        // Create Philippines-specific taxes
+        // Create valid Philippines formal taxes for business operations
         $taxes = [
             [
-                'name' => 'VAT (Value Added Tax)',
+                'name' => 'Value Added Tax (VAT)',
                 'code' => 'VAT',
                 'rate' => 12.00,
-                'description' => 'Philippines Standard VAT Rate - 12%',
+                'description' => 'Standard VAT rate for goods and services in the Philippines',
                 'active' => true,
             ],
             [
-                'name' => 'Jewelry Excise Tax',
-                'code' => 'JEWELRY_EXCISE',
-                'rate' => 20.00,
-                'description' => 'Excise Tax on Jewelry and Precious Metals',
-                'active' => true,
-            ],
-            [
-                'name' => 'Withholding Tax - Expanded',
+                'name' => 'Expanded Withholding Tax (EWT)',
                 'code' => 'EWT',
                 'rate' => 1.00,
-                'description' => 'Expanded Withholding Tax for Services',
+                'description' => 'Expanded Withholding Tax on payments to suppliers and contractors',
                 'active' => true,
             ],
             [
-                'name' => 'Withholding Tax - Final',
+                'name' => 'Final Withholding Tax (FWT)',
                 'code' => 'FWT',
                 'rate' => 2.00,
-                'description' => 'Final Withholding Tax',
+                'description' => 'Final Withholding Tax on certain payments',
                 'active' => true,
             ],
             [
                 'name' => 'Local Business Tax',
                 'code' => 'LBT',
                 'rate' => 1.00,
-                'description' => 'Local Business Tax (Municipal/City)',
+                'description' => 'Local Business Tax imposed by city/municipality',
                 'active' => true,
             ],
             [
                 'name' => 'Documentary Stamp Tax',
                 'code' => 'DST',
                 'rate' => 1.50,
-                'description' => 'Documentary Stamp Tax on Receipts',
+                'description' => 'Documentary Stamp Tax on receipts and documents',
+                'active' => true,
+            ],
+            [
+                'name' => 'Income Tax',
+                'code' => 'INCOME_TAX',
+                'rate' => 30.00,
+                'description' => 'Corporate Income Tax rate',
+                'active' => true,
+            ],
+            [
+                'name' => 'Capital Gains Tax',
+                'code' => 'CGT',
+                'rate' => 6.00,
+                'description' => 'Capital Gains Tax on sale of capital assets',
+                'active' => true,
+            ],
+            [
+                'name' => 'Donor\'s Tax',
+                'code' => 'DONOR_TAX',
+                'rate' => 6.00,
+                'description' => 'Donor\'s Tax on gifts and donations',
+                'active' => true,
+            ],
+            [
+                'name' => 'Estate Tax',
+                'code' => 'ESTATE_TAX',
+                'rate' => 6.00,
+                'description' => 'Estate Tax on inherited properties',
+                'active' => true,
+            ],
+            [
+                'name' => 'Real Property Tax',
+                'code' => 'RPT',
+                'rate' => 2.00,
+                'description' => 'Real Property Tax on land and buildings',
+                'active' => true,
+            ],
+            [
+                'name' => 'Professional Tax',
+                'code' => 'PROF_TAX',
+                'rate' => 0.50,
+                'description' => 'Professional Tax for licensed professionals',
+                'active' => true,
+            ],
+            [
+                'name' => 'Franchise Tax',
+                'code' => 'FRANCHISE_TAX',
+                'rate' => 2.00,
+                'description' => 'Franchise Tax on franchise holders',
+                'active' => true,
+            ],
+            [
+                'name' => 'Amusement Tax',
+                'code' => 'AMUSEMENT_TAX',
+                'rate' => 10.00,
+                'description' => 'Amusement Tax on entertainment venues',
+                'active' => true,
+            ],
+            [
+                'name' => 'Community Tax',
+                'code' => 'COMMUNITY_TAX',
+                'rate' => 0.25,
+                'description' => 'Community Tax (Cedula) for individuals and businesses',
+                'active' => true,
+            ],
+            [
+                'name' => 'Transfer Tax',
+                'code' => 'TRANSFER_TAX',
+                'rate' => 0.50,
+                'description' => 'Transfer Tax on real property transfers',
+                'active' => true,
+            ],
+            [
+                'name' => 'Percentage Tax',
+                'code' => 'PERCENTAGE_TAX',
+                'rate' => 3.00,
+                'description' => 'Percentage Tax for non-VAT registered businesses',
+                'active' => true,
+            ],
+            [
+                'name' => 'Withholding Tax on Compensation',
+                'code' => 'WTC',
+                'rate' => 0.00,
+                'description' => 'Withholding Tax on employee compensation (varies by income bracket)',
+                'active' => true,
+            ],
+            [
+                'name' => 'Withholding Tax on Government Money Payments',
+                'code' => 'WTGMP',
+                'rate' => 1.00,
+                'description' => 'Withholding Tax on payments to government contractors',
+                'active' => true,
+            ],
+            [
+                'name' => 'Withholding Tax on Interest',
+                'code' => 'WTI',
+                'rate' => 20.00,
+                'description' => 'Withholding Tax on bank interest and other interest income',
+                'active' => true,
+            ],
+            [
+                'name' => 'Withholding Tax on Dividends',
+                'code' => 'WTD',
+                'rate' => 10.00,
+                'description' => 'Withholding Tax on dividend payments',
+                'active' => true,
+            ],
+            [
+                'name' => 'Withholding Tax on Royalties',
+                'code' => 'WTR',
+                'rate' => 20.00,
+                'description' => 'Withholding Tax on royalty payments',
+                'active' => true,
+            ],
+            [
+                'name' => 'Withholding Tax on Rentals',
+                'code' => 'WTRENT',
+                'rate' => 5.00,
+                'description' => 'Withholding Tax on rental income',
+                'active' => true,
+            ],
+            [
+                'name' => 'Withholding Tax on Professional Fees',
+                'code' => 'WTPF',
+                'rate' => 10.00,
+                'description' => 'Withholding Tax on professional service fees',
+                'active' => true,
+            ],
+            [
+                'name' => 'Withholding Tax on Commissions',
+                'code' => 'WTC',
+                'rate' => 5.00,
+                'description' => 'Withholding Tax on commission payments',
+                'active' => true,
+            ],
+            [
+                'name' => 'Withholding Tax on Prizes and Winnings',
+                'code' => 'WTPW',
+                'rate' => 20.00,
+                'description' => 'Withholding Tax on prizes and winnings',
                 'active' => true,
             ],
         ];
 
         foreach ($taxes as $tax) {
             Tax::firstOrCreate(['code' => $tax['code']], $tax);
-        }
-
-        // Create additional Philippines-specific taxes to reach 25 total
-        $faker = \Faker\Factory::create();
-        $taxTypes = ['VAT', 'Jewelry Excise Tax', 'Withholding Tax', 'Local Business Tax', 'Documentary Stamp Tax', 'Income Tax', 'Capital Gains Tax', 'Donor\'s Tax', 'Estate Tax', 'Real Property Tax', 'Professional Tax', 'Franchise Tax', 'Amusement Tax', 'Community Tax', 'Transfer Tax'];
-        $taxCodes = ['VAT', 'JEWELRY_EXCISE', 'WHT', 'LBT', 'DST', 'INCOME', 'CGT', 'DONOR', 'ESTATE', 'RPT', 'PROF', 'FRANCHISE', 'AMUSEMENT', 'COMMUNITY', 'TRANSFER'];
-        
-        // Calculate how many more taxes we need to reach 25 total
-        $existingCount = count($taxes);
-        $additionalCount = 25 - $existingCount;
-        
-        for ($i = 0; $i < $additionalCount; $i++) {
-            $taxType = $faker->randomElement($taxTypes);
-            $taxCode = $faker->randomElement($taxCodes) . '_' . $faker->unique()->numberBetween(1, 999);
-            
-            Tax::firstOrCreate(['code' => $taxCode], [
-                'name' => $taxType . ' ' . $faker->numberBetween(1, 20),
-                'code' => $taxCode,
-                'rate' => $faker->randomFloat(2, 0.5, 25.0),
-                'description' => $faker->sentence(),
-                'active' => $faker->boolean(85), // 85% active
-            ]);
         }
     }
 }

@@ -14,99 +14,145 @@ class PaymentTermSeeder extends Seeder
      */
     public function run(): void
     {
-        // Create Philippines-specific payment terms with schedules
+        // Create formal payment terms for jewelry business in the Philippines
         $paymentTerms = [
             [
-                'name' => 'Bayad Agad (Cash Payment)',
-                'code' => 'BAYAD_AGAD',
+                'name' => 'Cash Payment',
+                'code' => 'CASH_PAYMENT',
                 'down_payment_percentage' => 100.00,
                 'remaining_percentage' => 0.00,
                 'term_months' => 1,
-                'description' => 'Full cash payment - bayad agad',
+                'description' => 'Full cash payment upon purchase',
                 'active' => true,
                 'schedules' => []
             ],
             [
-                'name' => 'Hulugan Plan A (Installment Plan A)',
-                'code' => 'HULUGAN_A',
-                'down_payment_percentage' => 30.00,
-                'remaining_percentage' => 70.00,
-                'term_months' => 6,
-                'description' => '6-month hulugan plan with 30% down payment',
+                'name' => '30 Days Net',
+                'code' => 'NET_30',
+                'down_payment_percentage' => 0.00,
+                'remaining_percentage' => 100.00,
+                'term_months' => 1,
+                'description' => 'Payment due within 30 days of invoice date',
                 'active' => true,
                 'schedules' => [
-                    ['month_number' => 1, 'percentage' => 15.00, 'description' => 'Unang buwan na bayad'],
-                    ['month_number' => 2, 'percentage' => 15.00, 'description' => 'Ikalawang buwan na bayad'],
-                    ['month_number' => 3, 'percentage' => 15.00, 'description' => 'Ikatlong buwan na bayad'],
-                    ['month_number' => 4, 'percentage' => 15.00, 'description' => 'Ikaapat na buwan na bayad'],
-                    ['month_number' => 5, 'percentage' => 5.00, 'description' => 'Ikalimang buwan na bayad'],
-                    ['month_number' => 6, 'percentage' => 5.00, 'description' => 'Ikaanim na buwan na bayad'],
+                    ['month_number' => 1, 'percentage' => 100.00, 'description' => 'Payment due within 30 days']
                 ]
             ],
             [
-                'name' => 'Hulugan Plan B (Installment Plan B)',
-                'code' => 'HULUGAN_B',
-                'down_payment_percentage' => 20.00,
-                'remaining_percentage' => 80.00,
-                'term_months' => 12,
-                'description' => '12-month hulugan plan with 20% down payment',
+                'name' => '60 Days Net',
+                'code' => 'NET_60',
+                'down_payment_percentage' => 0.00,
+                'remaining_percentage' => 100.00,
+                'term_months' => 2,
+                'description' => 'Payment due within 60 days of invoice date',
                 'active' => true,
                 'schedules' => [
-                    ['month_number' => 1, 'percentage' => 8.00, 'description' => 'Unang buwan na bayad'],
-                    ['month_number' => 2, 'percentage' => 8.00, 'description' => 'Ikalawang buwan na bayad'],
-                    ['month_number' => 3, 'percentage' => 8.00, 'description' => 'Ikatlong buwan na bayad'],
-                    ['month_number' => 4, 'percentage' => 8.00, 'description' => 'Ikaapat na buwan na bayad'],
-                    ['month_number' => 5, 'percentage' => 8.00, 'description' => 'Ikalimang buwan na bayad'],
-                    ['month_number' => 6, 'percentage' => 8.00, 'description' => 'Ikaanim na buwan na bayad'],
-                    ['month_number' => 7, 'percentage' => 8.00, 'description' => 'Ikapitong buwan na bayad'],
-                    ['month_number' => 8, 'percentage' => 8.00, 'description' => 'Ikawalong buwan na bayad'],
-                    ['month_number' => 9, 'percentage' => 8.00, 'description' => 'Ikasiyam na buwan na bayad'],
-                    ['month_number' => 10, 'percentage' => 8.00, 'description' => 'Ikasampung buwan na bayad'],
-                    ['month_number' => 11, 'percentage' => 0.00, 'description' => 'Ikalabing-isang buwan na bayad'],
-                    ['month_number' => 12, 'percentage' => 0.00, 'description' => 'Ikalabing-dalawang buwan na bayad'],
+                    ['month_number' => 1, 'percentage' => 0.00, 'description' => 'No payment required'],
+                    ['month_number' => 2, 'percentage' => 100.00, 'description' => 'Payment due within 60 days']
                 ]
             ],
             [
-                'name' => 'Suki Plan (Loyalty Plan)',
-                'code' => 'SUKI_PLAN',
+                'name' => '90 Days Net',
+                'code' => 'NET_90',
+                'down_payment_percentage' => 0.00,
+                'remaining_percentage' => 100.00,
+                'term_months' => 3,
+                'description' => 'Payment due within 90 days of invoice date',
+                'active' => true,
+                'schedules' => [
+                    ['month_number' => 1, 'percentage' => 0.00, 'description' => 'No payment required'],
+                    ['month_number' => 2, 'percentage' => 0.00, 'description' => 'No payment required'],
+                    ['month_number' => 3, 'percentage' => 100.00, 'description' => 'Payment due within 90 days']
+                ]
+            ],
+            [
+                'name' => '2/10 Net 30',
+                'code' => '2_10_NET_30',
+                'down_payment_percentage' => 0.00,
+                'remaining_percentage' => 100.00,
+                'term_months' => 1,
+                'description' => '2% discount if paid within 10 days, otherwise net 30 days',
+                'active' => true,
+                'schedules' => [
+                    ['month_number' => 1, 'percentage' => 100.00, 'description' => 'Payment due within 30 days (2% discount if paid within 10 days)']
+                ]
+            ],
+            [
+                'name' => '50% Down, 50% on Delivery',
+                'code' => '50_50_DELIVERY',
                 'down_payment_percentage' => 50.00,
                 'remaining_percentage' => 50.00,
-                'term_months' => 3,
-                'description' => 'Special plan para sa mga suki - 3 months',
+                'term_months' => 1,
+                'description' => '50% down payment, 50% upon delivery',
                 'active' => true,
                 'schedules' => [
-                    ['month_number' => 1, 'percentage' => 20.00, 'description' => 'Unang buwan na bayad'],
-                    ['month_number' => 2, 'percentage' => 20.00, 'description' => 'Ikalawang buwan na bayad'],
-                    ['month_number' => 3, 'percentage' => 10.00, 'description' => 'Ikatlong buwan na bayad'],
+                    ['month_number' => 1, 'percentage' => 50.00, 'description' => 'Balance due upon delivery']
                 ]
             ],
             [
-                'name' => 'VIP Plan (Premium Plan)',
-                'code' => 'VIP_PLAN',
-                'down_payment_percentage' => 10.00,
-                'remaining_percentage' => 90.00,
-                'term_months' => 18,
-                'description' => 'Premium plan para sa VIP customers - 18 months',
+                'name' => '30% Down, 70% in 30 Days',
+                'code' => '30_70_30DAYS',
+                'down_payment_percentage' => 30.00,
+                'remaining_percentage' => 70.00,
+                'term_months' => 1,
+                'description' => '30% down payment, 70% due in 30 days',
                 'active' => true,
                 'schedules' => [
-                    ['month_number' => 1, 'percentage' => 5.00, 'description' => 'Unang buwan na bayad'],
-                    ['month_number' => 2, 'percentage' => 5.00, 'description' => 'Ikalawang buwan na bayad'],
-                    ['month_number' => 3, 'percentage' => 5.00, 'description' => 'Ikatlong buwan na bayad'],
-                    ['month_number' => 4, 'percentage' => 5.00, 'description' => 'Ikaapat na buwan na bayad'],
-                    ['month_number' => 5, 'percentage' => 5.00, 'description' => 'Ikalimang buwan na bayad'],
-                    ['month_number' => 6, 'percentage' => 5.00, 'description' => 'Ikaanim na buwan na bayad'],
-                    ['month_number' => 7, 'percentage' => 5.00, 'description' => 'Ikapitong buwan na bayad'],
-                    ['month_number' => 8, 'percentage' => 5.00, 'description' => 'Ikawalong buwan na bayad'],
-                    ['month_number' => 9, 'percentage' => 5.00, 'description' => 'Ikasiyam na buwan na bayad'],
-                    ['month_number' => 10, 'percentage' => 5.00, 'description' => 'Ikasampung buwan na bayad'],
-                    ['month_number' => 11, 'percentage' => 5.00, 'description' => 'Ikalabing-isang buwan na bayad'],
-                    ['month_number' => 12, 'percentage' => 5.00, 'description' => 'Ikalabing-dalawang buwan na bayad'],
-                    ['month_number' => 13, 'percentage' => 5.00, 'description' => 'Ikalabing-tatlong buwan na bayad'],
-                    ['month_number' => 14, 'percentage' => 5.00, 'description' => 'Ikalabing-apat na buwan na bayad'],
-                    ['month_number' => 15, 'percentage' => 5.00, 'description' => 'Ikalabing-lima na buwan na bayad'],
-                    ['month_number' => 16, 'percentage' => 5.00, 'description' => 'Ikalabing-anim na buwan na bayad'],
-                    ['month_number' => 17, 'percentage' => 5.00, 'description' => 'Ikalabing-pitong buwan na bayad'],
-                    ['month_number' => 18, 'percentage' => 5.00, 'description' => 'Ikalabing-walong buwan na bayad'],
+                    ['month_number' => 1, 'percentage' => 70.00, 'description' => 'Balance due in 30 days']
+                ]
+            ],
+            [
+                'name' => '3-Month Installment',
+                'code' => '3_MONTH_INSTALLMENT',
+                'down_payment_percentage' => 33.33,
+                'remaining_percentage' => 66.67,
+                'term_months' => 3,
+                'description' => 'Equal payments over 3 months',
+                'active' => true,
+                'schedules' => [
+                    ['month_number' => 1, 'percentage' => 33.33, 'description' => 'First month payment'],
+                    ['month_number' => 2, 'percentage' => 33.33, 'description' => 'Second month payment'],
+                    ['month_number' => 3, 'percentage' => 33.34, 'description' => 'Third month payment']
+                ]
+            ],
+            [
+                'name' => '6-Month Installment',
+                'code' => '6_MONTH_INSTALLMENT',
+                'down_payment_percentage' => 20.00,
+                'remaining_percentage' => 80.00,
+                'term_months' => 6,
+                'description' => '20% down payment, balance in 6 equal installments',
+                'active' => true,
+                'schedules' => [
+                    ['month_number' => 1, 'percentage' => 13.33, 'description' => 'Month 1 payment'],
+                    ['month_number' => 2, 'percentage' => 13.33, 'description' => 'Month 2 payment'],
+                    ['month_number' => 3, 'percentage' => 13.33, 'description' => 'Month 3 payment'],
+                    ['month_number' => 4, 'percentage' => 13.33, 'description' => 'Month 4 payment'],
+                    ['month_number' => 5, 'percentage' => 13.33, 'description' => 'Month 5 payment'],
+                    ['month_number' => 6, 'percentage' => 13.35, 'description' => 'Month 6 payment']
+                ]
+            ],
+            [
+                'name' => '12-Month Installment',
+                'code' => '12_MONTH_INSTALLMENT',
+                'down_payment_percentage' => 15.00,
+                'remaining_percentage' => 85.00,
+                'term_months' => 12,
+                'description' => '15% down payment, balance in 12 equal installments',
+                'active' => true,
+                'schedules' => [
+                    ['month_number' => 1, 'percentage' => 7.08, 'description' => 'Month 1 payment'],
+                    ['month_number' => 2, 'percentage' => 7.08, 'description' => 'Month 2 payment'],
+                    ['month_number' => 3, 'percentage' => 7.08, 'description' => 'Month 3 payment'],
+                    ['month_number' => 4, 'percentage' => 7.08, 'description' => 'Month 4 payment'],
+                    ['month_number' => 5, 'percentage' => 7.08, 'description' => 'Month 5 payment'],
+                    ['month_number' => 6, 'percentage' => 7.08, 'description' => 'Month 6 payment'],
+                    ['month_number' => 7, 'percentage' => 7.08, 'description' => 'Month 7 payment'],
+                    ['month_number' => 8, 'percentage' => 7.08, 'description' => 'Month 8 payment'],
+                    ['month_number' => 9, 'percentage' => 7.08, 'description' => 'Month 9 payment'],
+                    ['month_number' => 10, 'percentage' => 7.08, 'description' => 'Month 10 payment'],
+                    ['month_number' => 11, 'percentage' => 7.08, 'description' => 'Month 11 payment'],
+                    ['month_number' => 12, 'percentage' => 7.12, 'description' => 'Month 12 payment']
                 ]
             ],
         ];
@@ -125,49 +171,5 @@ class PaymentTermSeeder extends Seeder
             }
         }
 
-        // Create additional Philippines-specific payment terms to reach 25 total
-        $faker = \Faker\Factory::create();
-        $termNames = ['Hulugan Plan', 'Bayad Plan', 'Utang Plan', 'Layaway Plan', 'Financing Plan', 'Payment Option', 'Credit Option', 'Installment Option', 'Payment Scheme', 'Credit Scheme', 'Suki Plan', 'VIP Plan', 'Premium Plan', 'Special Plan', 'Custom Plan'];
-        $termCodes = ['HULUGAN', 'BAYAD', 'UTANG', 'LAYAWAY', 'FINANCING', 'OPTION', 'SCHEME', 'SUKI', 'VIP', 'PREMIUM', 'SPECIAL', 'CUSTOM'];
-        
-        // Calculate how many more payment terms we need to reach 25 total
-        $existingCount = count($paymentTerms);
-        $additionalCount = 25 - $existingCount;
-        
-        for ($i = 0; $i < $additionalCount; $i++) {
-            $termName = $faker->randomElement($termNames) . ' ' . $faker->randomElement(['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J']) . $faker->numberBetween(1, 10);
-            $termCode = $faker->randomElement($termCodes) . '_' . $faker->unique()->numberBetween(1, 999);
-            
-            $downPayment = $faker->randomFloat(2, 10, 80);
-            $termMonths = $faker->numberBetween(1, 12);
-            
-            $paymentTerm = PaymentTerm::firstOrCreate(['code' => $termCode], [
-                'name' => $termName,
-                'code' => $termCode,
-                'down_payment_percentage' => $downPayment,
-                'remaining_percentage' => 100 - $downPayment,
-                'term_months' => $termMonths,
-                'description' => $faker->sentence(),
-                'active' => $faker->boolean(85), // 85% active
-            ]);
-            
-            // Create schedules for installment plans
-            if ($paymentTerm->wasRecentlyCreated && $termMonths > 1 && (100 - $downPayment) > 0) {
-                $remainingPercentage = 100 - $downPayment;
-                $equalPercentage = $remainingPercentage / $termMonths;
-                
-                for ($j = 1; $j <= $termMonths; $j++) {
-                    $percentage = $j === $termMonths 
-                        ? $remainingPercentage - ($equalPercentage * ($termMonths - 1)) // Last month gets remainder
-                        : $equalPercentage;
-                    
-                    $paymentTerm->schedules()->create([
-                        'month_number' => $j,
-                        'percentage' => round($percentage, 2),
-                        'description' => "Month {$j} payment"
-                    ]);
-                }
-            }
-        }
     }
 }

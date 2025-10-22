@@ -34,12 +34,6 @@ class DatabaseSeeder extends Seeder
     $this->call(PaymentTypeSeeder::class);
     
     // Step 5: Business Data Seeders (Depends on Users, Customers, Financial Config)
-    $this->call(InvoiceSeeder::class);
-    
-    // Step 6: Payment Management (Depends on Invoices, Users, Payment Methods)
-    $this->call(PaymentSeeder::class);
-
-    // Step 6: CustomerInvoiceSeeder (Depends on Invoices, Users, Payment Methods)
-    $this->call(CustomerInvoiceSeeder::class);
+    // Note: CustomerSeeder now includes invoice and payment creation
   }
 }

@@ -16,242 +16,106 @@ class UserSeeder extends Seeder
         UserMeta::query()->delete();
         User::query()->delete();
 
-        // Get Developer Account role
-        $developerRole = Role::where('name', 'Developer Account')->first();
+        // Get all roles except Customer
+        $roles = Role::where('name', '!=', 'Customer')->get();
         
-        if (!$developerRole) {
-            throw new \Exception('Developer Account role not found. Please run RoleSeeder first.');
+        if ($roles->isEmpty()) {
+            throw new \Exception('No roles found. Please run RoleSeeder first.');
         }
 
-        // Generate salt and password using PasswordHelper
+        // Create one user for each role (excluding Customer)
+        foreach ($roles as $role) {
+            $this->createUserForRole($role);
+        }
+    }
+
+    /**
+     * Create a user for the given role
+     */
+    private function createUserForRole(Role $role): void
+    {
+        // Generate unique username and email based on role
+        $roleSlug = strtolower(str_replace(' ', '_', $role->name));
+        $username = $roleSlug;
+        $email = $roleSlug . '@illussso.com';
+        
+        // Generate password fields
         $salt = PasswordHelper::generateSalt();
         $password = PasswordHelper::generatePassword($salt, 'password123');
 
-        // Create developer user
-        $developerUser = User::create([
-            'user_login' => 'developer',
-            'user_email' => 'developer@example.com',
+        // Create user
+        $user = User::create([
+            'user_login' => $username,
+            'user_email' => $email,
             'user_pass' => $password,
             'user_salt' => $salt,
             'user_status' => 1,
             'user_activation_key' => null,
             'remember_token' => null,
-            'user_role_id' => $developerRole->id,
+            'user_role_id' => $role->id,
         ]);
 
-        // Create user meta data
-        $userMetaData = [
-            'first_name' => 'Developer',
-            'last_name' => 'Account',
-            'nickname' => 'Dev',
-            'biography' => 'Developer account with full system access.',
-            'theme' => 'dark',
+        // Create user meta data based on role
+        $metaData = $this->getMetaDataForRole($role);
+        $user->saveUserMeta($metaData);
+    }
+
+    /**
+     * Get meta data for the given role
+     */
+    private function getMetaDataForRole(Role $role): array
+    {
+        $roleMetaData = [
+            'Developer Account' => [
+                'first_name' => 'Developer',
+                'last_name' => 'Account',
+                'nickname' => 'Dev',
+                'biography' => 'Developer account with full system access.',
+                'theme' => 'dark',
+            ],
+            'System Administrator' => [
+                'first_name' => 'System',
+                'last_name' => 'Administrator',
+                'nickname' => 'Admin',
+                'biography' => 'System administrator for jewelry business management.',
+                'theme' => 'dark',
+            ],
+            'Finance Manager' => [
+                'first_name' => 'Sarah',
+                'last_name' => 'Chen',
+                'nickname' => 'Finance',
+                'biography' => 'Finance manager responsible for financial configurations and reporting.',
+                'theme' => 'dark',
+            ],
+            'Invoice Manager' => [
+                'first_name' => 'Michael',
+                'last_name' => 'Rodriguez',
+                'nickname' => 'Invoice',
+                'biography' => 'Invoice manager handling invoice creation and management.',
+                'theme' => 'dark',
+            ],
+            'Customer Service' => [
+                'first_name' => 'Emily',
+                'last_name' => 'Thompson',
+                'nickname' => 'Customer Service',
+                'biography' => 'Customer service representative managing customer relationships.',
+                'theme' => 'dark',
+            ],
+            'Accountant' => [
+                'first_name' => 'David',
+                'last_name' => 'Kim',
+                'nickname' => 'Accountant',
+                'biography' => 'Accountant handling payment processing and financial records.',
+                'theme' => 'dark',
+            ],
         ];
 
-        // Save user meta data
-        $developerUser->saveUserMeta($userMetaData);
-
-        // Add admin user for system management
-        $adminSalt = PasswordHelper::generateSalt();
-        $adminPassword = PasswordHelper::generatePassword($adminSalt, 'password123');
-        $adminUser = User::create([
-            'user_login' => 'admin',
-            'user_email' => 'admin@invoice-system.com',
-            'user_pass' => $adminPassword,
-            'user_salt' => $adminSalt,
-            'user_status' => 1,
-            'user_activation_key' => null,
-            'remember_token' => null,
-            'user_role_id' => 2, // Assuming 2 is Admin role
-        ]);
-        $adminMetaData = [
-            'first_name' => 'System',
-            'last_name' => 'Administrator',
-            'nickname' => 'Admin',
-            'biography' => 'System administrator for invoice and payment management.',
+        return $roleMetaData[$role->name] ?? [
+            'first_name' => 'User',
+            'last_name' => $role->name,
+            'nickname' => $role->name,
+            'biography' => "User with {$role->name} role.",
             'theme' => 'light',
         ];
-        $adminUser->saveUserMeta($adminMetaData);
-
-        // Add finance manager user
-        $financeSalt = PasswordHelper::generateSalt();
-        $financePassword = PasswordHelper::generatePassword($financeSalt, 'password123');
-        $financeUser = User::create([
-            'user_login' => 'finance',
-            'user_email' => 'finance@invoice-system.com',
-            'user_pass' => $financePassword,
-            'user_salt' => $financeSalt,
-            'user_status' => 1,
-            'user_activation_key' => null,
-            'remember_token' => null,
-            'user_role_id' => 3, // Assuming 3 is Finance Manager role
-        ]);
-        $financeMetaData = [
-            'first_name' => 'Sarah',
-            'last_name' => 'Chen',
-            'nickname' => 'Finance',
-            'biography' => 'Finance manager responsible for financial configurations and reporting.',
-            'theme' => 'light',
-        ];
-        $financeUser->saveUserMeta($financeMetaData);
-
-        // Add invoice manager user
-        $invoiceSalt = PasswordHelper::generateSalt();
-        $invoicePassword = PasswordHelper::generatePassword($invoiceSalt, 'password123');
-        $invoiceUser = User::create([
-            'user_login' => 'invoice',
-            'user_email' => 'invoice@invoice-system.com',
-            'user_pass' => $invoicePassword,
-            'user_salt' => $invoiceSalt,
-            'user_status' => 1,
-            'user_activation_key' => null,
-            'remember_token' => null,
-            'user_role_id' => 4, // Assuming 4 is Invoice Manager role
-        ]);
-        $invoiceMetaData = [
-            'first_name' => 'Michael',
-            'last_name' => 'Rodriguez',
-            'nickname' => 'Invoice',
-            'biography' => 'Invoice manager handling invoice creation and management.',
-            'theme' => 'light',
-        ];
-        $invoiceUser->saveUserMeta($invoiceMetaData);
-
-        // Add customer service user
-        $customerServiceSalt = PasswordHelper::generateSalt();
-        $customerServicePassword = PasswordHelper::generatePassword($customerServiceSalt, 'password123');
-        $customerServiceUser = User::create([
-            'user_login' => 'customer_service',
-            'user_email' => 'customer-service@invoice-system.com',
-            'user_pass' => $customerServicePassword,
-            'user_salt' => $customerServiceSalt,
-            'user_status' => 1,
-            'user_activation_key' => null,
-            'remember_token' => null,
-            'user_role_id' => 5, // Customer Service role
-        ]);
-        $customerServiceMetaData = [
-            'first_name' => 'Emily',
-            'last_name' => 'Thompson',
-            'nickname' => 'Customer Service',
-            'biography' => 'Customer service representative managing customer relationships.',
-            'theme' => 'light',
-        ];
-        $customerServiceUser->saveUserMeta($customerServiceMetaData);
-
-        // Add actual customer user for portal login
-        $customerSalt = PasswordHelper::generateSalt();
-        $customerPassword = PasswordHelper::generatePassword($customerSalt, 'password123');
-        $customerUser = User::create([
-            'user_login' => 'customer',
-            'user_email' => 'customer@invoice-system.com',
-            'user_pass' => $customerPassword,
-            'user_salt' => $customerSalt,
-            'user_status' => 1,
-            'user_activation_key' => null,
-            'remember_token' => null,
-            'user_role_id' => 7, // Customer role
-        ]);
-        $customerMetaData = [
-            'first_name' => 'Maria',
-            'last_name' => 'Santos',
-            'nickname' => 'Customer',
-            'biography' => 'Customer portal user for invoice and payment management.',
-            'theme' => 'light',
-            'phone' => '+63-912-345-6789',
-            'address' => '123 Rizal Street, Barangay Poblacion, Manila, Philippines',
-            'user_type' => 'customer',
-            'customer_code' => 'CUST000001',
-        ];
-        $customerUser->saveUserMeta($customerMetaData);
-
-        // Add accountant user
-        $accountantSalt = PasswordHelper::generateSalt();
-        $accountantPassword = PasswordHelper::generatePassword($accountantSalt, 'password123');
-        $accountantUser = User::create([
-            'user_login' => 'accountant',
-            'user_email' => 'accountant@invoice-system.com',
-            'user_pass' => $accountantPassword,
-            'user_salt' => $accountantSalt,
-            'user_status' => 1,
-            'user_activation_key' => null,
-            'remember_token' => null,
-            'user_role_id' => 6, // Assuming 6 is Accountant role
-        ]);
-        $accountantMetaData = [
-            'first_name' => 'David',
-            'last_name' => 'Kim',
-            'nickname' => 'Accountant',
-            'biography' => 'Accountant handling payment processing and financial records.',
-            'theme' => 'light',
-        ];
-        $accountantUser->saveUserMeta($accountantMetaData);
-
-        // Add customer portal user
-        $customerPortalSalt = PasswordHelper::generateSalt();
-        $customerPortalPassword = PasswordHelper::generatePassword($customerPortalSalt, 'password123');
-        $customerPortalUser = User::create([
-            'user_login' => 'customer_portal',
-            'user_email' => 'customer-portal@invoice-system.com',
-            'user_pass' => $customerPortalPassword,
-            'user_salt' => $customerPortalSalt,
-            'user_status' => 1,
-            'user_activation_key' => null,
-            'remember_token' => null,
-            'user_role_id' => 7, // Customer role
-        ]);
-        $customerPortalMetaData = [
-            'first_name' => 'John',
-            'last_name' => 'Doe',
-            'nickname' => 'Customer',
-            'biography' => 'Customer portal user for testing invoice and payment functionality.',
-            'theme' => 'light',
-            'phone' => '+1-555-0123',
-            'address' => '123 Main Street, Anytown, ST 12345',
-            'user_type' => 'customer',
-            'customer_code' => 'CUST000001',
-        ];
-        $customerPortalUser->saveUserMeta($customerPortalMetaData);
-
-        // Create additional staff users to reach 25 total
-        $faker = \Faker\Factory::create();
-        $roles = [2, 3, 4, 5, 6]; // Admin, Finance Manager, Customer Service, Sales Rep, Accountant
-        $themes = ['light', 'dark'];
-        
-        // Calculate how many more users we need to reach 25 total
-        $existingCount = 5; // developer, admin, finance, customer service, accountant
-        $additionalCount = 25 - $existingCount;
-        
-        for ($i = 0; $i < $additionalCount; $i++) {
-            $firstName = $faker->firstName();
-            $lastName = $faker->lastName();
-            $email = strtolower($firstName . '.' . $lastName . '@invoice-system.com');
-            $username = strtolower($firstName . '.' . $lastName);
-            
-            // Generate password fields
-            $salt = PasswordHelper::generateSalt();
-            $password = PasswordHelper::generatePassword($salt, 'password123');
-            
-            $user = User::create([
-                'user_login' => $username,
-                'user_email' => $email,
-                'user_pass' => $password,
-                'user_salt' => $salt,
-                'user_status' => $faker->boolean(90) ? 1 : 0, // 90% active
-                'user_activation_key' => $faker->boolean(10) ? PasswordHelper::generateSalt() : null, // 10% pending
-                'remember_token' => null,
-                'user_role_id' => $faker->randomElement($roles),
-            ]);
-            
-            $userMetaData = [
-                'first_name' => $firstName,
-                'last_name' => $lastName,
-                'nickname' => $faker->optional(0.7)->firstName(),
-                'biography' => $faker->optional(0.6)->sentence(),
-                'theme' => $faker->randomElement($themes),
-            ];
-            
-            $user->saveUserMeta($userMetaData);
-        }
     }
 } 

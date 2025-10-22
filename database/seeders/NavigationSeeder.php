@@ -155,6 +155,14 @@ class NavigationSeeder extends Seeder
                 'active' => 1,
                 'show_in_menu' => 1
             ],
+            [
+                'name' => 'Payment Types',
+                'slug' => 'financial-management/payment-types',
+                'icon' => 'list',
+                'parent_id' => $parents['financial_management']->id,
+                'active' => 1,
+                'show_in_menu' => 1
+            ],
 
             // System Settings Children
             [
