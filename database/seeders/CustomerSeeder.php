@@ -498,6 +498,11 @@ class CustomerSeeder extends Seeder
                 'payment_term_id' => $paymentTerm?->id,
                 'active' => true,
                 ]);
+                
+                // Generate payment schedules if payment terms exist
+                if ($paymentTerm) {
+                    $invoice->generatePaymentSchedules();
+                }
             }
 
             // Create invoice items
@@ -510,15 +515,27 @@ class CustomerSeeder extends Seeder
                 ]);
             }
 
-            // Create payments
+            // Create payments that match payment schedules
+            $paymentSchedules = $invoice->paymentSchedules()->orderBy('payment_order')->get();
+            $paymentIndex = 0;
+            
             foreach ($invoiceData['payments'] as $paymentData) {
                 $paymentType = $this->getAppropriatePaymentType($paymentData['payment_type']);
                 
-                \App\Models\Payment::create([
+                // Get the corresponding payment schedule amount
+                $scheduleAmount = 0;
+                if ($paymentSchedules->count() > $paymentIndex) {
+                    $scheduleAmount = $paymentSchedules[$paymentIndex]->expected_amount;
+                } else {
+                    // If no more schedules, use the remaining balance
+                    $scheduleAmount = $invoiceData['total_amount'] - array_sum(array_column($invoiceData['payments'], 'amount_paid'));
+                }
+                
+                $payment = \App\Models\Payment::create([
                     'invoice_id' => $invoice->id,
                     'customer_id' => $customer->id,
-                    'amount_paid' => $paymentData['amount_paid'],
-                    'expected_amount' => $invoiceData['total_amount'],
+                    'amount_paid' => $scheduleAmount,
+                    'expected_amount' => $scheduleAmount,
                     'payment_date' => $paymentData['payment_date'],
                     'payment_type' => $paymentData['payment_type'],
                     'payment_method_id' => $paymentMethod?->id,
@@ -528,6 +545,17 @@ class CustomerSeeder extends Seeder
                     'confirmed_by' => $paymentData['status'] === 'confirmed' ? \App\Models\User::first()?->id : null,
                     'source' => 'admin_created',
                 ]);
+                
+                // Update the corresponding payment schedule if it exists
+                if ($paymentSchedules->count() > $paymentIndex) {
+                    $schedule = $paymentSchedules[$paymentIndex];
+                    $schedule->update([
+                        'paid_amount' => $scheduleAmount,
+                        'status' => $paymentData['status'] === 'confirmed' ? 'paid' : 'partial'
+                    ]);
+                }
+                
+                $paymentIndex++;
             }
 
             // Update invoice payment status

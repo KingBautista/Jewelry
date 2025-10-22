@@ -14,6 +14,8 @@ const PaymentSubmission = () => {
   const [submitting, setSubmitting] = useState(false);
   const [invoices, setInvoices] = useState([]);
   const [selectedInvoice, setSelectedInvoice] = useState(null);
+  const [paymentSchedules, setPaymentSchedules] = useState([]);
+  const [selectedSchedules, setSelectedSchedules] = useState([]);
   const [formData, setFormData] = useState({
     invoice_id: invoiceId || '',
     amount_paid: '',
@@ -49,6 +51,18 @@ const PaymentSubmission = () => {
     }
   };
 
+  const fetchPaymentSchedules = async (invoiceId) => {
+    try {
+      console.log('Fetching payment schedules for invoice:', invoiceId);
+      const response = await axiosClient.get(`/customer/invoices/${invoiceId}/payment-schedules`);
+      console.log('Payment schedules response:', response.data);
+      setPaymentSchedules(response.data || []);
+    } catch (error) {
+      console.error('Error fetching payment schedules:', error);
+      setPaymentSchedules([]);
+    }
+  };
+
   const fetchInvoiceDetails = async (id) => {
     try {
       console.log('Fetching invoice details for ID:', id);
@@ -62,6 +76,9 @@ const PaymentSubmission = () => {
         expected_amount: invoice.remaining_balance
       }));
       console.log('Selected invoice set:', invoice);
+      
+      // Fetch payment schedules for this invoice
+      await fetchPaymentSchedules(id);
     } catch (error) {
       console.error('Error fetching invoice details:', error);
     }
@@ -74,8 +91,13 @@ const PaymentSubmission = () => {
       [name]: value
     }));
     
-    // If invoice selection changed, fetch invoice details
+    // If invoice selection changed, fetch invoice details and reset selections
     if (name === 'invoice_id' && value) {
+      setSelectedSchedules([]);
+      setFormData(prev => ({
+        ...prev,
+        amount_paid: ''
+      }));
       fetchInvoiceDetails(value);
     }
     
@@ -96,6 +118,26 @@ const PaymentSubmission = () => {
     }));
   };
 
+  const handleScheduleSelection = (scheduleId, isChecked) => {
+    let updatedSelectedSchedules;
+    if (isChecked) {
+      updatedSelectedSchedules = [...selectedSchedules, scheduleId];
+    } else {
+      updatedSelectedSchedules = selectedSchedules.filter(id => id !== scheduleId);
+    }
+    setSelectedSchedules(updatedSelectedSchedules);
+    
+    // Auto-compute amount based on selected schedules
+    const totalAmount = paymentSchedules
+      .filter(schedule => updatedSelectedSchedules.includes(schedule.id))
+      .reduce((sum, schedule) => sum + parseFloat(schedule.amount || 0), 0);
+    
+    setFormData(prev => ({
+      ...prev,
+      amount_paid: totalAmount.toFixed(2)
+    }));
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setSubmitting(true);
@@ -109,6 +151,11 @@ const PaymentSubmission = () => {
       formDataToSend.append('reference_number', formData.reference_number);
       formDataToSend.append('payment_method', formData.payment_method);
       formDataToSend.append('notes', formData.notes);
+      
+      // Add selected payment schedules
+      selectedSchedules.forEach((scheduleId, index) => {
+        formDataToSend.append(`payment_schedules[${index}]`, scheduleId);
+      });
 
       formData.receipt_images.forEach((file, index) => {
         formDataToSend.append(`receipt_images[${index}]`, file);
@@ -235,6 +282,9 @@ const PaymentSubmission = () => {
                             <p className="mb-1"><strong>Total Amount:</strong> {formatCurrency(selectedInvoice.total_amount)}</p>
                             <p className="mb-1"><strong>Paid Amount:</strong> {formatCurrency(selectedInvoice.total_paid_amount)}</p>
                             <p className="mb-1"><strong>Remaining:</strong> {formatCurrency(selectedInvoice.remaining_balance)}</p>
+                            {selectedInvoice.payment_term && (
+                              <p className="mb-1"><strong>Payment Terms:</strong> {selectedInvoice.payment_term.name}</p>
+                            )}
                           </div>
                         </div>
                       </div>
@@ -260,8 +310,15 @@ const PaymentSubmission = () => {
                         step="0.01"
                         min="0.01"
                         required
+                        readOnly={selectedSchedules.length > 0}
                       />
                     </div>
+                    {selectedSchedules.length > 0 && (
+                      <div className="form-text text-info">
+                        <FontAwesomeIcon icon={solidIconMap.infoCircle} className="me-1" />
+                        Amount is auto-calculated based on selected payment schedules
+                      </div>
+                    )}
                   </div>
                   <div className="col-md-6">
                     <label htmlFor="expected_amount" className="form-label fw-semibold">
@@ -324,6 +381,71 @@ const PaymentSubmission = () => {
                     <option value="other">Other</option>
                   </select>
                 </div>
+
+                {/* Payment Schedules Selection */}
+                {selectedInvoice && paymentSchedules.length > 0 && (
+                  <div className="mb-4">
+                    <label className="form-label fw-semibold">
+                      Select Payment Schedules *
+                    </label>
+                    <div className="table-responsive">
+                      <table className="table table-bordered table-hover">
+                        <thead className="table-light">
+                          <tr>
+                            <th width="50">Select</th>
+                            <th>Schedule</th>
+                            <th>Due Date</th>
+                            <th>Amount</th>
+                            <th>Status</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {paymentSchedules.map((schedule, index) => (
+                            <tr key={schedule.id} className={schedule.status === 'paid' ? 'table-success' : ''}>
+                              <td>
+                                <input
+                                  type="checkbox"
+                                  className="form-check-input"
+                                  checked={selectedSchedules.includes(schedule.id)}
+                                  disabled={schedule.status === 'paid'}
+                                  onChange={(e) => handleScheduleSelection(schedule.id, e.target.checked)}
+                                />
+                              </td>
+                              <td>
+                                <strong>Payment {schedule.payment_order || index + 1}</strong>
+                                {schedule.payment_type && (
+                                  <div className="text-muted small">{schedule.payment_type}</div>
+                                )}
+                              </td>
+                              <td>
+                                {schedule.due_date ? new Date(schedule.due_date).toLocaleDateString() : 'N/A'}
+                              </td>
+                              <td>
+                                <strong>{formatCurrency(schedule.amount || 0)}</strong>
+                              </td>
+                              <td>
+                                <span className={`badge ${
+                                  schedule.status === 'paid' ? 'bg-success' : 
+                                  schedule.status === 'overdue' ? 'bg-danger' : 'bg-warning'
+                                }`}>
+                                  {schedule.status === 'paid' ? 'Paid' : 
+                                   schedule.status === 'overdue' ? 'Overdue' : 'Pending'}
+                                </span>
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                    <div className="form-text">
+                      <strong>Total Selected:</strong> {formatCurrency(
+                        paymentSchedules
+                          .filter(schedule => selectedSchedules.includes(schedule.id))
+                          .reduce((sum, schedule) => sum + parseFloat(schedule.amount || 0), 0)
+                      )}
+                    </div>
+                  </div>
+                )}
 
                 {/* Receipt Images */}
                 <div className="mb-4">
@@ -404,7 +526,8 @@ const PaymentSubmission = () => {
             <div className="card-body">
               <ol className="mb-0">
                 <li>Select the invoice you want to pay</li>
-                <li>Enter the exact amount you paid</li>
+                <li>Choose payment schedules to pay (checkboxes)</li>
+                <li>Amount will be auto-calculated</li>
                 <li>Provide your payment reference number</li>
                 <li>Select your payment method</li>
                 <li>Upload receipt images as proof</li>

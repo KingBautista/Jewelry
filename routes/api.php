@@ -365,6 +365,7 @@ Route::middleware('auth:sanctum')->prefix('customer')->group(function () {
     Route::get('/invoices', [CustomerPortalController::class, 'getInvoices']);
     Route::get('/invoices/{id}', [CustomerPortalController::class, 'getInvoice']);
     Route::get('/invoices/{id}/pdf', [CustomerPortalController::class, 'downloadInvoicePdf']);
+    Route::get('/invoices/{id}/payment-schedules', [CustomerPortalController::class, 'getPaymentSchedules']);
     
     Route::post('/payment-submission', [CustomerPortalController::class, 'submitPayment']);
     Route::get('/payment-submissions', [CustomerPortalController::class, 'getPaymentSubmissions']);

@@ -458,12 +458,13 @@ class Invoice extends Model
         ]);
 
         // Create monthly schedules
+        $remainingAmount = $this->total_amount * ($paymentTerm->remaining_percentage / 100);
         foreach ($paymentTerm->schedules as $schedule) {
             InvoicePaymentSchedule::create([
                 'invoice_id' => $this->id,
                 'payment_type' => 'monthly',
                 'due_date' => $this->issue_date->addMonths($schedule->month_number),
-                'expected_amount' => $this->total_amount * ($schedule->percentage / 100),
+                'expected_amount' => $remainingAmount * ($schedule->percentage / 100),
                 'payment_order' => $schedule->month_number + 1,
                 'is_auto_generated' => true,
                 'status' => 'pending'

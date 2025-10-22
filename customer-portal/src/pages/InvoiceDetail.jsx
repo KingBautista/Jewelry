@@ -135,6 +135,9 @@ const InvoiceDetail = () => {
                   <p className="mb-1"><strong>Total Amount:</strong> {formatCurrency(invoice.total_amount)}</p>
                   <p className="mb-1"><strong>Paid Amount:</strong> {formatCurrency(invoice.total_paid_amount)}</p>
                   <p className="mb-1"><strong>Remaining Balance:</strong> {formatCurrency(invoice.remaining_balance)}</p>
+                  {invoice.payment_term && (
+                    <p className="mb-1"><strong>Payment Terms:</strong> {invoice.payment_term.name}</p>
+                  )}
                 </div>
               </div>
 
@@ -162,6 +165,20 @@ const InvoiceDetail = () => {
                       ))}
                     </tbody>
                   </table>
+                </div>
+              )}
+
+              {/* Payment Terms Details */}
+              {invoice.payment_term && (
+                <div className="mt-4">
+                  <h6 className="fw-semibold">Payment Terms</h6>
+                  <div className="card border-info">
+                    <div className="card-body">
+                      <p className="mb-1"><strong>Terms:</strong> {invoice.payment_term.name}</p>
+                      <p className="mb-1"><strong>Code:</strong> {invoice.payment_term.code}</p>
+                      <p className="mb-1"><strong>Duration:</strong> {invoice.payment_term.term_months} month(s)</p>
+                    </div>
+                  </div>
                 </div>
               )}
 

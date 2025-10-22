@@ -701,4 +701,67 @@ class CustomerPortalController extends Controller
             ]);
         }
     }
+
+    /**
+     * @OA\Get(
+     *     path="/api/customer-portal/invoices/{id}/payment-schedules",
+     *     summary="Get invoice payment schedules",
+     *     description="Retrieve payment schedules for a specific invoice",
+     *     tags={"Customer Portal"},
+     *     security={{"sanctum":{}}},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         description="Invoice ID",
+     *         @OA\Schema(type="integer", example=1)
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Payment schedules retrieved successfully",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="data", type="array", @OA\Items(
+     *                 @OA\Property(property="id", type="integer"),
+     *                 @OA\Property(property="invoice_id", type="integer"),
+     *                 @OA\Property(property="schedule_number", type="integer"),
+     *                 @OA\Property(property="due_date", type="string", format="date"),
+     *                 @OA\Property(property="amount", type="number"),
+     *                 @OA\Property(property="status", type="string"),
+     *                 @OA\Property(property="description", type="string")
+     *             ))
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Invoice not found"
+     *     )
+     * )
+     * Get payment schedules for an invoice
+     */
+    public function getPaymentSchedules(Request $request, $id)
+    {
+        $user = $request->user();
+        
+        $invoice = Invoice::where('customer_id', $user->id)
+            ->findOrFail($id);
+
+        $paymentSchedules = $invoice->paymentSchedules()
+            ->orderBy('payment_order')
+            ->get();
+
+        return response([
+            'data' => $paymentSchedules->map(function ($schedule) {
+                return [
+                    'id' => $schedule->id,
+                    'invoice_id' => $schedule->invoice_id,
+                    'payment_order' => $schedule->payment_order,
+                    'due_date' => $schedule->due_date?->format('Y-m-d'),
+                    'amount' => $schedule->expected_amount,
+                    'paid_amount' => $schedule->paid_amount,
+                    'status' => $schedule->status,
+                    'payment_type' => $schedule->payment_type,
+                ];
+            })
+        ]);
+    }
 }
