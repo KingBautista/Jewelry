@@ -13,6 +13,36 @@ export default function PaymentForm() {
   const navigate = useNavigate();
   const toastAction = useRef();
   
+  // Currency formatting function
+  const formatCurrency = (amount) => {
+    if (!amount) return '₱0.00';
+    const numAmount = parseFloat(amount);
+    if (isNaN(numAmount)) return '₱0.00';
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'PHP',
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
+    }).format(numAmount);
+  };
+
+  // Format number with commas for display
+  const formatNumber = (value) => {
+    if (!value) return '';
+    const num = parseFloat(value);
+    if (isNaN(num)) return '';
+    return num.toLocaleString('en-US', {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
+    });
+  };
+
+  // Parse formatted number back to raw value
+  const parseFormattedNumber = (formattedValue) => {
+    if (!formattedValue) return '';
+    return formattedValue.replace(/,/g, '');
+  };
+  
   const [buttonText, setButtonText] = useState('Create Payment');
   const [payment, setPayment] = useState({
     id: null,
@@ -143,7 +173,7 @@ export default function PaymentForm() {
     // Generate notes
     const scheduleNotes = newSelectedSchedules
       .sort((a, b) => a.payment_order - b.payment_order)
-      .map(s => `${s.payment_type} (Order ${s.payment_order}) - ₱${parseFloat(s.expected_amount).toFixed(2)}`)
+      .map(s => `${s.payment_type} (Order ${s.payment_order}) - ${formatCurrency(s.expected_amount)}`)
       .join(', ');
     
     setPayment(prev => ({
@@ -165,7 +195,7 @@ export default function PaymentForm() {
       const totalAmount = pendingSchedules.reduce((sum, s) => sum + parseFloat(s.expected_amount), 0);
       const scheduleNotes = pendingSchedules
         .sort((a, b) => a.payment_order - b.payment_order)
-        .map(s => `${s.payment_type} (Order ${s.payment_order}) - ₱${parseFloat(s.expected_amount).toFixed(2)}`)
+        .map(s => `${s.payment_type} (Order ${s.payment_order}) - ${formatCurrency(s.expected_amount)}`)
         .join(', ');
       
       setPayment(prev => ({
@@ -603,7 +633,7 @@ export default function PaymentForm() {
                           <strong>Product:</strong> {selectedInvoice.product_name || 'Product/Service'}
                         </div>
                         <div className="mb-2">
-                          <strong>Total Amount:</strong> {selectedInvoice.total_amount}
+                          <strong>Total Amount:</strong> {formatCurrency(selectedInvoice.total_amount)}
                         </div>
                         <div className="mb-2">
                           <strong>Payment Status:</strong> 
@@ -619,10 +649,10 @@ export default function PaymentForm() {
                       </div>
                       <div className="col-md-6">
                         <div className="mb-2">
-                          <strong>Total Paid:</strong> {selectedInvoice.total_paid_amount}
+                          <strong>Total Paid:</strong> {formatCurrency(selectedInvoice.total_paid_amount)}
                         </div>
                         <div className="mb-2">
-                          <strong>Remaining Balance:</strong> {selectedInvoice.remaining_balance}
+                          <strong>Remaining Balance:</strong> {formatCurrency(selectedInvoice.remaining_balance)}
                         </div>
                       </div>
                     </div>
@@ -713,6 +743,10 @@ export default function PaymentForm() {
                             <input
                               className="form-check-input"
                               type="checkbox"
+                              style={{
+                                border: '2px solid var(--cui-primary)',
+                                borderRadius: '4px'
+                              }}
                               checked={selectedInvoice?.payment_schedules && 
                                 selectedInvoice.payment_schedules.filter(s => s.status === 'pending').length > 0 &&
                                 selectedInvoice.payment_schedules.filter(s => s.status === 'pending').every(s => 
@@ -740,6 +774,10 @@ export default function PaymentForm() {
                               <input
                                 className="form-check-input"
                                 type="checkbox"
+                                style={{
+                                  border: '2px solid var(--cui-primary)',
+                                  borderRadius: '4px'
+                                }}
                                 checked={selectedSchedules.some(selected => selected.id === schedule.id)}
                                 disabled={schedule.status === 'paid' || isReadOnly}
                                 onChange={(e) => handleScheduleSelect(schedule, e.target.checked)}
@@ -751,7 +789,7 @@ export default function PaymentForm() {
                             {schedule.payment_type}
                           </td>
                           <td>{new Date(schedule.due_date).toLocaleDateString()}</td>
-                          <td>₱{parseFloat(schedule.expected_amount).toFixed(2)}</td>
+                          <td>{formatCurrency(schedule.expected_amount)}</td>
                           <td>
                             <span className={`badge ${
                               schedule.status === 'paid' ? 'text-bg-success' :
@@ -831,11 +869,16 @@ export default function PaymentForm() {
                 <span className="input-group-text">₱</span>
                 <input
                   className="form-control"
-                  type="number"
-                  step="0.01"
-                  min="0"
-                  value={payment.amount_paid || ''}
-                  onChange={ev => setPayment({ ...payment, amount_paid: ev.target.value })}
+                  type="text"
+                  value={formatNumber(payment.amount_paid)}
+                  onChange={ev => {
+                    const rawValue = parseFormattedNumber(ev.target.value);
+                    setPayment({ ...payment, amount_paid: rawValue });
+                  }}
+                  onBlur={ev => {
+                    const formatted = formatNumber(ev.target.value);
+                    ev.target.value = formatted;
+                  }}
                   required
                   placeholder="0.00"
                   disabled={isReadOnly}
@@ -854,11 +897,16 @@ export default function PaymentForm() {
                 <span className="input-group-text">₱</span>
                 <input
                   className="form-control"
-                  type="number"
-                  step="0.01"
-                  min="0"
-                  value={payment.expected_amount || ''}
-                  onChange={ev => setPayment({ ...payment, expected_amount: ev.target.value })}
+                  type="text"
+                  value={formatNumber(payment.expected_amount)}
+                  onChange={ev => {
+                    const rawValue = parseFormattedNumber(ev.target.value);
+                    setPayment({ ...payment, expected_amount: rawValue });
+                  }}
+                  onBlur={ev => {
+                    const formatted = formatNumber(ev.target.value);
+                    ev.target.value = formatted;
+                  }}
                   placeholder="0.00"
                   disabled={isReadOnly}
                 />

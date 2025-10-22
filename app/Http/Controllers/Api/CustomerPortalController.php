@@ -212,21 +212,24 @@ class CustomerPortalController extends Controller
         
         $totalInvoices = Invoice::where('customer_id', $user->id)->count();
         $totalPaid = Payment::where('customer_id', $user->id)
-            ->where('status', 'approved')
+            ->whereIn('status', ['approved', 'confirmed'])
             ->sum('amount_paid');
         
         $outstandingBalance = Invoice::where('customer_id', $user->id)
             ->sum('remaining_balance');
         
         $overdueInvoices = Invoice::where('customer_id', $user->id)
-            ->where('due_date', '<', now())
-            ->where('payment_status', '!=', 'fully_paid')
+            ->where(function($query) {
+                $query->where('due_date', '<', now())
+                      ->orWhere('payment_status', 'overdue');
+            })
+            ->whereIn('payment_status', ['unpaid', 'partially_paid', 'overdue'])
             ->get();
         
         $upcomingDues = Invoice::where('customer_id', $user->id)
             ->where('due_date', '>=', now())
             ->where('due_date', '<=', now()->addDays(7))
-            ->where('payment_status', '!=', 'fully_paid')
+            ->whereIn('payment_status', ['unpaid', 'partially_paid', 'overdue'])
             ->get();
 
         return response([

@@ -31,6 +31,7 @@ const Dashboard = () => {
         axiosClient.get('/customer/invoices?limit=5')
       ]);
 
+
       setDashboardData({
         overview: overviewRes.data,
         recentInvoices: invoicesRes.data.data || [],
