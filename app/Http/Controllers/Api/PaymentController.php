@@ -366,6 +366,28 @@ class PaymentController extends BaseController
             if (empty($selectedSchedules) && $payment->selected_schedules) {
                 $selectedSchedules = $payment->selected_schedules;
             }
+            
+            // If no selected schedules from request or payment, get all pending schedules for the invoice
+            if (empty($selectedSchedules)) {
+                $invoice = Invoice::find($payment->invoice_id);
+                $pendingSchedules = $invoice->paymentSchedules()
+                    ->where('status', 'pending')
+                    ->orderBy('payment_order')
+                    ->get();
+                
+                // Calculate how many schedules can be paid with the payment amount
+                $remainingAmount = $payment->amount_paid;
+                foreach ($pendingSchedules as $schedule) {
+                    if ($remainingAmount <= 0) break;
+                    
+                    $scheduleAmount = min($remainingAmount, $schedule->expected_amount);
+                    if ($scheduleAmount > 0) {
+                        $selectedSchedules[] = $schedule->id;
+                        $remainingAmount -= $scheduleAmount;
+                    }
+                }
+            }
+            
             if (!empty($selectedSchedules)) {
                 $this->service->markSchedulesAsPaid($selectedSchedules, $payment->amount_paid);
             }

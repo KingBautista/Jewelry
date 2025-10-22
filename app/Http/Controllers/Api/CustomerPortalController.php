@@ -458,7 +458,9 @@ class CustomerPortalController extends Controller
             'amount_paid' => 'required|numeric|min:0.01',
             'expected_amount' => 'required|numeric|min:0.01',
             'reference_number' => 'required|string|max:191',
-            'payment_method' => 'required|string|max:191',
+            'payment_method' => 'required',
+            'payment_schedules' => 'nullable|array',
+            'payment_schedules.*' => 'integer|exists:invoice_payment_schedules,id',
             'receipt_images' => 'nullable|array',
             'receipt_images.*' => 'image|mimes:jpeg,png,jpg,gif|max:2048',
             'notes' => 'nullable|string',
@@ -470,6 +472,17 @@ class CustomerPortalController extends Controller
         $invoice = Invoice::where('customer_id', $user->id)
             ->findOrFail($request->invoice_id);
 
+        // Handle payment method - could be ID or string
+        $paymentMethodId = null;
+        if (is_numeric($request->payment_method)) {
+            // It's a payment method ID from the database
+            $paymentMethodId = $request->payment_method;
+        } else {
+            // It's a string payment method (fallback options)
+            // For now, we'll set it to null and store the string in notes
+            $paymentMethodId = null;
+        }
+
         // Handle file uploads
         $receiptImages = [];
         if ($request->hasFile('receipt_images')) {
@@ -479,18 +492,26 @@ class CustomerPortalController extends Controller
             }
         }
 
+        // Prepare notes with payment method info if it's a string
+        $notes = $request->notes;
+        if (!is_numeric($request->payment_method)) {
+            $notes = ($notes ? $notes . "\n\n" : '') . "Payment Method: " . $request->payment_method;
+        }
+
         $payment = Payment::create([
             'invoice_id' => $request->invoice_id,
             'customer_id' => $user->id,
             'payment_type' => 'partial', // Default type for customer submissions
+            'payment_method_id' => $paymentMethodId, // Use the processed payment method ID
             'amount_paid' => $request->amount_paid,
             'expected_amount' => $request->expected_amount,
             'reference_number' => $request->reference_number,
             'receipt_images' => $receiptImages,
+            'selected_schedules' => $request->payment_schedules, // Store selected payment schedules
             'status' => 'pending',
             'payment_date' => now()->toDateString(),
             'source' => 'customer_submission',
-            'notes' => $request->notes,
+            'notes' => $notes,
         ]);
 
         // Load relationships for email notification
