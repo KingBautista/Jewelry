@@ -660,8 +660,10 @@ export default function InvoiceForm() {
 
           {/* Products Summary Section */}
           <div className="row mb-4">
-            <div className="col-3">Products ({invoice.products.length})</div>
-            <div className="col-9">
+            <div className="col-lg-3 col-md-12 col-12 mb-3 mb-lg-0">
+              <h6>Products ({invoice.products.length})</h6>
+            </div>
+            <div className="col-lg-9 col-md-12 col-12">
               <div className="d-flex justify-content-end align-items-center mb-3">
                 <button 
                   type="button" 
@@ -672,7 +674,8 @@ export default function InvoiceForm() {
                   Add Product
                 </button>
               </div>
-              <table className="table table-striped">
+              <div className="table-responsive" style={{ height: 'auto' }}>
+                <table className="table table-striped">
                   <thead>
                     <tr>
                       <th className="text-start">Product Name</th>
@@ -813,6 +816,7 @@ export default function InvoiceForm() {
                     </tr>
                   </tfoot>
                 </table>
+              </div>
             </div>
           </div>
 
@@ -840,8 +844,10 @@ export default function InvoiceForm() {
           {/* Payment Breakdown Display */}
           {invoice.payment_term_id && (
             <div className="row mb-4">
-              <div className="col-3">Payment Breakdown</div>
-              <div className="col-9">
+              <div className="col-lg-3 col-md-12 col-12 mb-3 mb-lg-0">
+                <h6>Payment Breakdown</h6>
+              </div>
+              <div className="col-lg-9 col-md-12 col-12">
                 <div className="card">
                   <div className="card-body">
                     {(() => {
@@ -855,7 +861,7 @@ export default function InvoiceForm() {
                       
                       return (
                         <div className="row">
-                          <div className="col-md-6">
+                          <div className="col-lg-6 col-md-12 col-12 mb-3 mb-lg-0">
                             <h6 className="text-primary">Down Payment</h6>
                             <div className="d-flex justify-content-between">
                               <span>Amount:</span>
@@ -870,7 +876,7 @@ export default function InvoiceForm() {
                               <span>{invoice.issue_date || 'Issue Date'}</span>
                             </div>
                           </div>
-                          <div className="col-md-6">
+                          <div className="col-lg-6 col-md-12 col-12">
                             <h6 className="text-primary">Remaining Balance</h6>
                             <div className="d-flex justify-content-between">
                               <span>Amount:</span>
@@ -906,8 +912,10 @@ export default function InvoiceForm() {
             if (!selectedTerm.schedules || selectedTerm.schedules.length === 0) {
               return (
                 <div className="row mb-4">
-                  <div className="col-3">Monthly Payment Schedule</div>
-                  <div className="col-9">
+                  <div className="col-lg-3 col-md-12 col-12 mb-3 mb-lg-0">
+                    <h6>Monthly Payment Schedule</h6>
+                  </div>
+                  <div className="col-lg-9 col-md-12 col-12">
                     <div className="card">
                       <div className="card-body">
                         <div className="alert alert-warning border-warning">
@@ -933,9 +941,12 @@ export default function InvoiceForm() {
             
             return (
               <div className="row mb-4">
-                <div className="col-3">Monthly Payment Schedule</div>
-                <div className="col-9">
-                  <table className="table table-sm table-striped">
+                <div className="col-lg-3 col-md-12 col-12 mb-3 mb-lg-0">
+                  <h6>Monthly Payment Schedule</h6>
+                </div>
+                <div className="col-lg-9 col-md-12 col-12">
+                  <div className="table-responsive" style={{ height: 'auto' }}>
+                    <table className="table table-sm table-striped">
                     <thead>
                       <tr>
                         <th>Month</th>
@@ -969,7 +980,8 @@ export default function InvoiceForm() {
                         <td></td>
                       </tr>
                     </tfoot>
-                  </table>
+                    </table>
+                  </div>
                 </div>
               </div>
             );
@@ -1085,63 +1097,65 @@ export default function InvoiceForm() {
             inputClass="col-sm-12 col-md-9"
           />
         </div>
-        <div className="card-footer d-flex justify-content-between">
-          <div>
-            <Link type="button" to="/invoice-management/invoices" className="btn btn-secondary">
-              <FontAwesomeIcon icon={solidIconMap.arrowleft} className="me-2" />
-              Cancel
-            </Link> &nbsp;
-            <button type="submit" className="btn btn-secondary">
-              <FontAwesomeIcon icon={solidIconMap.save} className="me-2" />
-              {buttonText} &nbsp;
-              {isLoading && <span className="spinner-border spinner-border-sm ml-1" role="status"></span>}
-            </button>
-          </div>
-          <div>
-            {invoice.id && (
-              <>
+        <div className="card-footer">
+          <div className="d-flex flex-column flex-lg-row justify-content-between align-items-start align-items-lg-center gap-3">
+            <div className="d-flex flex-column flex-sm-row gap-2">
+              <Link type="button" to="/invoice-management/invoices" className="btn btn-secondary">
+                <FontAwesomeIcon icon={solidIconMap.arrowleft} className="me-2" />
+                Cancel
+              </Link>
+              <button type="submit" className="btn btn-secondary">
+                <FontAwesomeIcon icon={solidIconMap.save} className="me-2" />
+                {buttonText} &nbsp;
+                {isLoading && <span className="spinner-border spinner-border-sm ml-1" role="status"></span>}
+              </button>
+            </div>
+            <div className="d-flex flex-column flex-sm-row gap-2">
+              {invoice.id && (
+                <>
+                  <button 
+                    type="button" 
+                    className="btn btn-primary" 
+                    onClick={handleDownloadPdf}
+                    disabled={isLoading}
+                  >
+                    <FontAwesomeIcon icon={solidIconMap.file} className="me-2" />
+                    Download PDF
+                  </button>
+                  <button 
+                    type="button" 
+                    className="btn btn-success" 
+                    onClick={handleSendEmail}
+                    disabled={isLoading}
+                  >
+                    <FontAwesomeIcon icon={solidIconMap.envelope} className="me-2" />
+                    Send Email
+                  </button>
+                </>
+              )}
+              {invoice.id && invoice.status !== 'cancelled' && (
                 <button 
                   type="button" 
-                  className="btn btn-primary me-2" 
-                  onClick={handleDownloadPdf}
+                  className="btn btn-warning" 
+                  onClick={handleCancel}
                   disabled={isLoading}
                 >
-                  <FontAwesomeIcon icon={solidIconMap.file} className="me-2" />
-                  Download PDF
+                  <FontAwesomeIcon icon={solidIconMap.times} className="me-2" />
+                  Cancel Invoice
                 </button>
+              )}
+              {invoice.id && (
                 <button 
                   type="button" 
-                  className="btn btn-success me-2" 
-                  onClick={handleSendEmail}
+                  className="btn btn-danger" 
+                  onClick={handleDelete}
                   disabled={isLoading}
                 >
-                  <FontAwesomeIcon icon={solidIconMap.envelope} className="me-2" />
-                  Send Email
+                  <FontAwesomeIcon icon={solidIconMap.trash} className="me-2" />
+                  Delete
                 </button>
-              </>
-            )}
-            {invoice.id && invoice.status !== 'cancelled' && (
-              <button 
-                type="button" 
-                className="btn btn-warning me-2" 
-                onClick={handleCancel}
-                disabled={isLoading}
-              >
-                <FontAwesomeIcon icon={solidIconMap.times} className="me-2" />
-                Cancel Invoice
-              </button>
-            )}
-            {invoice.id && (
-              <button 
-                type="button" 
-                className="btn btn-danger" 
-                onClick={handleDelete}
-                disabled={isLoading}
-              >
-                <FontAwesomeIcon icon={solidIconMap.trash} className="me-2" />
-                Delete
-              </button>
-            )}
+              )}
+            </div>
           </div>
         </div>
       </form>
