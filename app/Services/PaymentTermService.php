@@ -94,7 +94,7 @@ class PaymentTermService extends BaseService
     /**
      * Get Details for editing the specified resource with schedules.
      */
-    public function show(int $id)
+    public function show(int $id, $withOutResource = false)
     {
         $model = $this->model::with('schedules')->findOrFail($id);
         return $this->resource::make($model);

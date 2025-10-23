@@ -45,10 +45,17 @@ class BaseService
   }
 
   // Get Details for editing the specified resource.
-  public function show(int $id) 
+  public function show(int $id, $withOutResource = false) 
   {
     $model = $this->findModelById($id);
-    return $this->resource::make($model);
+     // BY DEFAULT RESULT WRAP DATA RESOURCE
+     if(!$withOutResource) {
+      $this->resource::withoutWrapping();
+      return $this->resource::make($model);  
+    }
+
+    // ELSE RETURN WITHOUT RESOURCE WRAPPING
+    return $model;
   }
 
   // Update the specified resource in storage.

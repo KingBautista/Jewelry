@@ -16,7 +16,7 @@ class InvoiceService extends BaseService
     /**
      * Get Details for editing the specified resource.
      */
-    public function show(int $id) 
+    public function show(int $id, $withOutResource = false) 
     {
         $model = Invoice::with(['customer', 'paymentTerm', 'tax', 'fee', 'discount', 'items'])->findOrFail($id);
         return $model;

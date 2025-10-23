@@ -228,7 +228,7 @@ class PaymentController extends BaseController
      *     )
      * )
      */
-    public function show($id)
+    public function show($id, $withOutResource = false)
     {
         try {
             $payment = Payment::with(['invoice.paymentSchedules', 'customer', 'paymentMethod', 'confirmedBy'])

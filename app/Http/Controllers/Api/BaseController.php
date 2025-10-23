@@ -33,11 +33,11 @@ class BaseController extends Controller
   }
 
   // Common method to handle showing resources
-  public function show($id)
+  public function show($id, $withOutResource = false)
   {
     try {
-      $item = $this->service->show($id);
-      return response(['data' => $item]);
+      $item = $this->service->show($id, $withOutResource);
+      return $item;
     } catch (\Exception $e) {
       return $this->messageService->responseError();
     }

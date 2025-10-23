@@ -95,9 +95,9 @@ class RoleController extends BaseController
    *     )
    * )
    */
-  public function show($id)
+  public function show($id, $withOutResource = false)
   {
-    return parent::show($id);
+    return parent::show($id, true);
   }
 
   /**
