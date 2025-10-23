@@ -6664,6 +6664,53 @@ hr {
 }
 
 /* ===========================================
+   CONTENT AREA RESPONSIVE STYLES
+   =========================================== */
+
+/* Content area responsive padding */
+.content-area {
+  padding: 1rem;
+}
+
+/* Mobile content area - reduced padding */
+@media (max-width: 768px) {
+  .content-area {
+    padding: 0.5rem;
+  }
+}
+
+@media (max-width: 576px) {
+  .content-area {
+    padding: 0.25rem;
+  }
+}
+
+/* ===========================================
+   DASHBOARD TABLE STYLES
+   =========================================== */
+
+/* Dashboard specific table container - prevent compression */
+.dashboard-table-responsive {
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Ensure dashboard tables maintain their natural width */
+.dashboard-table-responsive table {
+  min-width: 100%;
+  width: auto;
+  table-layout: auto;
+}
+
+/* Prevent dashboard table column compression */
+.dashboard-table-responsive th,
+.dashboard-table-responsive td {
+  white-space: nowrap;
+  min-width: fit-content;
+}
+
+/* ===========================================
    HEADER RESPONSIVE STYLES
    =========================================== */
 
