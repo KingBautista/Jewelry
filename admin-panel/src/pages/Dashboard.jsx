@@ -253,7 +253,7 @@ export default function Dashboard() {
 
 			{/* Revenue Overview */}
 			<div className="row g-3 mb-4">
-				<div className="col-md-4">
+				<div className="col-lg-4 col-md-6 col-12">
 					<div className="card text-center h-100 border-success">
 						<div className="card-body">
 							<FontAwesomeIcon icon={solidIconMap.dollarSign} className="mb-2" style={{ color: '#10b981' }} size="2x" />
@@ -267,7 +267,7 @@ export default function Dashboard() {
 						</div>
 					</div>
 				</div>
-				<div className="col-md-4">
+				<div className="col-lg-4 col-md-6 col-12">
 					<div className="card text-center h-100 border-info">
 						<div className="card-body">
 							<FontAwesomeIcon icon={solidIconMap.chartLine} className="mb-2" style={{ color: '#3b82f6' }} size="2x" />
@@ -276,7 +276,7 @@ export default function Dashboard() {
 						</div>
 					</div>
 				</div>
-				<div className="col-md-4">
+				<div className="col-lg-4 col-md-12 col-12">
 					<div className="card text-center h-100 border-primary">
 						<div className="card-body">
 							<FontAwesomeIcon icon={solidIconMap.chartPie} className="mb-2" style={{ color: '#8b5cf6' }} size="2x" />
@@ -289,7 +289,7 @@ export default function Dashboard() {
 
 			{/* Outstanding Balances & Invoice Stats */}
 			<div className="row g-3 mb-4">
-				<div className="col-md-6">
+				<div className="col-lg-6 col-md-12 col-12">
 					<div className="card text-center border-warning">
 						<div className="card-body">
 							<FontAwesomeIcon icon={solidIconMap.exclamationCircle} className="mb-2" style={{ color: '#f59e0b' }} size="2x" />
@@ -299,7 +299,7 @@ export default function Dashboard() {
 						</div>
 					</div>
 				</div>
-				<div className="col-md-6">
+				<div className="col-lg-6 col-md-12 col-12">
 					<div className="card">
 						<div className="card-header">
 									<h6 className="mb-0">
@@ -333,7 +333,7 @@ export default function Dashboard() {
 
 			{/* Payment Breakdown Chart */}
 			<div className="row g-3 mb-4">
-				<div className="col-md-6">
+				<div className="col-lg-6 col-md-12 col-12">
 					<div className="card">
 						<div className="card-header">
 									<h6 className="mb-0">
@@ -368,7 +368,7 @@ export default function Dashboard() {
 						</div>
 					</div>
 				</div>
-				<div className="col-md-6">
+				<div className="col-lg-6 col-md-12 col-12">
 					<div className="card">
 						<div className="card-header">
 									<h6 className="mb-0">

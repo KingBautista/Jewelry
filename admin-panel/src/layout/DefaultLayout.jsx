@@ -8,6 +8,7 @@ import { useSessionTimeout } from '../hooks/useSessionTimeout'; // Import the se
 export default function DefaultLayout() {
   const { token } = useStateContext();
   const [theme] = useState(() => { return localStorage.getItem('theme') || 'light'; });
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   const [isReloaded, setIsReloaded] = useState(() => {
     // Get value from localStorage (default to false if not set)
     return localStorage.getItem('isReloaded') === 'true';
@@ -44,9 +45,17 @@ export default function DefaultLayout() {
 
   return (
     <div className="main-wrapper">
-      <Sidebar />
+      {/* Mobile Overlay */}
+      {sidebarOpen && (
+        <div 
+          className="sidebar-overlay d-lg-none" 
+          onClick={() => setSidebarOpen(false)}
+        ></div>
+      )}
+      
+      <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
       <div className="main-content">
-        <Header />
+        <Header onMenuClick={() => setSidebarOpen(!sidebarOpen)} />
         <div className="content-area">
           <div className="content-container mt-3">
             <Outlet />

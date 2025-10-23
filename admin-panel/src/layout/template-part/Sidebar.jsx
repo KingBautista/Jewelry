@@ -4,36 +4,43 @@ import { useStateContext } from "../../contexts/AuthProvider";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { solidIconMap } from '../../utils/solidIcons';
 
-export default function Sidebar() {
+export default function Sidebar({ isOpen, onClose }) {
   const { userRoutes } = useStateContext();
   const location = useLocation();
 
-  const [isOpen, setIsOpen] = useState({});
+  const [subMenuOpen, setSubMenuOpen] = useState({});
+
+  // Close sidebar when navigation item is clicked (mobile only)
+  const handleNavClick = () => {
+    if (window.innerWidth < 992) {
+      onClose();
+    }
+  };
 
   // Only sync sub-menu open state based on current path
   useEffect(() => {
     if (!userRoutes) return;
 
-    const newIsOpen = {};
+    const newSubMenuOpen = {};
 
     userRoutes.forEach(route => {
       if (route.children && route.children.length > 0) {
         const match = route.children.some(child => location.pathname.startsWith(child.path));
         if (match) {
-          newIsOpen[route.name] = true;
+          newSubMenuOpen[route.name] = true;
         }
       }
     });
 
-    setIsOpen(newIsOpen);
+    setSubMenuOpen(newSubMenuOpen);
   }, [userRoutes, location.pathname]);
 
   const toggleSubMenu = (name) => {
     const newState = {
-      ...isOpen,
-      [name]: !isOpen[name],
+      ...subMenuOpen,
+      [name]: !subMenuOpen[name],
     };
-    setIsOpen(newState);
+    setSubMenuOpen(newState);
   };
 
   const isPathActive = (path) => location.pathname === path;
@@ -44,7 +51,11 @@ export default function Sidebar() {
     // Add Dashboard as the first item
     <li className="nav-group" key="dashboard">
       <div className="nav-group-header">
-        <Link to="/dashboard" className={`nav-link ${isPathActive('/dashboard') ? "active" : ""}`}>
+        <Link 
+          to="/dashboard" 
+          className={`nav-link ${isPathActive('/dashboard') ? "active" : ""}`}
+          onClick={handleNavClick}
+        >
           <div className="nav-icon">
             <FontAwesomeIcon icon={solidIconMap.home} />
           </div>
@@ -64,7 +75,11 @@ export default function Sidebar() {
               const isActive = isPathActive(childItem.path);
               return (
                 <li className="nav-item sub-nav-item" key={cidx}>
-                  <Link to={childItem.path} className={`nav-link sub-nav-link ${isActive ? "active" : ""}`}>
+                  <Link 
+                    to={childItem.path} 
+                    className={`nav-link sub-nav-link ${isActive ? "active" : ""}`}
+                    onClick={handleNavClick}
+                  >
                     <span className="nav-text">{childItem.name}</span>
                   </Link>
                 </li>
@@ -73,30 +88,34 @@ export default function Sidebar() {
             return null;
           });
 
-          return (
-            <li className={`nav-group${isOpen[navItem.name] ? " show" : ""}`} key={idx}>
-              <div className="nav-group-header">
-                <button
-                  className="nav-link nav-group-toggle"
-                  onClick={() => toggleSubMenu(navItem.name)}>
-                  <div className="nav-icon">
-                    <FontAwesomeIcon icon={navIcon} />
-                  </div>
-                  <span className="nav-text">{navItem.name}</span>
-                </button>
-              </div>
-              <ul className="nav-group-items">
-                {childLinks}
-              </ul>
-            </li>
-          );
+        return (
+          <li className={`nav-group${subMenuOpen[navItem.name] ? " show" : ""}`} key={idx}>
+            <div className="nav-group-header">
+              <button
+                className="nav-link nav-group-toggle"
+                onClick={() => toggleSubMenu(navItem.name)}>
+                <div className="nav-icon">
+                  <FontAwesomeIcon icon={navIcon} />
+                </div>
+                <span className="nav-text">{navItem.name}</span>
+              </button>
+            </div>
+            <ul className="nav-group-items">
+              {childLinks}
+            </ul>
+          </li>
+        );
         }
 
         // No children
         const isActive = isPathActive(navItem.path);
         return (
           <li className="nav-item" key={idx}>
-            <Link to={navItem.path} className={`nav-link ${isActive ? "active" : ""}`}>
+            <Link 
+              to={navItem.path} 
+              className={`nav-link ${isActive ? "active" : ""}`}
+              onClick={handleNavClick}
+            >
               <div className="nav-icon">
                 <FontAwesomeIcon icon={navIcon} />
               </div>
@@ -121,7 +140,7 @@ export default function Sidebar() {
   ];
 
   return (
-    <div className="sidebar sidebar-modern" id="sidebar">
+    <div className={`sidebar sidebar-modern ${isOpen ? 'sidebar-open' : ''}`} id="sidebar">
       <div className="sidebar-header">
         <div className="sidebar-brand">
           <div className="brand-logo" style={{ 
@@ -140,6 +159,16 @@ export default function Sidebar() {
             <span className="brand-subtitle">MANAGEMENT</span>
           </div>
         </div>
+        {/* Mobile close button */}
+        <button 
+          className="sidebar-close d-lg-none" 
+          onClick={onClose}
+          aria-label="Close sidebar"
+        >
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M18 6L6 18M6 6L18 18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+          </svg>
+        </button>
       </div>
       <div className="sidebar-content">
         <ul className="sidebar-nav">

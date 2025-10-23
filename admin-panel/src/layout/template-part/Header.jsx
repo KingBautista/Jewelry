@@ -5,7 +5,7 @@ import { useStateContext } from "../../contexts/AuthProvider";
 import Breadcrumb from "./Breadcrumb";
 import ToastMessage from "../../components/ToastMessage";
 
-export default function Header() {
+export default function Header({ onMenuClick }) {
   const { user, setUser, setToken } = useStateContext();
   const [userIcon, setuserIcon] = useState();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -124,9 +124,19 @@ export default function Header() {
   return (
     <>
     <header className="header header-modern">
-      <div className="header-container">
+      <div className="header-container d-flex justify-content-between align-items-center">
         {/* Left side - Title and Breadcrumb */}
         <div className="header-left">
+          {/* Mobile Menu Button */}
+          <button 
+            className="mobile-menu-btn d-lg-none" 
+            onClick={onMenuClick}
+            aria-label="Toggle menu"
+          >
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M3 12H21M3 6H21M3 18H21" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+          </button>
           <div className="page-title">
             <h1 className="page-title-text">{getPageTitle()}</h1>
             <div className="page-breadcrumb">
@@ -148,7 +158,7 @@ export default function Header() {
                   </div>
                 )}
               </div>
-              <div className="user-info">
+              <div className="user-info d-none d-sm-flex">
                 <div className="user-name">{user && user.user_login ? user.user_login : 'User'}</div>
                 <div className="user-role">{getUserRole()}</div>
               </div>
