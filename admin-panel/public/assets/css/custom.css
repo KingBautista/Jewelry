@@ -6691,15 +6691,15 @@ hr {
 
 /* Dashboard specific table container - prevent compression */
 .dashboard-table-responsive {
-  overflow-x: auto;
-  overflow-y: hidden;
+  overflow-x: hidden;
+  overflow-y: auto;
   -webkit-overflow-scrolling: touch;
 }
 
 /* Ensure dashboard tables maintain their natural width */
 .dashboard-table-responsive table {
   min-width: 100%;
-  width: auto;
+  width: 100%;
   table-layout: auto;
 }
 
@@ -6708,6 +6708,74 @@ hr {
 .dashboard-table-responsive td {
   white-space: nowrap;
   min-width: fit-content;
+}
+
+/* Enhanced responsive behavior for small screens */
+@media (max-width: 768px) {
+  .dashboard-table-responsive {
+    overflow-x: auto !important;
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch;
+    max-height: 400px;
+  }
+  
+  .dashboard-table-responsive table {
+    min-width: 600px !important;
+    width: auto !important;
+    table-layout: auto !important;
+  }
+  
+  .dashboard-table-responsive th,
+  .dashboard-table-responsive td {
+    white-space: nowrap !important;
+    min-width: 120px !important;
+    padding: 0.5rem 0.75rem !important;
+  }
+}
+
+/* ===========================================
+   PAGINATION RESPONSIVE STYLES
+   =========================================== */
+
+/* Pagination modern responsive layout */
+.pagination-modern {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.pagination-left {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.pagination-right {
+  display: flex;
+  align-items: center;
+}
+
+/* Small screens - center both sections */
+@media (max-width: 768px) {
+  .pagination-modern {
+    flex-direction: column;
+    align-items: center;
+    gap: 1.5rem;
+  }
+  
+  .pagination-left {
+    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.75rem;
+  }
+  
+  .pagination-right {
+    justify-content: center;
+  }
 }
 
 /* ===========================================

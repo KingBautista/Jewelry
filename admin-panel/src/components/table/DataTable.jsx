@@ -294,7 +294,7 @@ const DataTable = forwardRef((props, ref) => {
 
   return (
     <>
-      <div className="table-responsive" style={{ height: tableHeight }}>
+      <div className="dashboard-table-responsive" style={{ height: tableHeight }}>
         <table className="table-modern">
           <TableHeader 
             header={tHeader} 
