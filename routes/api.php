@@ -13,6 +13,7 @@ use App\Http\Controllers\Api\FeeController;
 use App\Http\Controllers\Api\DiscountController;
 use App\Http\Controllers\Api\PaymentTermController;
 use App\Http\Controllers\Api\PaymentMethodController;
+use App\Http\Controllers\Api\PaymentTypeController;
 use App\Http\Controllers\Api\CustomerController;
 use App\Http\Controllers\Api\InvoiceController;
 use App\Http\Controllers\Api\PaymentController;
@@ -79,6 +80,7 @@ Route::middleware('auth:sanctum')->group(function () {
 		Route::get('/discounts', [DiscountController::class, 'getActiveDiscounts']);
 		Route::get('/payment-terms', [PaymentTermController::class, 'getActivePaymentTerms']);
 		Route::get('/payment-methods', [PaymentMethodController::class, 'getActivePaymentMethods']);
+		Route::get('/payment-types', [PaymentTypeController::class, 'getActivePaymentTypes']);
 		
 		// Invoice Management Options
 		Route::get('/invoices', [InvoiceController::class, 'getInvoicesForDropdown']);
@@ -269,6 +271,23 @@ Route::middleware('auth:sanctum')->group(function () {
 			Route::get('/', [PaymentMethodController::class, 'getTrashed']);
 			Route::patch('/restore/{id}', [PaymentMethodController::class, 'restore']);
 			Route::delete('/{id}', [PaymentMethodController::class, 'forceDelete']);
+		});
+
+		// Payment Types Management
+		Route::prefix('payment-types')->group(function () {
+			Route::get('/', [PaymentTypeController::class, 'index']);
+			Route::get('/{id}', [PaymentTypeController::class, 'show']);
+			Route::post('/', [PaymentTypeController::class, 'store']);
+			Route::put('/{id}', [PaymentTypeController::class, 'update']);
+			Route::delete('/{id}', [PaymentTypeController::class, 'destroy']);
+			Route::post('/bulk/delete', [PaymentTypeController::class, 'bulkDelete']);
+			Route::post('/bulk/restore', [PaymentTypeController::class, 'bulkRestore']);
+			Route::post('/bulk/force-delete', [PaymentTypeController::class, 'bulkForceDelete']);
+		});
+		Route::prefix('archived/payment-types')->group(function () {
+			Route::get('/', [PaymentTypeController::class, 'getTrashed']);
+			Route::patch('/restore/{id}', [PaymentTypeController::class, 'restore']);
+			Route::delete('/{id}', [PaymentTypeController::class, 'forceDelete']);
 		});
 	});
 

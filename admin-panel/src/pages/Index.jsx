@@ -30,6 +30,8 @@ const PaymentTerms = lazy(() => import('./financial-management/PaymentTerms'));
 const PaymentTermForm = lazy(() => import('./financial-management/PaymentTermForm'));
 const PaymentMethods = lazy(() => import('./financial-management/PaymentMethods'));
 const PaymentMethodForm = lazy(() => import('./financial-management/PaymentMethodForm'));
+const PaymentTypes = lazy(() => import('./financial-management/PaymentTypes'));
+const PaymentTypeForm = lazy(() => import('./financial-management/PaymentTypeForm'));
 
 // Customer Management Components
 const Customers = lazy(() => import('./customer-management/Customers'));
@@ -77,6 +79,9 @@ const routeMap = {
   '/financial-management/payment-methods': PaymentMethods,
   '/financial-management/payment-methods/create': PaymentMethodForm,
   '/financial-management/payment-methods/:id': PaymentMethodForm,
+  '/financial-management/payment-types': PaymentTypes,
+  '/financial-management/payment-types/create': PaymentTypeForm,
+  '/financial-management/payment-types/:id': PaymentTypeForm,
   // Customer Management Routes
   '/customer-management/customers': Customers,
   '/customer-management/customers/create': CustomerForm,
