@@ -244,13 +244,15 @@ export default function Profile() {
           />
 
         </div>
-        <div className="card-footer d-flex justify-content-between">
-          <div>
-            <button type="submit" className="btn btn-secondary">
-              <FontAwesomeIcon icon={solidIconMap.save} className="me-2" />
-              {isLoading ? 'Saving Changes...' : 'Save Profile'} &nbsp;
-              {isLoading && <span className="spinner-border spinner-border-sm ml-1" role="status"></span>}
-            </button>
+        <div className="card-footer">
+          <div className="d-flex flex-column flex-lg-row justify-content-between align-items-start align-items-lg-center gap-3">
+            <div className="d-flex flex-column flex-sm-row gap-2">
+              <button type="submit" className="btn btn-secondary w-100 w-sm-auto">
+                <FontAwesomeIcon icon={solidIconMap.save} className="me-2" />
+                {isLoading ? 'Saving Changes...' : 'Save Profile'} &nbsp;
+                {isLoading && <span className="spinner-border spinner-border-sm ml-1" role="status"></span>}
+              </button>
+            </div>
           </div>
         </div>
       </form>

@@ -1088,74 +1088,76 @@ export default function PaymentForm() {
             inputClass="col-sm-12 col-md-9"
           />
         </div>
-        <div className="card-footer d-flex justify-content-between">
-          <div>
-            <Link type="button" to="/payment-management/payments" className="btn btn-secondary">
-              <FontAwesomeIcon icon={solidIconMap.arrowleft} className="me-2" />
-              Cancel
-            </Link> &nbsp;
-            <button type="submit" className="btn btn-secondary" disabled={isReadOnly}>
-              <FontAwesomeIcon icon={solidIconMap.save} className="me-2" />
-              {buttonText} &nbsp;
-              {isLoading && <span className="spinner-border spinner-border-sm ml-1" role="status"></span>}
-            </button>
-          </div>
-          <div>
-            {payment.id && payment.status === 'pending' && !isReadOnly && (
-              <>
+        <div className="card-footer">
+          <div className="d-flex flex-column flex-lg-row justify-content-between align-items-start align-items-lg-center gap-3">
+            <div className="d-flex flex-column flex-sm-row gap-2">
+              <Link type="button" to="/payment-management/payments" className="btn btn-secondary w-100 w-sm-auto">
+                <FontAwesomeIcon icon={solidIconMap.arrowleft} className="me-2" />
+                Cancel
+              </Link>
+              <button type="submit" className="btn btn-secondary w-100 w-sm-auto" disabled={isReadOnly}>
+                <FontAwesomeIcon icon={solidIconMap.save} className="me-2" />
+                {buttonText} &nbsp;
+                {isLoading && <span className="spinner-border spinner-border-sm ml-1" role="status"></span>}
+              </button>
+            </div>
+            <div className="d-flex flex-column flex-sm-row gap-2">
+              {payment.id && payment.status === 'pending' && !isReadOnly && (
+                <>
+                  <button 
+                    type="button" 
+                    className="btn btn-success w-100 w-sm-auto" 
+                    onClick={handleApprove}
+                    disabled={isLoading}
+                  >
+                    <FontAwesomeIcon icon={solidIconMap.check} className="me-2" />
+                    Approve
+                  </button>
+                  <button 
+                    type="button" 
+                    className="btn btn-danger w-100 w-sm-auto" 
+                    onClick={handleReject}
+                    disabled={isLoading}
+                  >
+                    <FontAwesomeIcon icon={solidIconMap.times} className="me-2" />
+                    Reject
+                  </button>
+                </>
+              )}
+              {payment.id && payment.status === 'approved' && !isReadOnly && (
                 <button 
                   type="button" 
-                  className="btn btn-success me-2" 
-                  onClick={handleApprove}
+                  className="btn btn-primary w-100 w-sm-auto" 
+                  onClick={handleConfirm}
                   disabled={isLoading}
                 >
                   <FontAwesomeIcon icon={solidIconMap.check} className="me-2" />
-                  Approve
+                  Confirm
                 </button>
+              )}
+              {payment.id && selectedInvoice && (
                 <button 
                   type="button" 
-                  className="btn btn-danger me-2" 
-                  onClick={handleReject}
+                  className="btn btn-primary w-100 w-sm-auto" 
+                  onClick={handleSendUpdateInvoice}
                   disabled={isLoading}
                 >
-                  <FontAwesomeIcon icon={solidIconMap.times} className="me-2" />
-                  Reject
+                  <FontAwesomeIcon icon={solidIconMap.envelope} className="me-2" />
+                  Send Update Invoice
                 </button>
-              </>
-            )}
-            {payment.id && payment.status === 'approved' && !isReadOnly && (
-              <button 
-                type="button" 
-                className="btn btn-primary me-2" 
-                onClick={handleConfirm}
-                disabled={isLoading}
-              >
-                <FontAwesomeIcon icon={solidIconMap.check} className="me-2" />
-                Confirm
-              </button>
-            )}
-            {payment.id && selectedInvoice && (
-              <button 
-                type="button" 
-                className="btn btn-primary me-2" 
-                onClick={handleSendUpdateInvoice}
-                disabled={isLoading}
-              >
-                <FontAwesomeIcon icon={solidIconMap.envelope} className="me-2" />
-                Send Update Invoice
-              </button>
-            )}
-            {payment.id && !isReadOnly && (
-              <button 
-                type="button" 
-                className="btn btn-danger" 
-                onClick={handleDelete}
-                disabled={isLoading}
-              >
-                <FontAwesomeIcon icon={solidIconMap.trash} className="me-2" />
-                Delete
-              </button>
-            )}
+              )}
+              {payment.id && !isReadOnly && (
+                <button 
+                  type="button" 
+                  className="btn btn-danger w-100 w-sm-auto" 
+                  onClick={handleDelete}
+                  disabled={isLoading}
+                >
+                  <FontAwesomeIcon icon={solidIconMap.trash} className="me-2" />
+                  Delete
+                </button>
+              )}
+            </div>
           </div>
         </div>
       </form>

@@ -194,23 +194,25 @@ export default function NavigationForm() {
             inputClass="col-sm-12 col-md-9"
           />
         </div>
-        <div className="card-footer d-flex justify-content-between">
-          <div>
-            <Link type="button" to="/system-settings/navigation" className="btn btn-secondary">Cancel</Link>&nbsp;
-            <button type="submit" className="btn btn-secondary">
-              {buttonText} {isLoading && <span className="spinner-border spinner-border-sm ml-1" />}
-            </button>
+        <div className="card-footer">
+          <div className="d-flex flex-column flex-lg-row justify-content-between align-items-start align-items-lg-center gap-3">
+            <div className="d-flex flex-column flex-sm-row gap-2">
+              <Link type="button" to="/system-settings/navigation" className="btn btn-secondary w-100 w-sm-auto">Cancel</Link>
+              <button type="submit" className="btn btn-secondary w-100 w-sm-auto">
+                {buttonText} {isLoading && <span className="spinner-border spinner-border-sm ml-1" />}
+              </button>
+            </div>
+            {navigation.id && (
+              <button 
+                type="button" 
+                className="btn btn-danger w-100 w-sm-auto" 
+                onClick={handleDelete}
+                disabled={isLoading}
+              >
+                Delete
+              </button>
+            )}
           </div>
-          {navigation.id && (
-            <button 
-              type="button" 
-              className="btn btn-danger" 
-              onClick={handleDelete}
-              disabled={isLoading}
-            >
-              Delete
-            </button>
-          )}
         </div>
       </form>
     </div>

@@ -393,29 +393,31 @@ export default function RoleForm() {
             inputClass="col-sm-12 col-md-9"
           />
         </div>
-        <div className="card-footer d-flex justify-content-between">
-          <div>
-            <Link type="button" to="/user-management/roles" className="btn btn-secondary">
-              <FontAwesomeIcon icon={solidIconMap.arrowleft} className="me-2" />
-              Cancel
-            </Link> &nbsp;
-            <button type="submit" className="btn btn-secondary">
-              <FontAwesomeIcon icon={solidIconMap.save} className="me-2" />
-              {buttonText} &nbsp;
-              {isLoading && <span className="spinner-border spinner-border-sm ml-1" role="status"></span>}
-            </button>
+        <div className="card-footer">
+          <div className="d-flex flex-column flex-lg-row justify-content-between align-items-start align-items-lg-center gap-3">
+            <div className="d-flex flex-column flex-sm-row gap-2">
+              <Link type="button" to="/user-management/roles" className="btn btn-secondary w-100 w-sm-auto">
+                <FontAwesomeIcon icon={solidIconMap.arrowleft} className="me-2" />
+                Cancel
+              </Link>
+              <button type="submit" className="btn btn-secondary w-100 w-sm-auto">
+                <FontAwesomeIcon icon={solidIconMap.save} className="me-2" />
+                {buttonText} &nbsp;
+                {isLoading && <span className="spinner-border spinner-border-sm ml-1" role="status"></span>}
+              </button>
+            </div>
+            {role.id && (
+              <button 
+                type="button" 
+                className="btn btn-danger w-100 w-sm-auto" 
+                onClick={handleDelete}
+                disabled={isLoading}
+              >
+                <FontAwesomeIcon icon={solidIconMap.trash} className="me-2" />
+                Delete
+              </button>
+            )}
           </div>
-          {role.id && (
-            <button 
-              type="button" 
-              className="btn btn-danger" 
-              onClick={handleDelete}
-              disabled={isLoading}
-            >
-              <FontAwesomeIcon icon={solidIconMap.trash} className="me-2" />
-              Delete
-            </button>
-          )}
         </div>
       </form>
     </div>

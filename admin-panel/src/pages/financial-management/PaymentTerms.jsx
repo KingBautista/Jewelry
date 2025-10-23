@@ -269,23 +269,25 @@ export default function PaymentTerms() {
           <h4>Payment Terms</h4>
         </div>
         <div className="px-4" style={{ paddingTop: '0.50rem' }}>
-          <div className="row"> 
-            <div className="col-md-7 col-12">
-               <div className="d-flex align-items-center gap-2">
-                 <SearchBox ref={searchRef} onClick={handleSearch} />
-                 <button className="btn btn-secondary h-100 text-nowrap" onClick={toggleFilterModal}>
+          <div className="row g-2"> 
+            <div className="col-lg-5 col-md-12 col-12">
+              <SearchBox ref={searchRef} onClick={handleSearch} />
+            </div>
+            <div className="col-lg-3 col-md-6 col-12">
+              <div className="d-flex gap-2">
+                 <button className="btn btn-secondary flex-fill" onClick={toggleFilterModal}>
                    <img src="/assets/new-icons/icons-bold/fi-br-filter.svg" alt="Filter" className="me-1" style={{ width: '14px', height: '14px', filter: 'brightness(0) invert(1)' }} />
                    Filters
                  </button>
-                 <button className="btn btn-secondary h-100 text-nowrap" onClick={clearFilters}>
+                 <button className="btn btn-secondary flex-fill" onClick={clearFilters}>
                    <img src="/assets/new-icons/icons-bold/fi-br-cross.svg" alt="Clear" className="me-1" style={{ width: '14px', height: '14px', filter: 'brightness(0) invert(1)' }} />
                    Clear
                  </button>
                </div>
-             </div>
-             <div className="col-md-5 col-12 d-flex justify-content-end align-items-center">
+            </div>
+            <div className="col-lg-4 col-md-6 col-12 d-flex justify-content-end align-items-center">
               {access?.can_create && 
-                <Link to="/financial-management/payment-terms/create" className="btn btn-secondary" type="button">
+                <Link to="/financial-management/payment-terms/create" className="btn btn-secondary w-100" type="button">
                   <FontAwesomeIcon icon={solidIconMap.plus} className="me-2" />
                   Create New Payment Term
                 </Link>
