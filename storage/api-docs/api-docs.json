@@ -1281,6 +1281,80 @@
                 ]
             }
         },
+        "/api/customer-portal/invoices/{id}/payment-schedules": {
+            "get": {
+                "tags": [
+                    "Customer Portal"
+                ],
+                "summary": "Get invoice payment schedules",
+                "description": "Retrieve payment schedules for a specific invoice",
+                "operationId": "802cbb8e250d0dad02675cb219900a2e",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Invoice ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Payment schedules retrieved successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "integer"
+                                                    },
+                                                    "invoice_id": {
+                                                        "type": "integer"
+                                                    },
+                                                    "schedule_number": {
+                                                        "type": "integer"
+                                                    },
+                                                    "due_date": {
+                                                        "type": "string",
+                                                        "format": "date"
+                                                    },
+                                                    "amount": {
+                                                        "type": "number"
+                                                    },
+                                                    "status": {
+                                                        "type": "string"
+                                                    },
+                                                    "description": {
+                                                        "type": "string"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Invoice not found"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
         "/api/dashboard/overview": {
             "get": {
                 "tags": [
@@ -4743,6 +4817,376 @@
                 ]
             }
         },
+        "/api/financial-management/payment-types": {
+            "get": {
+                "tags": [
+                    "Payment Type Management"
+                ],
+                "summary": "Get all payment types",
+                "description": "Retrieve a paginated list of all payment types",
+                "operationId": "918e99d438424dd73557adb0a16c432d",
+                "parameters": [
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "description": "Number of items per page",
+                        "schema": {
+                            "type": "integer",
+                            "example": 10
+                        }
+                    },
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "description": "Page number",
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Payment types retrieved successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object"
+                                            }
+                                        },
+                                        "current_page": {
+                                            "type": "integer",
+                                            "example": 1
+                                        },
+                                        "per_page": {
+                                            "type": "integer",
+                                            "example": 10
+                                        },
+                                        "total": {
+                                            "type": "integer",
+                                            "example": 100
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Payment Type Management"
+                ],
+                "summary": "Create a new payment type",
+                "description": "Create a new payment type configuration",
+                "operationId": "cfec9a1485d24a7dc3ad216ddffed537",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "name",
+                                    "code"
+                                ],
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "example": "Credit Card"
+                                    },
+                                    "code": {
+                                        "type": "string",
+                                        "example": "CREDIT_CARD"
+                                    },
+                                    "description": {
+                                        "type": "string",
+                                        "example": "Payment via credit card"
+                                    },
+                                    "is_active": {
+                                        "type": "boolean",
+                                        "example": true
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Payment type created successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "payment_type": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/financial-management/payment-types/{id}": {
+            "get": {
+                "tags": [
+                    "Payment Type Management"
+                ],
+                "summary": "Get a specific payment type",
+                "description": "Retrieve detailed information about a specific payment type",
+                "operationId": "2ddc01a162828a4247e32820a6dd6e5c",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Payment type ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Payment type retrieved successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "payment_type": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Payment type not found"
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "Payment Type Management"
+                ],
+                "summary": "Update a payment type",
+                "description": "Update an existing payment type configuration",
+                "operationId": "d308027d7d238e09e3842c931a2dee30",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Payment type ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "name",
+                                    "code"
+                                ],
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "example": "Updated Credit Card"
+                                    },
+                                    "code": {
+                                        "type": "string",
+                                        "example": "CREDIT_CARD"
+                                    },
+                                    "description": {
+                                        "type": "string",
+                                        "example": "Updated payment via credit card"
+                                    },
+                                    "is_active": {
+                                        "type": "boolean",
+                                        "example": true
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Payment type updated successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "payment_type": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Payment type not found"
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Payment Type Management"
+                ],
+                "summary": "Delete a payment type",
+                "description": "Move a payment type to trash (soft delete)",
+                "operationId": "3557aa901e93ddddbee34d11c1ddbd74",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Payment type ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Payment type moved to trash successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Resource has been moved to trash."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Payment type not found"
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/options/payment-types": {
+            "get": {
+                "tags": [
+                    "Payment Type Management"
+                ],
+                "summary": "Get active payment types for dropdown",
+                "description": "Retrieve a list of active payment types for dropdown/select options",
+                "operationId": "f81522f142ff49635240f2514b5d6bb7",
+                "responses": {
+                    "200": {
+                        "description": "Active payment types retrieved successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "payment_types": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "integer",
+                                                        "example": 1
+                                                    },
+                                                    "name": {
+                                                        "type": "string",
+                                                        "example": "Credit Card"
+                                                    },
+                                                    "code": {
+                                                        "type": "string",
+                                                        "example": "CREDIT_CARD"
+                                                    },
+                                                    "description": {
+                                                        "type": "string",
+                                                        "example": "Payment via credit card"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
         "/api/user-management/roles": {
             "get": {
                 "tags": [
@@ -6171,6 +6615,10 @@
         {
             "name": "Payment Terms",
             "description": "Payment term management endpoints"
+        },
+        {
+            "name": "Payment Type Management",
+            "description": "Payment type management endpoints"
         },
         {
             "name": "Role Management",

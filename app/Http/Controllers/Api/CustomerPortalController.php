@@ -396,20 +396,23 @@ class CustomerPortalController extends Controller
      */
     public function downloadInvoicePdf(Request $request, $id)
     {
-        $user = $request->user();
-        
-        $invoice = Invoice::where('customer_id', $user->id)
-            ->with(['customer', 'paymentTerm', 'tax', 'fee', 'discount', 'items'])
-            ->findOrFail($id);
+        try {
+            $user = $request->user();
+            
+            $invoice = Invoice::where('customer_id', $user->id)
+                ->with(['customer', 'paymentTerm', 'tax', 'fee', 'discount', 'items'])
+                ->findOrFail($id);
 
-        // Generate PDF using the existing service
-        $pdfService = new \App\Services\InvoiceService();
-        $pdf = $pdfService->generatePdf($invoice);
-
-        return response($pdf, 200, [
-            'Content-Type' => 'application/pdf',
-            'Content-Disposition' => 'attachment; filename="invoice-' . $invoice->invoice_number . '.pdf"'
-        ]);
+            // Generate PDF using DomPDF
+            $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('invoices.pdf', compact('invoice'));
+            $pdf->setPaper('A4', 'portrait');
+            
+            // Return PDF as download
+            return $pdf->download("invoice-{$invoice->invoice_number}.pdf");
+        } catch (\Exception $e) {
+            \Log::error('PDF Generation Error: ' . $e->getMessage());
+            return response()->json(['error' => 'Failed to generate PDF'], 500);
+        }
     }
 
     /**

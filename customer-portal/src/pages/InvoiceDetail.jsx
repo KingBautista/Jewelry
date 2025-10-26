@@ -27,6 +27,7 @@ const InvoiceDetail = () => {
 
   const downloadPdf = async () => {
     try {
+      setLoading(true);
       const response = await axiosClient.get(`/customer/invoices/${id}/pdf`, {
         responseType: 'blob'
       });
@@ -42,6 +43,9 @@ const InvoiceDetail = () => {
       window.URL.revokeObjectURL(url);
     } catch (error) {
       console.error('Error downloading PDF:', error);
+      alert('Failed to download PDF. Please try again.');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -86,20 +90,25 @@ const InvoiceDetail = () => {
         <div className="col-12">
           <div className="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4">
             <div className="mb-3 mb-md-0">
-              <h1 className="h3 mb-0" style={{ color: 'var(--text-color)' }}>
+              <h1 className="h3 mb-0" style={{ color: 'var(--text-color)', whiteSpace: 'nowrap' }}>
                 <FontAwesomeIcon icon={solidIconMap.fileInvoice} className="me-2 text-champagne" />
                 Invoice #{invoice.invoice_number}
               </h1>
               <p className="text-muted mb-0">Issue Date: {new Date(invoice.issue_date).toLocaleDateString()}</p>
             </div>
-            <div className="d-flex flex-column flex-sm-row gap-2 w-100 w-md-auto">
+            <div className="d-flex flex-column flex-sm-row gap-2 w-100 w-md-auto justify-content-end">
               <button 
-                className="btn btn-outline-primary"
+                className="btn btn-primary"
                 onClick={downloadPdf}
+                disabled={loading}
               >
                 <FontAwesomeIcon icon={solidIconMap.download} className="me-2" />
-                <span className="d-none d-sm-inline">Download PDF</span>
-                <span className="d-sm-none">PDF</span>
+                <span className="d-none d-sm-inline">
+                  {loading ? 'Downloading...' : 'Download PDF'}
+                </span>
+                <span className="d-sm-none">
+                  {loading ? '...' : 'PDF'}
+                </span>
               </button>
               {invoice.payment_status !== 'fully_paid' && (
                 <Link 
