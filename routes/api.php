@@ -338,6 +338,7 @@ Route::middleware('auth:sanctum')->group(function () {
 			Route::patch('/{id}/reject', [PaymentController::class, 'reject']);
 			Route::patch('/{id}/confirm', [PaymentController::class, 'confirm']);
 			Route::post('/{id}/send-update-invoice', [PaymentController::class, 'sendUpdateInvoice']);
+			Route::post('/{id}/download-updated-invoice', [PaymentController::class, 'downloadUpdatedInvoice']);
 		});
 		
 		// Payment Submissions

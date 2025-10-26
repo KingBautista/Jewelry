@@ -536,6 +536,52 @@ export default function PaymentForm() {
     }
   };
 
+  // Handle download invoice PDF
+  const handleDownloadInvoicePdf = async () => {
+    if (!selectedInvoice) return;
+    
+    try {
+      setIsLoading(true);
+      
+      // If we have a payment ID, use the updated invoice with paid transactions
+      if (payment.id) {
+        const response = await axiosClient.post(`/payment-management/payments/${payment.id}/download-updated-invoice`, {}, {
+          responseType: 'blob'
+        });
+        
+        const blob = new Blob([response.data], { type: 'application/pdf' });
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `invoice-updated-${selectedInvoice.invoice_number}.pdf`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        window.URL.revokeObjectURL(url);
+      } else {
+        // For new payments, use the regular invoice PDF
+        const response = await axiosClient.get(`/invoice-management/invoices/${selectedInvoice.id}/pdf`, {
+          responseType: 'blob'
+        });
+        
+        const blob = new Blob([response.data], { type: 'application/pdf' });
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `invoice-${selectedInvoice.invoice_number}.pdf`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        window.URL.revokeObjectURL(url);
+      }
+    } catch (error) {
+      console.error('Error downloading PDF:', error);
+      toastAction.current.showError('Failed to download PDF. Please try again.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <>
     <div className="card">
@@ -1089,24 +1135,24 @@ export default function PaymentForm() {
           />
         </div>
         <div className="card-footer">
-          <div className="d-flex flex-column flex-lg-row justify-content-between align-items-start align-items-lg-center gap-3">
-            <div className="d-flex flex-column flex-sm-row gap-2">
-              <Link type="button" to="/payment-management/payments" className="btn btn-secondary w-100 w-sm-auto">
+          <div className="d-flex flex-wrap justify-content-between align-items-center gap-2">
+            <div className="d-flex flex-wrap gap-2">
+              <Link type="button" to="/payment-management/payments" className="btn btn-secondary">
                 <FontAwesomeIcon icon={solidIconMap.arrowleft} className="me-2" />
                 Cancel
               </Link>
-              <button type="submit" className="btn btn-secondary w-100 w-sm-auto" disabled={isReadOnly}>
+              <button type="submit" className="btn btn-secondary" disabled={isReadOnly}>
                 <FontAwesomeIcon icon={solidIconMap.save} className="me-2" />
                 {buttonText} &nbsp;
                 {isLoading && <span className="spinner-border spinner-border-sm ml-1" role="status"></span>}
               </button>
             </div>
-            <div className="d-flex flex-column flex-sm-row gap-2">
+            <div className="d-flex flex-wrap gap-2">
               {payment.id && payment.status === 'pending' && !isReadOnly && (
                 <>
                   <button 
                     type="button" 
-                    className="btn btn-success w-100 w-sm-auto" 
+                    className="btn btn-success" 
                     onClick={handleApprove}
                     disabled={isLoading}
                   >
@@ -1115,7 +1161,7 @@ export default function PaymentForm() {
                   </button>
                   <button 
                     type="button" 
-                    className="btn btn-danger w-100 w-sm-auto" 
+                    className="btn btn-danger" 
                     onClick={handleReject}
                     disabled={isLoading}
                   >
@@ -1127,7 +1173,7 @@ export default function PaymentForm() {
               {payment.id && payment.status === 'approved' && !isReadOnly && (
                 <button 
                   type="button" 
-                  className="btn btn-primary w-100 w-sm-auto" 
+                  className="btn btn-primary" 
                   onClick={handleConfirm}
                   disabled={isLoading}
                 >
@@ -1135,21 +1181,34 @@ export default function PaymentForm() {
                   Confirm
                 </button>
               )}
-              {payment.id && selectedInvoice && (
-                <button 
-                  type="button" 
-                  className="btn btn-primary w-100 w-sm-auto" 
-                  onClick={handleSendUpdateInvoice}
-                  disabled={isLoading}
-                >
-                  <FontAwesomeIcon icon={solidIconMap.envelope} className="me-2" />
-                  Send Update Invoice
-                </button>
+              {selectedInvoice && (
+                <>
+                  <button 
+                    type="button" 
+                    className="btn btn-secondary" 
+                    onClick={handleDownloadInvoicePdf}
+                    disabled={isLoading}
+                  >
+                    <FontAwesomeIcon icon={solidIconMap.download} className="me-2" />
+                    Download PDF
+                  </button>
+                  {payment.id && (
+                    <button 
+                      type="button" 
+                      className="btn btn-primary" 
+                      onClick={handleSendUpdateInvoice}
+                      disabled={isLoading}
+                    >
+                      <FontAwesomeIcon icon={solidIconMap.envelope} className="me-2" />
+                      Send Update Invoice
+                    </button>
+                  )}
+                </>
               )}
               {payment.id && !isReadOnly && (
                 <button 
                   type="button" 
-                  className="btn btn-danger w-100 w-sm-auto" 
+                  className="btn btn-danger" 
                   onClick={handleDelete}
                   disabled={isLoading}
                 >

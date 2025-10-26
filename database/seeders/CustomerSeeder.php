@@ -449,11 +449,11 @@ class CustomerSeeder extends Seeder
                 // Update existing user with correct role ID
                 $existingUser->update($userData);
                 $user = $existingUser;
-                
-                // Create invoices and payments for this customer
-                if (isset($customerData['invoices'])) {
-                    $this->createCustomerInvoices($user, $customerData['invoices']);
-                }
+            }
+            
+            // Create invoices and payments for this customer
+            if (isset($customerData['invoices'])) {
+                $this->createCustomerInvoices($user, $customerData['invoices']);
             }
         }
     }
@@ -520,6 +520,17 @@ class CustomerSeeder extends Seeder
             $paymentIndex = 0;
             
             foreach ($invoiceData['payments'] as $paymentData) {
+                // Check if payment already exists for this invoice
+                $existingPayment = \App\Models\Payment::where('invoice_id', $invoice->id)
+                    ->where('amount_paid', $paymentData['amount_paid'])
+                    ->where('payment_date', $paymentData['payment_date'])
+                    ->first();
+                
+                if ($existingPayment) {
+                    $paymentIndex++;
+                    continue; // Skip if payment already exists
+                }
+                
                 $paymentType = $this->getAppropriatePaymentType($paymentData['payment_type']);
                 
                 // Get the corresponding payment schedule amount
@@ -534,7 +545,7 @@ class CustomerSeeder extends Seeder
                 $payment = \App\Models\Payment::create([
                     'invoice_id' => $invoice->id,
                     'customer_id' => $customer->id,
-                    'amount_paid' => $scheduleAmount,
+                    'amount_paid' => $paymentData['amount_paid'],
                     'expected_amount' => $scheduleAmount,
                     'payment_date' => $paymentData['payment_date'],
                     'payment_type' => $paymentData['payment_type'],
@@ -550,7 +561,7 @@ class CustomerSeeder extends Seeder
                 if ($paymentSchedules->count() > $paymentIndex) {
                     $schedule = $paymentSchedules[$paymentIndex];
                     $schedule->update([
-                        'paid_amount' => $scheduleAmount,
+                        'paid_amount' => $paymentData['amount_paid'],
                         'status' => $paymentData['status'] === 'confirmed' ? 'paid' : 'partial'
                     ]);
                 }

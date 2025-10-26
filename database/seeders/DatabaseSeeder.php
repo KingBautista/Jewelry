@@ -21,11 +21,7 @@ class DatabaseSeeder extends Seeder
     // Step 2: Role-Permission Relationships (Depends on Roles & Permissions)
     $this->call(RolePermissionSeeder::class);
     
-    // Step 3: User Management (Depends on Roles)
-    $this->call(UserSeeder::class);
-    $this->call(CustomerSeeder::class);
-    
-    // Step 4: Financial Configuration Seeders (No Dependencies)
+    // Step 3: Financial Configuration Seeders (No Dependencies - Must run before CustomerSeeder)
     $this->call(TaxSeeder::class);
     $this->call(FeeSeeder::class);
     $this->call(DiscountSeeder::class);
@@ -33,7 +29,10 @@ class DatabaseSeeder extends Seeder
     $this->call(PaymentMethodSeeder::class);
     $this->call(PaymentTypeSeeder::class);
     
+    // Step 4: User Management (Depends on Roles)
+    $this->call(UserSeeder::class);
+    
     // Step 5: Business Data Seeders (Depends on Users, Customers, Financial Config)
-    // Note: CustomerSeeder now includes invoice and payment creation
+    $this->call(CustomerSeeder::class);
   }
 }

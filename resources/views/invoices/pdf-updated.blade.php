@@ -406,27 +406,27 @@
     </table>
     
     
-    <!-- Paid Payment Schedules Section -->
-    @if($paidSchedules && count($paidSchedules) > 0)
-    <div class="section-title">Paid Payment Schedule</div>
+    <!-- Payment History Section -->
+    @if($paymentHistory && count($paymentHistory) > 0)
+    <div class="section-title">Payment History</div>
     <table class="items-table">
         <thead>
             <tr>
                 <th class="description">DESCRIPTION</th>
-                <th class="unit-price">DUE DATE</th>
+                <th class="unit-price">PAYMENT DATE</th>
                 <th class="qty">STATUS</th>
                 <th class="total">AMOUNT PAID</th>
             </tr>
         </thead>
         <tbody>
-            @foreach($paidSchedules as $schedule)
+            @foreach($paymentHistory as $payment)
             <tr>
-                <td class="description">{{ $schedule->payment_type }} - Payment #{{ $schedule->payment_order }}</td>
-                <td class="unit-price">{{ \Carbon\Carbon::parse($schedule->due_date)->format('M d, Y') }}</td>
+                <td class="description">{{ $payment->reference_number ?: ($payment->payment_type ? ucfirst(str_replace('_', ' ', $payment->payment_type)) : 'Payment') }}</td>
+                <td class="unit-price">{{ \Carbon\Carbon::parse($payment->payment_date)->format('M d, Y') }}</td>
                 <td class="qty">
-                    <span style="color: green; font-weight: bold;">PAID</span>
+                    <span style="color: green; font-weight: bold;">CONFIRMED</span>
                 </td>
-                <td class="total">P{{ number_format($schedule->paid_amount, 2, '.', ',') }}</td>
+                <td class="total">P{{ number_format($payment->amount_paid, 2, '.', ',') }}</td>
             </tr>
             @endforeach
         </tbody>
@@ -441,13 +441,24 @@
             <span>P{{ number_format($invoice->total_amount, 2, '.', ',') }}</span>
         </div>
         <div class="summary-row">
-            <span>Total Paid Amount:</span>
+            <span>Total Paid Amount ({{ count($paymentHistory) }} payment(s)):</span>
             <span>P{{ number_format($totalPaid, 2, '.', ',') }}</span>
         </div>
         <div class="summary-row total">
             <span>Remaining Balance:</span>
             <span>P{{ number_format($remainingBalance, 2, '.', ',') }}</span>
         </div>
+        @if($remainingBalance <= 0)
+        <div class="summary-row" style="color: green; font-weight: bold; font-size: 14px;">
+            <span>Status:</span>
+            <span>FULLY PAID</span>
+        </div>
+        @else
+        <div class="summary-row" style="color: #e67e22; font-weight: bold;">
+            <span>Status:</span>
+            <span>PARTIALLY PAID</span>
+        </div>
+        @endif
     </div>
     
     <!-- Receipt Images Section -->

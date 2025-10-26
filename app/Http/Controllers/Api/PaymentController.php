@@ -678,7 +678,7 @@ class PaymentController extends BaseController
             $paymentHistory = Payment::where('invoice_id', $payment->invoice_id)
                 ->where('status', 'confirmed')
                 ->orderBy('payment_date', 'asc')
-                ->get(['id', 'invoice_id', 'amount_paid', 'payment_date', 'receipt_images', 'status']);
+                ->get(['id', 'invoice_id', 'amount_paid', 'payment_date', 'receipt_images', 'status', 'reference_number', 'payment_type']);
             
             // Get paid payment schedules
             $paidSchedules = $payment->invoice->paymentSchedules()
@@ -696,6 +696,72 @@ class PaymentController extends BaseController
             return response(['message' => 'Updated invoice has been sent to the customer.'], 200);
         } catch (\Exception $e) {
             return $this->messageService->responseError();
+        }
+    }
+
+    /**
+     * Download updated invoice PDF with payment history and paid transactions
+     */
+    public function downloadUpdatedInvoice(Int $id)
+    {
+        try {
+            $payment = Payment::with(['invoice.customer', 'invoice.items', 'invoice.paymentSchedules'])
+                ->findOrFail($id);
+            
+            if (!$payment->invoice) {
+                return response(['message' => 'No invoice found for this payment.'], 400);
+            }
+            
+            // Get payment history for this invoice
+            $paymentHistory = Payment::where('invoice_id', $payment->invoice_id)
+                ->where('status', 'confirmed')
+                ->orderBy('payment_date', 'asc')
+                ->get(['id', 'invoice_id', 'amount_paid', 'payment_date', 'receipt_images', 'status', 'reference_number', 'payment_type']);
+            
+            // Get paid payment schedules
+            $paidSchedules = $payment->invoice->paymentSchedules()
+                ->where('status', 'paid')
+                ->orderBy('payment_order', 'asc')
+                ->get();
+            
+            // Calculate totals
+            $totalPaid = $paymentHistory->sum('amount_paid');
+            $remainingBalance = $payment->invoice->total_amount - $totalPaid;
+            
+            // Get all receipt images from payment history and convert to base64
+            $receiptImages = [];
+            
+            foreach ($paymentHistory as $paymentRecord) {
+                if ($paymentRecord->receipt_images && is_array($paymentRecord->receipt_images)) {
+                    foreach ($paymentRecord->receipt_images as $imagePath) {
+                        $fullPath = storage_path('app/public/' . $imagePath);
+                        
+                        if (file_exists($fullPath)) {
+                            $imageData = file_get_contents($fullPath);
+                            $mimeType = mime_content_type($fullPath);
+                            $base64 = 'data:' . $mimeType . ';base64,' . base64_encode($imageData);
+                            $receiptImages[] = $base64;
+                        }
+                    }
+                }
+            }
+            
+            // Generate PDF with updated information
+            $pdf = \PDF::loadView('invoices.pdf-updated', [
+                'invoice' => $payment->invoice,
+                'paymentHistory' => $paymentHistory,
+                'paidSchedules' => $paidSchedules,
+                'totalPaid' => $totalPaid,
+                'remainingBalance' => $remainingBalance,
+                'receiptImages' => $receiptImages
+            ]);
+            $pdf->setPaper('A4', 'portrait');
+            
+            // Return PDF as download
+            return $pdf->download("invoice-updated-{$payment->invoice->invoice_number}.pdf");
+        } catch (\Exception $e) {
+            \Log::error('PDF Generation Error: ' . $e->getMessage());
+            return response()->json(['error' => 'Failed to generate PDF'], 500);
         }
     }
 }

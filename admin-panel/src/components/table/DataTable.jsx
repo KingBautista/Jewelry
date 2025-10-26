@@ -294,8 +294,8 @@ const DataTable = forwardRef((props, ref) => {
 
   return (
     <>
-      <div className="dashboard-table-responsive" style={{ height: tableHeight }}>
-        <table className="table-modern">
+      <div className="dashboard-table-responsive" style={{ height: tableHeight, overflowX: 'auto' }}>
+        <table className="table-modern" style={{ minWidth: '100%', whiteSpace: 'nowrap' }}>
           <TableHeader 
             header={tHeader} 
             onCheckAll={(checked) => tbodyRef.current.checkedAll(checked)} 
