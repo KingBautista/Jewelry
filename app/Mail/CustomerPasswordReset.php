@@ -38,7 +38,7 @@ class CustomerPasswordReset extends Mailable
                     ->with([
                         'user' => $this->user,
                         'newPassword' => $this->newPassword,
-                        'loginUrl' => env('CUSTOMER_PORTAL_URL', 'http://localhost:3001') . '/login'
+                        'loginUrl' => env('CUSTOMER_PORTAL_URL', 'https://customer.illussso.com/') . '/login'
                     ]);
     }
 }

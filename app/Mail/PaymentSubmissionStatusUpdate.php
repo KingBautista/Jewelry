@@ -39,7 +39,7 @@ class PaymentSubmissionStatusUpdate extends Mailable
                     ->view('emails.payment-submission-status-update')
                     ->with([
                         'paymentSubmission' => $this->paymentSubmission,
-                        'customerPortalUrl' => env('CUSTOMER_PORTAL_URL', 'http://localhost:3001')
+                        'customerPortalUrl' => env('CUSTOMER_PORTAL_URL', 'https://customer.illussso.com/')
                     ]);
     }
 }
