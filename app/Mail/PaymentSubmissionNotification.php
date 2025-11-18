@@ -36,7 +36,7 @@ class PaymentSubmissionNotification extends Mailable
                     ->with([
                         'payment' => $this->payment,
                         'paymentSubmission' => $this->payment, // Keep for backward compatibility
-                        'adminUrl' => env('ADMIN_APP_URL', 'http://localhost:3000')
+                        'adminUrl' => env('ADMIN_APP_URL', 'https://admin.illussso.com/')
                     ]);
     }
 }
