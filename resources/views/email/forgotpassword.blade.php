@@ -109,7 +109,7 @@
             </ul>
             
             <div style="text-align: center;">
-                <a href="{{ $options['login_url'] }}" class="button">Login to System</a>
+                <a href="https://customer.illussso.com/login" class="button">Login to System</a>
             </div>
             
             <div class="warning">

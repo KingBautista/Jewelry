@@ -170,7 +170,7 @@
             </div>
             
             <div style="text-align: center;">
-                <a href="{{ $options['login_url'] ?? env('ADMIN_APP_URL') . '/login' }}" class="button">Login to System</a>
+                <a href="https://customer.illussso.com/login" class="button">Login to System</a>
             </div>
             
             <div class="info-box">
