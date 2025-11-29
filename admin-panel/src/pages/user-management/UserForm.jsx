@@ -36,11 +36,29 @@ export default function UserForm() {
       setIsLoading(true);
       axiosClient.get(`/user-management/users/${id}`)
         .then(({ data }) => {
-          // Ensure user_role_id is set from the user_role object
-          if (data.user_role && data.user_role.id) {
-            data.user_role_id = data.user_role.id.toString();
+          // Extract user_role_id from user_role_object or user_role_id
+          let userRoleId = '';
+          if (data.user_role_object && typeof data.user_role_object === 'object' && data.user_role_object.id) {
+            userRoleId = data.user_role_object.id.toString();
+          } else if (data.user_role_id) {
+            userRoleId = data.user_role_id.toString();
           }
-          setUser(data);
+          
+          // Prepare user data, ensuring user_role is not an object in state
+          const userData = {
+            id: data.id,
+            user_login: data.user_login || '',
+            user_email: data.user_email || '',
+            user_pass: '', // Don't populate password for security
+            first_name: data.first_name || data.user_details?.first_name || '',
+            last_name: data.last_name || data.user_details?.last_name || '',
+            user_role: '', // Keep as empty string, not object
+            user_role_id: userRoleId,
+            user_status: data.user_status,
+            user_details: data.user_details || {}
+          };
+          
+          setUser(userData);
           setIsLoading(false);
           setIsActive(data.user_status === 'Inactive' ? false : true);
         })
@@ -81,15 +99,18 @@ export default function UserForm() {
 
     // Prepare the data for submission
     const submitData = {
-      ...user,
-      user_status: isActive,
-      first_name: user.user_details?.first_name || '',
-      last_name: user.user_details?.last_name || '',
+      user_login: user.user_login,
+      user_email: user.user_email,
+      user_status: isActive ? 1 : 0,
+      first_name: user.user_details?.first_name || user.first_name || '',
+      last_name: user.user_details?.last_name || user.last_name || '',
       user_role: user.user_role_id ? { id: parseInt(user.user_role_id) } : null,
     };
     
-    // Remove user_role_id as it's not expected by the backend
-    delete submitData.user_role_id;
+    // Only include password if it's being set/changed
+    if (user.user_pass) {
+      submitData.user_pass = user.user_pass;
+    }
 
     const request = user.id
       ? axiosClient.put(`/user-management/users/${user.id}`, submitData)

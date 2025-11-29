@@ -29,12 +29,13 @@ class UserResource extends JsonResource
       'biography' => $userDetails['biography'] ?? '',
       'attachment_file' => $userDetails['attachment_file'] ?? '',
       'attachment_metadata' => $userDetails['attachment_metadata'] ?? '',
-      'user_role' => $this->userRole ? [
+      'user_role' => $this->userRole ? $this->userRole->name : 'Unassigned', // String for display compatibility
+      'user_role_object' => $this->userRole ? [
         'id' => $this->userRole->id,
         'name' => $this->userRole->name,
         'active' => $this->userRole->active,
         'is_super_admin' => $this->userRole->is_super_admin,
-      ] : null,
+      ] : null, // Full object for detailed views
       'user_role_id' => $this->user_role_id,
       'user_details' => $userDetails, // Include full user_details for frontend
       'theme' => $userDetails['theme'] ?? '',
