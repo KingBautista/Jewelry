@@ -190,7 +190,7 @@ class CustomerController extends BaseController
                 'user_pass' => $password,
                 'user_status' => 1, // Active
                 'user_activation_key' => $activation_key,
-                'user_role_id' => null, // Will be set based on customer role
+                'user_role_id' => 7, // Will be set based on customer role
             ];
 
             // Prepare customer meta data
