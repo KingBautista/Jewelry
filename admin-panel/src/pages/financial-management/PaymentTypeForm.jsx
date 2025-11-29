@@ -176,11 +176,11 @@ export default function PaymentTypeForm() {
         <div className="card-footer">
           <div className="d-flex flex-column flex-lg-row justify-content-between align-items-start align-items-lg-center gap-3">
             <div className="d-flex flex-column flex-sm-row gap-2">
-              <Link type="button" to="/financial-management/payment-types" className="btn btn-secondary w-100 w-sm-auto">
+              <Link type="button" to="/financial-management/payment-types" className="btn btn-secondary" style={{ minWidth: '120px' }}>
                 <FontAwesomeIcon icon={solidIconMap.arrowleft} className="me-2" />
                 Cancel
               </Link>
-              <button type="submit" className="btn btn-secondary w-100 w-sm-auto">
+              <button type="submit" className="btn btn-secondary" style={{ minWidth: '120px' }}>
                 <FontAwesomeIcon icon={solidIconMap.save} className="me-2" />
                 {buttonText} &nbsp;
                 {isLoading && <span className="spinner-border spinner-border-sm ml-1" role="status"></span>}
@@ -189,9 +189,10 @@ export default function PaymentTypeForm() {
             {paymentType.id && (
               <button 
                 type="button" 
-                className="btn btn-danger w-100 w-sm-auto" 
+                className="btn btn-danger" 
                 onClick={handleDelete}
                 disabled={isLoading}
+                style={{ minWidth: '120px' }}
               >
                 <FontAwesomeIcon icon={solidIconMap.trash} className="me-2" />
                 Delete

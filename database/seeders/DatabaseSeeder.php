@@ -33,6 +33,6 @@ class DatabaseSeeder extends Seeder
     $this->call(UserSeeder::class);
     
     // Step 5: Business Data Seeders (Depends on Users, Customers, Financial Config)
-    $this->call(CustomerSeeder::class);
+    // $this->call(CustomerSeeder::class);
   }
 }

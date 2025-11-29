@@ -14,13 +14,10 @@ class RoleSeeder extends Seeder
 
         // Data for Invoice and Payment Management System
         // (id, name, active, is_super_admin)
+        // Retaining only: Developer Account, Web Administrator (renamed from System Administrator), and Customer
         $roles = [
             [1, 'Developer Account', 1, 1],
-            [2, 'System Administrator', 1, 0],
-            [3, 'Finance Manager', 1, 0],
-            [4, 'Invoice Manager', 1, 0],
-            [5, 'Customer Service', 1, 0],
-            [6, 'Accountant', 1, 0],
+            [2, 'Web Administrator', 1, 0], // Renamed from System Administrator
             [7, 'Customer', 1, 0],
         ];
 

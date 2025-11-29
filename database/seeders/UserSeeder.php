@@ -73,41 +73,13 @@ class UserSeeder extends Seeder
                 'biography' => 'Developer account with full system access.',
                 'theme' => 'dark',
             ],
-            'System Administrator' => [
-                'first_name' => 'System',
+            'Web Administrator' => [
+                'first_name' => 'Web',
                 'last_name' => 'Administrator',
                 'nickname' => 'Admin',
-                'biography' => 'System administrator for jewelry business management.',
+                'biography' => 'Web administrator for jewelry business management.',
                 'theme' => 'dark',
-            ],
-            'Finance Manager' => [
-                'first_name' => 'Sarah',
-                'last_name' => 'Chen',
-                'nickname' => 'Finance',
-                'biography' => 'Finance manager responsible for financial configurations and reporting.',
-                'theme' => 'dark',
-            ],
-            'Invoice Manager' => [
-                'first_name' => 'Michael',
-                'last_name' => 'Rodriguez',
-                'nickname' => 'Invoice',
-                'biography' => 'Invoice manager handling invoice creation and management.',
-                'theme' => 'dark',
-            ],
-            'Customer Service' => [
-                'first_name' => 'Emily',
-                'last_name' => 'Thompson',
-                'nickname' => 'Customer Service',
-                'biography' => 'Customer service representative managing customer relationships.',
-                'theme' => 'dark',
-            ],
-            'Accountant' => [
-                'first_name' => 'David',
-                'last_name' => 'Kim',
-                'nickname' => 'Accountant',
-                'biography' => 'Accountant handling payment processing and financial records.',
-                'theme' => 'dark',
-            ],
+            ]
         ];
 
         return $roleMetaData[$role->name] ?? [
