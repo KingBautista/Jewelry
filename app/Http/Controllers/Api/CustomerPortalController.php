@@ -525,8 +525,8 @@ class CustomerPortalController extends Controller
 
         // Send notification email to admin (if admin email is configured)
         // $adminEmail = EmailSetting::getValue('admin_email');
-        // $adminEmail = 'illussso.manila@gmail.com, villegitau@gmail.com';
-        $adminEmail = 'bautista_el23@yahoo.com.ph';
+        $adminEmail = 'illussso.manila@gmail.com, villegitau@gmail.com';
+        
         if ($adminEmail) {
             try {
                 // Configure mail settings from database
