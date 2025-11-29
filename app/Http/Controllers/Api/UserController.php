@@ -101,7 +101,19 @@ class UserController extends BaseController
    */
   public function show($id, $withOutResource = false)
   {
-    return parent::show($id, $withOutResource);
+    try {
+      // Load user with relationships for proper display
+      $user = User::with('userRole', 'getUserMetas')->findOrFail($id);
+      
+      if (!$withOutResource) {
+        UserResource::withoutWrapping();
+        return new UserResource($user);
+      }
+      
+      return $user;
+    } catch (\Exception $e) {
+      return $this->messageService->responseError();
+    }
   }
 
   /**
@@ -178,7 +190,7 @@ class UserController extends BaseController
    */
   public function store(StoreUserRequest $request)
   {
-    // try {
+    try {
       $data = $request->validated();
 
       $salt = PasswordHelper::generateSalt();
@@ -194,9 +206,15 @@ class UserController extends BaseController
         'user_activation_key' => $activation_key,
       ];
 
-      // Handle user_role_id if provided
+      // Handle user_role_id if provided - check both formats
       if (isset($data['user_role']['id'])) {
         $userData['user_role_id'] = $data['user_role']['id'];
+      } elseif (isset($data['user_role_id'])) {
+        $userData['user_role_id'] = $data['user_role_id'];
+      } elseif (isset($request->user_role_id)) {
+        $userData['user_role_id'] = $request->user_role_id;
+      } elseif (isset($request->user_role) && is_array($request->user_role) && isset($request->user_role['id'])) {
+        $userData['user_role_id'] = $request->user_role['id'];
       }
 
       $meta_details = [];
@@ -206,12 +224,14 @@ class UserController extends BaseController
       if(isset($request->last_name))
         $meta_details['last_name'] = $request->last_name;
 
-      $user = $this->service->storeWithMeta($userData, $meta_details);
+      $userResource = $this->service->storeWithMeta($userData, $meta_details);
       
-      return response($user, 201);
-    // } catch (\Exception $e) {
-    //   return $this->messageService->responseError();
-    // }
+      // Reload user with relationships after creation
+      $user = User::with('userRole', 'getUserMetas')->findOrFail($userResource->id);
+      return response(new UserResource($user), 201);
+    } catch (\Exception $e) {
+      return $this->messageService->responseError();
+    }
   }
 
   /**
@@ -265,7 +285,7 @@ class UserController extends BaseController
   {
     try {
       $data = $request->validated();
-      $user = User::findOrFail($id);
+      $user = User::with('userRole', 'getUserMetas')->findOrFail($id);
       $oldData = $user->toArray();
 
       $upData = [
@@ -274,9 +294,15 @@ class UserController extends BaseController
         'user_status' => $request->user_status,
       ];
 
-      // Handle user_role_id if provided
+      // Handle user_role_id if provided - check both formats
       if (isset($data['user_role']['id'])) {
         $upData['user_role_id'] = $data['user_role']['id'];
+      } elseif (isset($data['user_role_id'])) {
+        $upData['user_role_id'] = $data['user_role_id'];
+      } elseif (isset($request->user_role_id)) {
+        $upData['user_role_id'] = $request->user_role_id;
+      } elseif (isset($request->user_role) && is_array($request->user_role) && isset($request->user_role['id'])) {
+        $upData['user_role_id'] = $request->user_role['id'];
       }
 
       // Handle password update if provided
@@ -296,7 +322,9 @@ class UserController extends BaseController
 
       $user = $this->service->updateWithMeta($upData, $meta_details, $user, $originalPassword);
 
-      return response($user, 200);
+      // Reload user with relationships after update
+      $user = User::with('userRole', 'getUserMetas')->findOrFail($id);
+      return response(new UserResource($user), 200);
     } catch (\Exception $e) {
       return $this->messageService->responseError();
     }
