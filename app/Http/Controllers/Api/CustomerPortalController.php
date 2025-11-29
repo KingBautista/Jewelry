@@ -524,7 +524,9 @@ class CustomerPortalController extends Controller
         $payment->load(['invoice', 'customer']);
 
         // Send notification email to admin (if admin email is configured)
-        $adminEmail = EmailSetting::getValue('admin_email');
+        // $adminEmail = EmailSetting::getValue('admin_email');
+        // $adminEmail = 'illussso.manila@gmail.com, villegitau@gmail.com';
+        $adminEmail = 'bautista_el23@yahoo.com.ph';
         if ($adminEmail) {
             try {
                 // Configure mail settings from database
