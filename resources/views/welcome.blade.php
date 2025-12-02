@@ -237,7 +237,7 @@
         <div class="main-content">
             <h2 class="welcome-title">Welcome to Illusso</h2>
             <p class="description">
-                Your comprehensive jewelry management system designed for modern jewelry businesses. 
+                Your comprehensive luxury management system designed for modern luxury businesses. 
                 Manage invoices, payments, customers, and inventory with ease and elegance.
             </p>
 
@@ -246,7 +246,7 @@
                     <div class="feature-icon">💎</div>
                     <h3 class="feature-title">Inventory Management</h3>
                     <p class="feature-description">
-                        Track your jewelry inventory with detailed descriptions, photos, and specifications. 
+                        Track your luxury inventory with detailed descriptions, photos, and specifications. 
                         Manage stock levels and product variations efficiently.
                     </p>
                 </div>
@@ -314,7 +314,7 @@
 
             <div class="footer">
                 <p>&copy; 2025 Illusso Jewelry Management System. All rights reserved.</p>
-                <p>Designed for jewelry businesses who value excellence and efficiency.</p>
+                <p>Designed for luxury businesses who value excellence and efficiency.</p>
                 <p style="margin-top: 10px; font-size: 0.8rem; color: #999;">
                     Laravel v{{ Illuminate\Foundation\Application::VERSION }} (PHP v{{ PHP_VERSION }})
                 </p>
